@@ -38,6 +38,25 @@ client = session.client(
 SECRETS_STRING = client.get_secret_value(SecretId=AWS_SECRETS_MANAGER_SECRET_NAME)['SecretString']
 SECRETS = json.loads(SECRETS_STRING)
 
+# S3
+AWS_STORAGE_BUCKET_NAME = SECRETS['AWS_STORAGE_BUCKET_NAME']
+AWS_S3_REGION_NAME = 'ap-northeast-2'
+AWS_DEFAULT_ACL = None
+
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
+
+# s3 static settings
+STATIC_LOCATION = 'static'
+STATICFILES_STORAGE = 'config.storages.S3StaticStorage'
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+
+# s3 media settings
+DEFAULT_FILE_STORAGE = 'config.storages.S3MediaStorage'
+MEDIA_LOCATION = 'media'
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIA_LOCATION}/'
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = SECRETS['DJANGO_SECRET_KEY']
 
