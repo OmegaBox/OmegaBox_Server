@@ -1,0 +1,8 @@
+.gitignore
+.git
+
+Dockerfile
+
+env.*
+.DS_Store
+

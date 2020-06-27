@@ -1,0 +1,26 @@
+server {
+    listen 80;
+    server_name omegabox.xyz www.omegabox.xyz;
+    charset utf-8;
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+
+}
+
+server {
+    listen 443 ssl;
+    server_name omegabox.xyz www.omegabox.xyz;
+    charset utf-8;
+
+    ssl on;
+    ssl_certificate /etc/letsencrypt/live/omegabox.xyz/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/omegabox.xyz/privkey.pem;
+
+
+    location / {
+        include     /etc/nginx/proxy_params;
+        proxy_pass  http://unix:/run/omegabox.sock;
+    }
+}
