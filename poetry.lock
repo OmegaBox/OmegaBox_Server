@@ -22,6 +22,17 @@ version = ">=0.2.5,<0.4.4"
 
 [[package]]
 category = "main"
+description = "Internationalization utilities"
+name = "babel"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "2.8.0"
+
+[package.dependencies]
+pytz = ">=2015.7"
+
+[[package]]
+category = "main"
 description = "The AWS SDK for Python"
 name = "boto3"
 optional = false
@@ -74,6 +85,33 @@ sqlparse = "*"
 [package.extras]
 argon2 = ["argon2-cffi (>=16.1.0)"]
 bcrypt = ["bcrypt"]
+
+[[package]]
+category = "dev"
+description = "Extensions for Django"
+name = "django-extensions"
+optional = false
+python-versions = "*"
+version = "2.2.9"
+
+[package.dependencies]
+six = ">=1.2"
+
+[[package]]
+category = "main"
+description = "An international phone number field for django models."
+name = "django-phonenumber-field"
+optional = false
+python-versions = ">=3.5"
+version = "4.0.0"
+
+[package.dependencies]
+Django = ">=1.11.3"
+babel = "*"
+
+[package.extras]
+phonenumbers = ["phonenumbers (>=7.0.2)"]
+phonenumberslite = ["phonenumberslite (>=7.0.2)"]
 
 [[package]]
 category = "main"
@@ -137,6 +175,22 @@ name = "jmespath"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 version = "0.10.0"
+
+[[package]]
+category = "main"
+description = "Python version of Google's common library for parsing, formatting, storing and validating international phone numbers."
+name = "phonenumbers"
+optional = false
+python-versions = "*"
+version = "8.12.6"
+
+[[package]]
+category = "main"
+description = "Python version of Google's common library for parsing, formatting, storing and validating international phone numbers."
+name = "phonenumberslite"
+optional = false
+python-versions = "*"
+version = "8.12.6"
 
 [[package]]
 category = "main"
@@ -246,13 +300,17 @@ secure = ["certifi", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "pyOpenSSL (>=0
 socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
 
 [metadata]
-content-hash = "7424a6c7c6e6595ca6ee5a911a7fffaa1d1889a2639e5302dc84f0817ea8cdad"
+content-hash = "79c18b95d90658f6e0dd495912b0c7556c8449baa7edb7417a7236c5867ed9b2"
 python-versions = "^3.7"
 
 [metadata.files]
 awscli = [
     {file = "awscli-1.18.85-py2.py3-none-any.whl", hash = "sha256:affbb3734116aba754a9ab112d7ffe200e0cdc6e8214d36a44bd1a69b6e3e092"},
     {file = "awscli-1.18.85.tar.gz", hash = "sha256:2b46d54dfb2bca9286e46e0d08f0a3aa3c81c99005058feb0e5aecc7d60c5375"},
+]
+babel = [
+    {file = "Babel-2.8.0-py2.py3-none-any.whl", hash = "sha256:d670ea0b10f8b723672d3a6abeb87b565b244da220d76b4dba1b66269ec152d4"},
+    {file = "Babel-2.8.0.tar.gz", hash = "sha256:1aac2ae2d0d8ea368fa90906567f5c08463d98ade155c0c4bfedd6a0f7160e38"},
 ]
 boto3 = [
     {file = "boto3-1.14.8-py2.py3-none-any.whl", hash = "sha256:e831278ada45b984574a533fd427cb08c9c245445ca9a51457a84903d8b09b86"},
@@ -269,6 +327,14 @@ colorama = [
 django = [
     {file = "Django-2.2.13-py3-none-any.whl", hash = "sha256:e8fe3c2b2212dce6126becab7a693157f1a441a07b62ec994c046c76af5bb66d"},
     {file = "Django-2.2.13.tar.gz", hash = "sha256:84f370f6acedbe1f3c41e1a02de44ac206efda3355e427139ecb785b5f596d80"},
+]
+django-extensions = [
+    {file = "django-extensions-2.2.9.tar.gz", hash = "sha256:2f81b618ba4d1b0e58603e25012e5c74f88a4b706e0022a3b21f24f0322a6ce6"},
+    {file = "django_extensions-2.2.9-py2.py3-none-any.whl", hash = "sha256:b19182d101a441fe001c5753553a901e2ef3ff60e8fbbe38881eb4a61fdd17c4"},
+]
+django-phonenumber-field = [
+    {file = "django-phonenumber-field-4.0.0.tar.gz", hash = "sha256:d4580cc3352f4433962825f9927e6669852c1b40ec484fcb5a74064dabc1201a"},
+    {file = "django_phonenumber_field-4.0.0-py3-none-any.whl", hash = "sha256:2ca3bb0ada0ebc164bd903a981a34f1202a4294006e520b0da961bd7ce9f20a4"},
 ]
 django-storages = [
     {file = "django-storages-1.9.1.tar.gz", hash = "sha256:a59e9923cbce7068792f75344ed7727021ee4ac20f227cf17297d0d03d141e91"},
@@ -290,6 +356,14 @@ gunicorn = [
 jmespath = [
     {file = "jmespath-0.10.0-py2.py3-none-any.whl", hash = "sha256:cdf6525904cc597730141d61b36f2e4b8ecc257c420fa2f4549bac2c2d0cb72f"},
     {file = "jmespath-0.10.0.tar.gz", hash = "sha256:b85d0567b8666149a93172712e68920734333c0ce7e89b78b3e987f71e5ed4f9"},
+]
+phonenumbers = [
+    {file = "phonenumbers-8.12.6-py2.py3-none-any.whl", hash = "sha256:e49b8e21c557f0dafee966ddd55fb2bd3d6db155451999b75fb1b012e8d2016c"},
+    {file = "phonenumbers-8.12.6.tar.gz", hash = "sha256:d332078fe71c6153b5a263ac87283618b2afe514a248a14f06a0d39ce1f5ce0b"},
+]
+phonenumberslite = [
+    {file = "phonenumberslite-8.12.6-py2.py3-none-any.whl", hash = "sha256:f898bff9cb2fe6a0f6e6d6d8d27e550acf77af4cf20ec22f4f02c0a399ae6f39"},
+    {file = "phonenumberslite-8.12.6.tar.gz", hash = "sha256:19c8f083676061ca5848104aaecfd0d6378d1fc9b37d3777a8636fce05bca6d1"},
 ]
 psycopg2-binary = [
     {file = "psycopg2-binary-2.8.5.tar.gz", hash = "sha256:ccdc6a87f32b491129ada4b87a43b1895cf2c20fdb7f98ad979647506ffc41b6"},
