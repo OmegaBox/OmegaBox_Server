@@ -64,7 +64,6 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'members.Member'
 
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -72,10 +71,25 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+
+    # 3rd-party packages
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+
     'phonenumber_field',
 
+    # Local
     'members.apps.MembersConfig',
 ]
+
+SITE_ID = 1
+
+# Application definition
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -149,3 +163,11 @@ STATIC_URL = '/static/'
 # django-phonenumber-field
 PHONENUMBER_DEFAULT_REGION = 'KR'
 PHONENUMBER_DB_FORMAT = 'NATIONAL'
+
+# DRF
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
