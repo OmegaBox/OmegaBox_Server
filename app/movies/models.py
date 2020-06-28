@@ -1,7 +1,6 @@
 from django.db import models
 
 from config.settings._base import AUTH_USER_MODEL
-from members.models import Member
 from theaters.models import Screen, Schedule
 
 
@@ -14,12 +13,12 @@ class Movie(models.Model):
     ]
 
     liked = models.ManyToManyField(
-        Member,
+        AUTH_USER_MODEL,
         through='Rating',
         related_name='movies',
     )
     screens = models.ManyToManyField(
-        Screen,
+        'theaters.Screen',
         through=Schedule,
         related_name='movies',
     )
@@ -28,7 +27,7 @@ class Movie(models.Model):
     code = models.PositiveIntegerField()
     running_time = models.DurationField()
     genre = models.ForeignKey(
-        'Genre',
+        'movies.Genre',
         on_delete=models.CASCADE,
         related_name='movies',
     )
@@ -41,9 +40,12 @@ class Movie(models.Model):
         max_length=20,
         choices=MOVIE_GRADES
     )
-    description = models.TextField()
-    poster = models.ImageField(upload_to='posters/')
-    trailer = models.FileField(upload_to='trailers/')
+    description = models.TextField(blank=True)
+    poster = models.ImageField(upload_to='posters/', blank=True)
+    trailer = models.FileField(upload_to='trailers/', blank=True)
+
+    def __str__(self):
+        return f'{self.name_kor} ({self.name_kor})'
 
 
 class Rating(models.Model):
@@ -60,7 +62,7 @@ class Rating(models.Model):
         related_name='ratings',
     )
     movie = models.ForeignKey(
-        Movie,
+        'Movie',
         on_delete=models.CASCADE,
         related_name='ratings',
     )
@@ -75,3 +77,6 @@ class Rating(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return f'{self.name}'

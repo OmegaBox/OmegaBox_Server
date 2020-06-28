@@ -1,6 +1,5 @@
 from django.db import models
 
-from movies.models import Movie
 
 
 class Theater(models.Model):
@@ -28,7 +27,7 @@ class Screen(models.Model):
     )
     name = models.CharField(max_length=30)
     theater = models.ForeignKey(
-        Theater,
+        'Theater',
         related_name='screens',
         on_delete=models.CASCADE,
     )
@@ -36,12 +35,12 @@ class Screen(models.Model):
 
 class Schedule(models.Model):
     movie = models.ForeignKey(
-        Movie,
+        'movies.Movie',
         related_name='schedules',
         on_delete=models.CASCADE,
     )
     screen = models.ForeignKey(
-        Screen,
+        'Screen',
         related_name='screens',
         on_delete=models.CASCADE,
     )

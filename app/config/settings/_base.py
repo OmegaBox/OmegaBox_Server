@@ -85,6 +85,8 @@ INSTALLED_APPS = [
 
     # Local
     'members.apps.MembersConfig',
+    'movies.apps.MoviesConfig',
+    'theaters.apps.TheatersConfig',
 ]
 
 SITE_ID = 1
