@@ -41,9 +41,12 @@ class Movie(models.Model):
         max_length=20,
         choices=MOVIE_GRADES
     )
-    description = models.TextField()
-    poster = models.ImageField(upload_to='posters/')
-    trailer = models.FileField(upload_to='trailers/')
+    description = models.TextField(blank=True)
+    poster = models.ImageField(upload_to='posters/', blank=True)
+    trailer = models.FileField(upload_to='trailers/', blank=True)
+
+    def __str__(self):
+        return f'{self.name_kor} ({self.name_kor})'
 
 
 class Rating(models.Model):
@@ -75,3 +78,6 @@ class Rating(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return f'{self.name}'
