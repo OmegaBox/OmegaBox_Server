@@ -62,8 +62,9 @@ SECRET_KEY = SECRETS['DJANGO_SECRET_KEY']
 
 ALLOWED_HOSTS = []
 
-# Application definition
+AUTH_USER_MODEL = 'members.Member'
 
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -71,6 +72,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'phonenumber_field',
+
+    'members.apps.MembersConfig',
 ]
 
 MIDDLEWARE = [
@@ -141,3 +145,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# django-phonenumber-field
+PHONENUMBER_DEFAULT_REGION = 'KR'
+PHONENUMBER_DB_FORMAT = 'NATIONAL'

@@ -1,0 +1,52 @@
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
+
+
+class BaseMemberMixin(models.Model):
+    name = models.CharField(max_length=30)
+    mobile = PhoneNumberField(unique=True)
+    birth_date = models.DateField()
+
+    class Meta:
+        abstract = True
+
+
+class Member(AbstractUser, BaseMemberMixin):
+    TIER_CHOICES = [
+        ('BASIC', 'BASIC'),
+        ('VIP', 'VIP'),
+    ]
+
+    email = models.EmailField(unique=True)
+    tier = models.CharField(
+        max_length=20,
+        choices=TIER_CHOICES,
+        default='BASIC',
+    )
+    point = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f'username: {self.username}, email: {self.email}, name: {self.name}, mobile: {self.mobile}'
+
+
+class NonMember(BaseMemberMixin):
+    pin_number = models.IntegerField()
+
+    def __str__(self):
+        return f'name: {self.name}, mobile: {self.mobile}, birth_date: {self.birth_date}'
+
+# class Profile(models.Model):
+#     TIME_CHOICES = [
+#         ('00-10', '10시 이전'),
+#         ('10-13', '10시~13시'),
+#         ('13-16', '13시~16시'),
+#         ('16-18', '16시~18시'),
+#         ('18-21', '18시~21시'),
+#         ('21-00', '21시 이후'),
+#     ]
+#
+#     member = models.OneToOneField(AUTH_USER_MODEL)
+#     region = models.ManyToManyField(Region)
+#     genre = models.ManyToManyField(Genre)
+#     time = models.CharField(choices=TIME_CHOICES)
