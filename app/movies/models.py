@@ -2,6 +2,7 @@ from django.db import models
 
 from config.settings._base import AUTH_USER_MODEL
 from members.models import Member
+from theaters.models import Screen, Schedule
 
 
 class Movie(models.Model):
@@ -17,10 +18,9 @@ class Movie(models.Model):
         through='Rating',
         related_name='movies',
     )
-    # 아직 생성되지 않은 모델: Screen, Schedule
     screens = models.ManyToManyField(
-        'Screen',
-        through='Schedule',
+        Screen,
+        through=Schedule,
         related_name='movies',
     )
     name_kor = models.CharField(max_length=100)
