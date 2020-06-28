@@ -1,7 +1,6 @@
 from django.db import models
 
 from config.settings._base import AUTH_USER_MODEL
-from members.models import Member
 from theaters.models import Screen, Schedule
 
 
@@ -14,12 +13,12 @@ class Movie(models.Model):
     ]
 
     liked = models.ManyToManyField(
-        Member,
+        AUTH_USER_MODEL,
         through='Rating',
         related_name='movies',
     )
     screens = models.ManyToManyField(
-        Screen,
+        'theaters.Screen',
         through=Schedule,
         related_name='movies',
     )
@@ -28,7 +27,7 @@ class Movie(models.Model):
     code = models.PositiveIntegerField()
     running_time = models.DurationField()
     genre = models.ForeignKey(
-        'Genre',
+        'movies.Genre',
         on_delete=models.CASCADE,
         related_name='movies',
     )
@@ -63,7 +62,7 @@ class Rating(models.Model):
         related_name='ratings',
     )
     movie = models.ForeignKey(
-        Movie,
+        'Movie',
         on_delete=models.CASCADE,
         related_name='ratings',
     )
