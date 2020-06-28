@@ -1,0 +1,88 @@
+{
+  "companyListResult": {
+    "totCnt": 12271,
+    "companyList": [
+      {
+        "companyCd": "20204225",
+        "companyNm": "이트라필름",
+        "companyNmEn": "",
+        "companyPartNames": "제작사",
+        "ceoNm": "원태웅",
+        "filmoNames": ""
+      },
+      {
+        "companyCd": "20204241",
+        "companyNm": "모모루덴스",
+        "companyNmEn": "",
+        "companyPartNames": "제작사",
+        "ceoNm": "연왕모",
+        "filmoNames": ""
+      },
+      {
+        "companyCd": "20204224",
+        "companyNm": "파인아트컴퍼니",
+        "companyNmEn": "",
+        "companyPartNames": "제작사",
+        "ceoNm": "김유찬",
+        "filmoNames": ""
+      },
+      {
+        "companyCd": "20204223",
+        "companyNm": "퇴근길 씨네마",
+        "companyNmEn": "",
+        "companyPartNames": "배급사",
+        "ceoNm": "이서연",
+        "filmoNames": ""
+      },
+      {
+        "companyCd": "20030026",
+        "companyNm": "(주)에스알시네마",
+        "companyNmEn": "",
+        "companyPartNames": "제작사",
+        "ceoNm": "신용인",
+        "filmoNames": ""
+      },
+      {
+        "companyCd": "20204222",
+        "companyNm": "타워필름",
+        "companyNmEn": "",
+        "companyPartNames": "제작사",
+        "ceoNm": "조근현",
+        "filmoNames": ""
+      },
+      {
+        "companyCd": "20203082",
+        "companyNm": "씨제이포디플렉스 주식회사",
+        "companyNmEn": "",
+        "companyPartNames": "제작사,배급사",
+        "ceoNm": "김종열",
+        "filmoNames": "아이즈 온 미 : 더 무비,메탈리카와 샌프란시스코 심포니,조쉬 그로반: 브리지스 뉴욕 매디슨스퀘어가든 콘서트,왕과 나: 런던 팔라디움 극장 뮤지컬"
+      },
+      {
+        "companyCd": "20204221",
+        "companyNm": "(주)퍼스펙티브픽쳐스",
+        "companyNmEn": "PERSPECTIVE PICTURES",
+        "companyPartNames": "제작사,프로덕션 서비스",
+        "ceoNm": "김새롬",
+        "filmoNames": "#살아있다"
+      },
+      {
+        "companyCd": "20203381",
+        "companyNm": "소니 픽쳐스 인터내셔널 프로덕션",
+        "companyNmEn": "Sony Pictures International Productions",
+        "companyPartNames": "제공,해외세일즈사",
+        "ceoNm": "",
+        "filmoNames": "결백"
+      },
+      {
+        "companyCd": "20204201",
+        "companyNm": "주식회사 제이씨투엠인터내셔녈",
+        "companyNmEn": "JC2M International inc. ",
+        "companyPartNames": "제작사",
+        "ceoNm": "육근하",
+        "filmoNames": "815 군산 : 돼지의 최후"
+      }
+    ],
+    "source": "영화진흥위원회"
+  }
+}
