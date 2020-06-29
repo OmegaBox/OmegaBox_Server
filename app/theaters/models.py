@@ -1,7 +1,6 @@
 from django.db import models
 
 
-
 class Theater(models.Model):
     name = models.CharField(max_length=30)
     region = models.ForeignKey(
@@ -10,20 +9,37 @@ class Theater(models.Model):
         on_delete=models.CASCADE,
     )
 
+    def __str__(self):
+        return f'{self.region}/{self.name}'
+
 
 class Region(models.Model):
     name = models.CharField(max_length=30)
 
+    def __str__(self):
+        return f'{self.name}'
+
 
 class Screen(models.Model):
-    SCREEN_TYPE_CHOICES = [
+    SEATS_TYPE_CHOICES = [
         ('A', 'A-type'),
         ('B', 'B-type'),
         ('C', 'C-type'),
     ]
-    type = models.CharField(
-        max_length=30,
+    SCREEN_TYPE_CHOICES = [
+        ('2D', '2D'),
+        ('2Ds', '2D 자막'),
+        ('3D', '3D'),
+    ]
+    seats_type = models.CharField(
+        max_length=20,
+        choices=SEATS_TYPE_CHOICES,
+        default='A',
+    )
+    screen_type = models.CharField(
+        max_length=20,
         choices=SCREEN_TYPE_CHOICES,
+        default='2D',
     )
     name = models.CharField(max_length=30)
     theater = models.ForeignKey(
@@ -31,6 +47,9 @@ class Screen(models.Model):
         related_name='screens',
         on_delete=models.CASCADE,
     )
+
+    def __str__(self):
+        return f'{self.theater} {self.name}'
 
 
 class Schedule(models.Model):
@@ -45,3 +64,6 @@ class Schedule(models.Model):
         on_delete=models.CASCADE,
     )
     start_time = models.DateTimeField()
+
+    def __str__(self):
+        return f'{self.start_time:%m/%d %H:%M} {self.screen} {self.movie}'

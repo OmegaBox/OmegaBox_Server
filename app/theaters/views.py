@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
 
-# Create your views here.
+from .models import Schedule
+from .serializers import ScheduleSerializer
+
+
+class ScheduleDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Schedule.objects.all()
+    serializer_class = ScheduleSerializer
