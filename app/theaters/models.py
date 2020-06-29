@@ -21,14 +21,25 @@ class Region(models.Model):
 
 
 class Screen(models.Model):
-    SCREEN_TYPE_CHOICES = [
+    SEATS_TYPE_CHOICES = [
         ('A', 'A-type'),
         ('B', 'B-type'),
         ('C', 'C-type'),
     ]
-    type = models.CharField(
-        max_length=30,
+    SCREEN_TYPE_CHOICES = [
+        ('2D', '2D'),
+        ('2Ds', '2D 자막'),
+        ('3D', '3D'),
+    ]
+    seats_type = models.CharField(
+        max_length=20,
+        choices=SEATS_TYPE_CHOICES,
+        default='A',
+    )
+    screen_type = models.CharField(
+        max_length=20,
         choices=SCREEN_TYPE_CHOICES,
+        default='2D',
     )
     name = models.CharField(max_length=30)
     theater = models.ForeignKey(
