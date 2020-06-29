@@ -1,7 +1,7 @@
 from django.db import models
 
 from config.settings._base import AUTH_USER_MODEL
-from theaters.models import Screen, Schedule
+from theaters.models import Schedule
 
 
 class Movie(models.Model):
@@ -27,7 +27,7 @@ class Movie(models.Model):
     code = models.PositiveIntegerField()
     running_time = models.DurationField()
     genre = models.ForeignKey(
-        'movies.Genre',
+        'Genre',
         on_delete=models.CASCADE,
         related_name='movies',
     )
