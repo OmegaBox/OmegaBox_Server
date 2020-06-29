@@ -38,7 +38,7 @@ class Movie(models.Model):
     close_date = models.DateField()
     grade = models.CharField(
         max_length=20,
-        choices=MOVIE_GRADES
+        choices=MOVIE_GRADES,
     )
     description = models.TextField(blank=True)
     poster = models.ImageField(upload_to='posters/', blank=True)
