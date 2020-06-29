@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+import json
 import urllib.request as req
 
 path_url_lst = [
@@ -39,8 +42,26 @@ path_url_lst = [
     ),
 ]
 
+datas = list()
 for path_url in path_url_lst:
-    with open(path_url[0], 'w') as f:
-        url = req.urlopen(path_url[1])
-        data = str(url.read().decode('utf-8'))
-        f.write(data)
+    # with open(path_url[0], 'w') as f:
+    #     url = req.urlopen(path_url[1])
+    #     data = str(url.read().decode('utf-8'))
+    #     f.write(data)
+
+    with open(path_url[0], 'r') as f:
+        datas.append(json.load(f))
+
+boxoffice_daily_datas = datas[0]
+boxoffice_weekly_datas = datas[1]
+code_datas = datas[2]
+movie_list_datas = datas[3]
+movie_info_datas = datas[4]
+company_list_datas = datas[5]
+company_info_datas = datas[6]
+people_list_datas = datas[7]
+people_info_datas = datas[8]
+
+# 일별 박스오피스 랭크 2위 영화 이름 출력
+rank = 2
+print(boxoffice_daily_datas['boxOfficeResult']['dailyBoxOfficeList'][rank - 1]['movieNm'])
