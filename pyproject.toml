@@ -7,7 +7,7 @@ authors = ["qu3vipon <sdh5813@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.7"
 django = "<3.0"
-djangorestframework = "^3.11.0"
+djangorestframework = "<3.11.0"
 boto3 = "^1.14.8"
 awscli = "^1.18.85"
 django-storages = "^1.9.1"
@@ -20,6 +20,7 @@ phonenumberslite = "^8.12.6"
 django-rest-auth = "^0.9.5"
 django-allauth = "^0.42.0"
 pillow = "^7.1.2"
+djangorestframework-simplejwt = "<4.4"
 
 [tool.poetry.dev-dependencies]
 django-extensions = "^2.2.9"
