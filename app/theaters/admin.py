@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Schedule, Screen, Theater, Region
+from .models import Schedule, Screen, Theater, Region, Seat, SeatGrade
 
 
 @admin.register(Theater)
@@ -20,4 +20,14 @@ class ScheduleAdmin(admin.ModelAdmin):
 
 @admin.register(Region)
 class RegionAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Seat)
+class SeatAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(SeatGrade)
+class SeatGradeAdmin(admin.ModelAdmin):
     pass

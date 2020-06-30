@@ -67,3 +67,5 @@ class Profile(models.Model):
         max_length=20,
         choices=TIME_CHOICES
     )
+    # 프론트와 협의 필요
+    is_disabled = models.BooleanField(default=False)
