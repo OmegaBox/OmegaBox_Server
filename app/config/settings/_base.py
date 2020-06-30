@@ -90,7 +90,9 @@ INSTALLED_APPS = [
     'reservations.apps.ReservationsConfig',
 ]
 
+# Django allauth
 SITE_ID = 1
+ACCOUNT_EMAIL_VERIFICATION = None
 
 # Application definition
 
@@ -170,7 +172,18 @@ PHONENUMBER_DB_FORMAT = 'NATIONAL'
 # DRF
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
+}
+
+# DJANGO_REST_AUTH
+REST_USE_JWT = True
+REST_AUTH_SERIALIZERS = {
+    'JWT_SERIALIZER': 'members.serializers.JWTSerializer',
+}
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'members.serializers.SignUpSerializer',
 }
