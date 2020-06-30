@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     'members.apps.MembersConfig',
     'movies.apps.MoviesConfig',
     'theaters.apps.TheatersConfig',
+    'reservations.apps.ReservationsConfig',
 ]
 
 SITE_ID = 1
