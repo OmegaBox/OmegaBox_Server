@@ -2,19 +2,19 @@ import requests
 
 urls_params = [
     # 일별 박스오피스 (매일 갱신)
-    (
-        'http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json',
-        {
-            # 필수
-            'key': '',
-            'targetDt': '20200629',
-            # 옵션
-            'itemPerPage': '',
-            'multiMovieYn': '',
-            'repNationCd': '',
-            'wideAreaCd': '',
-        }
-    ),
+    # (
+    #     'http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json',
+    #     {
+    #         # 필수
+    #         'key': '90aae50e8cd71ff96082a492f0da3918',
+    #         'targetDt': '20200630',
+    #         # 옵션
+    #         'itemPerPage': '',
+    #         'multiMovieYn': '',
+    #         'repNationCd': '',
+    #         'wideAreaCd': '',
+    #     }
+    # ),
 
     # 주간/주말 박스오피스 (필요?)
     # (
@@ -43,34 +43,34 @@ urls_params = [
     # ),
 
     # 영화목록
-    (
-        'http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json',
-        {
-            # 필수
-            'key': '',
-            # 옵션
-            'curPage': '',
-            'itemPerPage': '',
-            'movieNm': '광해, 왕이 된 남자',
-            'directorNm': '',
-            'openStartDt': '',
-            'openEndDt': '',
-            'prdtStartYear': '',
-            'prdtEndYear': '',
-            'repNationCd': '',
-            'movieTypeCd': '',
-        }
-    ),
+    # (
+    #     'http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json',
+    #     {
+    #         # 필수
+    #         'key': '',
+    #         # 옵션
+    #         'curPage': '',
+    #         'itemPerPage': '',
+    #         'movieNm': '광해, 왕이 된 남자',
+    #         'directorNm': '',
+    #         'openStartDt': '',
+    #         'openEndDt': '',
+    #         'prdtStartYear': '',
+    #         'prdtEndYear': '',
+    #         'repNationCd': '',
+    #         'movieTypeCd': '',
+    #     }
+    # ),
 
     # 영화 상세정보
-    (
-        'http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json',
-        {
-            # 필수
-            'key': '',
-            'movieCd': '20124079',
-        }
-    ),
+    # (
+    #     'http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json',
+    #     {
+    #         # 필수
+    #         'key': '',
+    #         'movieCd': '20124079',
+    #     }
+    # ),
 
     # 영화사목록 (필요?)
     # (
@@ -122,8 +122,3 @@ urls_params = [
     #     }
     # ),
 ]
-
-for url_param in urls_params:
-    request_url = requests.get(url_param[0], params=url_param[1])
-    data = request_url.json()
-    print('data >> ', data)
