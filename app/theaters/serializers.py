@@ -20,6 +20,8 @@ class ScheduleSerializer(serializers.ModelSerializer):
     screen_type = serializers.CharField(source='screen.screen_type')
     seats_type = serializers.CharField(source='screen.seats_type')
     poster = serializers.ImageField(source='movie.poster')
+    grade = serializers.CharField(source='movie.grade')
+    region = serializers.CharField(source='screen.theater.region')
 
     class Meta:
         model = Schedule
