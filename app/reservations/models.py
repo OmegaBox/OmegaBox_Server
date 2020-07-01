@@ -3,7 +3,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.crypto import get_random_string
 
-from config.settings import AUTH_USER_MODEL
+from config.settings._base import AUTH_USER_MODEL
 
 
 class Reservation(models.Model):
