@@ -20,7 +20,6 @@ class MovieSerializer(serializers.ModelSerializer):
             'acc_audience',
             'reservation_rate',
             'open_date',
-            'close_date',
             'grade',
             'description',
             'poster',
