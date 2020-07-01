@@ -1,51 +1,129 @@
-import json
-import urllib.request as req
+import requests
 
-path_url_lst = [
+urls_params = [
+    # 일별 박스오피스 (매일 갱신)
     (
-        'jsons/boxoffice_daily.json',
-        'http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=430156241533f1d058c603178cc3ca0e&targetDt=20120101'
+        'http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json',
+        {
+            # 필수
+            'key': '',
+            'targetDt': '20200629',
+            # 옵션
+            'itemPerPage': '',
+            'multiMovieYn': '',
+            'repNationCd': '',
+            'wideAreaCd': '',
+        }
     ),
+
+    # 주간/주말 박스오피스 (필요?)
+    # (
+    #     'http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchWeeklyBoxOfficeList.json',
+    #     {
+    #         # 필수
+    #         'key': '',
+    #         'targetDt': '20200629',
+    #         # 옵션
+    #         'weekGb': '',
+    #         'itemPerPage': '',
+    #         'multiMovieYn': '',
+    #         'repNationCd': '',
+    #         'wideAreaCd': '',
+    #     }
+    # ),
+
+    # 공통코드 조회 (필요?)
+    # (
+    #     'http://www.kobis.or.kr/kobisopenapi/webservice/rest/code/searchCodeList.json',
+    #     {
+    #         # 필수
+    #         'key': '',
+    #         'comCode': '0105000000',
+    #     }
+    # ),
+
+    # 영화목록
     (
-        'jsons/boxoffice_weekly.json',
-        'http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchWeeklyBoxOfficeList.json?key=430156241533f1d058c603178cc3ca0e&targetDt=20120101'
+        'http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json',
+        {
+            # 필수
+            'key': '',
+            # 옵션
+            'curPage': '',
+            'itemPerPage': '',
+            'movieNm': '광해, 왕이 된 남자',
+            'directorNm': '',
+            'openStartDt': '',
+            'openEndDt': '',
+            'prdtStartYear': '',
+            'prdtEndYear': '',
+            'repNationCd': '',
+            'movieTypeCd': '',
+        }
     ),
+
+    # 영화 상세정보
     (
-        'jsons/code.json',
-        'http://www.kobis.or.kr/kobisopenapi/webservice/rest/code/searchCodeList.json?key=430156241533f1d058c603178cc3ca0e&comCode=0105000000'
+        'http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json',
+        {
+            # 필수
+            'key': '',
+            'movieCd': '20124079',
+        }
     ),
-    (
-        'jsons/movie_list.json',
-        'http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json?key=430156241533f1d058c603178cc3ca0e'
-    ),
-    (
-        'jsons/movie_info.json',
-        'http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json?key=430156241533f1d058c603178cc3ca0e&movieCd=20124079'
-    ),
-    (
-        'jsons/company_list.json',
-        'http://kobis.or.kr/kobisopenapi/webservice/rest/company/searchCompanyList.json?key=430156241533f1d058c603178cc3ca0e'
-    ),
-    (
-        'jsons/company_info.json',
-        'http://kobis.or.kr/kobisopenapi/webservice/rest/company/searchCompanyInfo.json?key=430156241533f1d058c603178cc3ca0e&companyCd=20122497'
-    ),
-    (
-        'jsons/people_list.json',
-        'http://www.kobis.or.kr/kobisopenapi/webservice/rest/people/searchPeopleList.json?key=430156241533f1d058c603178cc3ca0e'
-    ),
-    (
-        'jsons/people_info.json',
-        'http://www.kobis.or.kr/kobisopenapi/webservice/rest/people/searchPeopleInfo.json?key=430156241533f1d058c603178cc3ca0e&peopleCd=20164556'
-    ),
+
+    # 영화사목록 (필요?)
+    # (
+    #     'http://kobis.or.kr/kobisopenapi/webservice/rest/company/searchCompanyList.json',
+    #     {
+    #         # 필수
+    #         'key': '',
+    #         # 옵션
+    #         'curPage': '',
+    #         'itemPerPage': '',
+    #         'companyNm': '',
+    #         'ceoNm': '',
+    #         'companyPartCd': '',
+    #     }
+    # ),
+
+    # 영화사 상세정보 (필요?)
+    # (
+    #     'http://kobis.or.kr/kobisopenapi/webservice/rest/company/searchCompanyInfo.json',
+    #     {
+    #         # 필수
+    #         'key': '',
+    #         # 옵션
+    #         'companyCd': '',
+    #     }
+    # ),
+
+    # 영화인목록 (필요?)
+    # (
+    #     'http://www.kobis.or.kr/kobisopenapi/webservice/rest/people/searchPeopleList.json',
+    #     {
+    #         # 필수
+    #         'key': '',
+    #         # 옵션
+    #         'curPage': '',
+    #         'itemPerPage': '',
+    #         'peopleNm': '',
+    #         'filmoNames': '',
+    #     }
+    # ),
+
+    # 영화인 상세정보 (필요?)
+    # (
+    #     'http://www.kobis.or.kr/kobisopenapi/webservice/rest/people/searchPeopleInfo.json',
+    #     {
+    #         # 필수
+    #         'key': '',
+    #         'peopleCd': '20164556',
+    #     }
+    # ),
 ]
 
-datas = list()
-for path_url in path_url_lst:
-    with open(path_url[0], 'w') as f:
-        url = req.urlopen(path_url[1])
-        data = str(url.read().decode('utf-8'))
-        f.write(data)
-
-    with open(path_url[0], 'r') as f:
-        datas.append(json.load(f))
+for url_param in urls_params:
+    request_url = requests.get(url_param[0], params=url_param[1])
+    data = request_url.json()
+    print('data >> ', data)
