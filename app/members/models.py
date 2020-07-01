@@ -31,7 +31,7 @@ class Member(AbstractUser, BaseMemberMixin):
     REQUIRED_FIELDS = ['email', 'mobile', 'birth_date']
 
     def __str__(self):
-        return f'username: {self.username}, email: {self.email}, name: {self.name}, mobile: {self.mobile}'
+        return f'{self.username} | {self.email}'
 
 
 class NonMember(BaseMemberMixin):

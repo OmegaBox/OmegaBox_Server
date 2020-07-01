@@ -6,10 +6,10 @@ from theaters.models import Schedule
 
 class Movie(models.Model):
     MOVIE_GRADES = [
-        ('all', '전체이용가'),
-        ('12+', '12세 이상 관람가'),
-        ('15+', '15세 이상 관람'),
-        ('18+', '청소년 관람 불가'),
+        ('all', '전체관람가'),
+        ('12+', '12세이상관람가'),
+        ('15+', '15세이상관람가'),
+        ('18+', '청소년관람불가'),
     ]
 
     liked = models.ManyToManyField(
@@ -22,20 +22,26 @@ class Movie(models.Model):
         through=Schedule,
         related_name='movies',
     )
+    director = models.ManyToManyField(
+        'Director',
+        related_name='movies',
+    )
+    actor = models.ManyToManyField(
+        'Actor',
+        related_name='movies',
+    )
+    genre = models.ManyToManyField(
+        'Genre',
+        related_name='movies',
+    )
     name_kor = models.CharField(max_length=100)
     name_eng = models.CharField(max_length=100)
     code = models.PositiveIntegerField()
     running_time = models.DurationField(help_text='<분:초>로 입력 - 예시: 90:00 (90분)')
-    genre = models.ForeignKey(
-        'Genre',
-        on_delete=models.CASCADE,
-        related_name='movies',
-    )
     rank = models.IntegerField(unique=True)
     acc_audience = models.PositiveIntegerField()
     reservation_rate = models.FloatField()
     open_date = models.DateField()
-    close_date = models.DateField()
     grade = models.CharField(
         max_length=20,
         choices=MOVIE_GRADES,
@@ -76,6 +82,20 @@ class Rating(models.Model):
 
 
 class Genre(models.Model):
+    name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return f'{self.name}'
+
+
+class Director(models.Model):
+    name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return f'{self.name}'
+
+
+class Actor(models.Model):
     name = models.CharField(max_length=30)
 
     def __str__(self):

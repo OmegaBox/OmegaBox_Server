@@ -15,6 +15,10 @@ class ScheduleSerializer(serializers.ModelSerializer):
     start_time = serializers.DateTimeField(format='%H:%M')
     running_time = serializers.SerializerMethodField()
     end_time = serializers.SerializerMethodField()
+    poster = serializers.ImageField(source='movie.poster')
+    screen_type = serializers.CharField(source='screen.screen_type')
+    seats_type = serializers.CharField(source='screen.seats_type')
+    grade = serializers.CharField(source='movie.grade')
 
     class Meta:
         model = Schedule
@@ -24,8 +28,12 @@ class ScheduleSerializer(serializers.ModelSerializer):
             'running_time',
             'end_time',
             'movie',
+            'grade',
             'theater',
             'screen',
+            'screen_type',
+            'seats_type',
+            'poster',
         ]
 
     def get_running_time(self, obj):

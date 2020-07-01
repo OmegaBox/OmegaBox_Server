@@ -1,5 +1,9 @@
+import datetime
+
 import requests
 from django.core.management import BaseCommand
+
+from movies.models import Genre, Movie
 
 
 class Command(BaseCommand):
@@ -21,24 +25,34 @@ class Command(BaseCommand):
         request_url = requests.get(url, params=param)
         boxoffice_info = request_url.json()
 
+        NAME_KORS = []
+        NAME_ENGS = []
+        CODES = []
+        RUNNING_TIMES = []
+        OPEN_DATES = []
+        DIRECTORS = []
+        ACTORS = []
+        RANKS = []
+        ACC_AUDS = []
+        RESERVATION_RATES = []
+        GRADES = []
+
         for rank in range(10):
-            # 영화명
-            movie_name = boxoffice_info['boxOfficeResult']['dailyBoxOfficeList'][rank]['movieNm']
-
-            # 개봉일
-            open_date = boxoffice_info['boxOfficeResult']['dailyBoxOfficeList'][rank]['openDt']
-
-            # 해당일 관객수
-            aud_count = boxoffice_info['boxOfficeResult']['dailyBoxOfficeList'][rank]['audiCnt']
-
             # 누적관객수
             acc_count = boxoffice_info['boxOfficeResult']['dailyBoxOfficeList'][rank]['audiAcc']
+            ACC_AUDS.append(int(acc_count))
 
             # 해당일 상영작 매출총액 대비 매출 비율 (예매율 대체)
             sales_share = boxoffice_info['boxOfficeResult']['dailyBoxOfficeList'][rank]['salesShare']
+            RESERVATION_RATES.append(float(sales_share))
 
             # 해당 영화 상세정보 출력을 위한 영화 코드
             movie_code = boxoffice_info['boxOfficeResult']['dailyBoxOfficeList'][rank]['movieCd']
+            CODES.append(movie_code)
+
+            # 영화 순위
+            rank = boxoffice_info['boxOfficeResult']['dailyBoxOfficeList'][rank]['rank']
+            RANKS.append(int(rank))
 
             # 영화 코드별 상세 정보
             url = 'http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json'
@@ -52,24 +66,39 @@ class Command(BaseCommand):
 
             # 영화명(국문)
             movie_info_name_ko = movie_info['movieInfoResult']['movieInfo']['movieNm']
+            NAME_KORS.append(movie_info_name_ko)
 
             # 영화명(영문)
             movie_info_name_eng = movie_info['movieInfoResult']['movieInfo']['movieNmEn']
+            NAME_ENGS.append(movie_info_name_eng)
 
             # 상영시간
             movie_info_showtime = movie_info['movieInfoResult']['movieInfo']['showTm']
+            RUNNING_TIMES.append(datetime.timedelta(minutes=int(movie_info_showtime)))
 
             # 개봉일
-            movie_info_open_date = movie_info['movieInfoResult']['movieInfo']['openDt']
+            open_date = movie_info['movieInfoResult']['movieInfo']['openDt']
+            open_year, open_month, open_day = int(open_date[:4]), int(open_date[4:6]), int(open_date[6:])
+            movie_open_date = datetime.date(open_year, open_month, open_day)
+            OPEN_DATES.append(movie_open_date)
 
-            # 제작상태
-            movie_info_prd_stat = movie_info['movieInfoResult']['movieInfo']['prdtStatNm']
+            # 관람등급
+            movie_info_grade = movie_info['movieInfoResult']['movieInfo']['audits'][0]['watchGradeNm']
+            GRADES.append(movie_info_grade)
 
-            # 제작국가
-            nations = movie_info['movieInfoResult']['movieInfo']['nations']
-            movie_info_nations = list()
-            for idx in range(len(nations)):
-                movie_info_nations.append(nations[idx]['nationNm'])
+            # 감독 (2명 이상일 가능성)
+            directors = movie_info['movieInfoResult']['movieInfo']['directors']
+            movie_info_directors = list()
+            for idx in range(len(directors)):
+                movie_info_directors.append(directors[idx]['peopleNm'])
+            DIRECTORS.append(movie_info_directors)
+
+            # 배우
+            actors = movie_info['movieInfoResult']['movieInfo']['actors']
+            movie_info_actors = list()
+            for idx in range(len(actors)):
+                movie_info_actors.append(actors[idx]['peopleNm'])
+            ACTORS.append((movie_info_actors))
 
             # 장르
             genres = movie_info['movieInfoResult']['movieInfo']['genres']
@@ -77,21 +106,9 @@ class Command(BaseCommand):
             for idx in range(len(genres)):
                 movie_info_genres.append(genres[idx]['genreNm'])
 
-            # 감독 (2명 이상일 가능성)
-            directors = movie_info['movieInfoResult']['movieInfo']['directors']
-            movie_info_directors = list()
-            for idx in range(len(directors)):
-                movie_info_directors.append(directors[idx]['peopleNm'])
+        GENRES = ['드라마', '애니메이션', '어드벤처', '판타지', '범죄', '액션', '미스터리', '뮤지컬', '멜로/로맨스', '스릴러']
+        for genre in GENRES:
+            Genre.objects.get_or_create(name=genre)
 
-            # 배우
-            actors = movie_info['movieInfoResult']['movieInfo']['actors']
-            movie_info_actors = list()
-            for idx in range(len(actors)):
-                movie_info_actors.append(actors[idx]['peopleNm'])
-
-            print(f'{rank + 1}위')
-            print(f'{movie_name} / {open_date} / 일별관객수: {aud_count} (누적: {acc_count}) / {sales_share} / {movie_code}')
-            print()
-            print(
-                f'{movie_info_name_ko}({movie_info_name_eng}) / {movie_info_showtime}분 / {movie_info_open_date} / {movie_info_prd_stat} / 국가: {movie_info_nations} / 장르: {movie_info_genres} / 감독: {movie_info_directors} / 배우: {movie_info_actors}')
-            print()
+        print('GRADES >> ', GRADES)
+        # Movie.objects.get_or_create()
