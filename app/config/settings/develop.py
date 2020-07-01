@@ -7,4 +7,3 @@ WSGI_APPLICATION = 'config.wsgi.develop.application'
 INSTALLED_APPS += [
     'django_extensions',
 ]
-

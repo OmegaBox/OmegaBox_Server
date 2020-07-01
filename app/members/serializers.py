@@ -12,6 +12,7 @@ class SignUpSerializer(RegisterSerializer):
     mobile = PhoneNumberField()
     birth_date = serializers.DateField()
 
+    # mobile field unique validate
     def save(self, request):
         self.is_valid()
         validated_data = self.validated_data
@@ -34,7 +35,6 @@ class JWTSerializer(serializers.Serializer):
     email = serializers.EmailField(source='user.email')
     birth_date = serializers.DateField(source='user.birth_date')
     mobile = PhoneNumberField(source='user.mobile')
-
 
     @classmethod
     def get_token(cls, user):

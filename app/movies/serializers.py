@@ -1,10 +1,12 @@
 from rest_framework import serializers
 
+from theaters.utils import reformat_duration
 from .models import Movie
 
 
 class MovieSerializer(serializers.ModelSerializer):
     genre = serializers.CharField(source='genre.name')
+    running_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Movie
@@ -18,9 +20,11 @@ class MovieSerializer(serializers.ModelSerializer):
             'acc_audience',
             'reservation_rate',
             'open_date',
-            'close_date',
             'grade',
             'description',
             'poster',
             'trailer',
         ]
+
+    def get_running_time(self, obj):
+        return reformat_duration(obj.running_time)
