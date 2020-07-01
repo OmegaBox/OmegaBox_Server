@@ -5,20 +5,21 @@ from .utils import reformat_duration
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
-    movie = serializers.CharField(source='movie.name_kor')
-    theater = serializers.CharField(source='screen.theater.name')
-    screen = serializers.CharField(source='screen.name')
     date = serializers.DateTimeField(
-        format='%y-%m-%d',
+        format='%Y-%m-%d',
         source='start_time',
     )
     start_time = serializers.DateTimeField(format='%H:%M')
     running_time = serializers.SerializerMethodField()
     end_time = serializers.SerializerMethodField()
-    poster = serializers.ImageField(source='movie.poster')
+    movie = serializers.CharField(source='movie.name_kor')
+    grade = serializers.CharField(source='movie.grade')
+    region = serializers.CharField(source='screen.theater.region')
+    theater = serializers.CharField(source='screen.theater.name')
+    screen = serializers.CharField(source='screen.name')
     screen_type = serializers.CharField(source='screen.screen_type')
     seats_type = serializers.CharField(source='screen.seats_type')
-    grade = serializers.CharField(source='movie.grade')
+    poster = serializers.ImageField(source='movie.poster')
 
     class Meta:
         model = Schedule
@@ -29,6 +30,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
             'end_time',
             'movie',
             'grade',
+            'region',
             'theater',
             'screen',
             'screen_type',
