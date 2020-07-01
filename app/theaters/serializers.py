@@ -9,7 +9,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
     theater = serializers.CharField(source='screen.theater.name')
     screen = serializers.CharField(source='screen.name')
     date = serializers.DateTimeField(
-        format='%y-%m-%d',
+        format='%Y-%m-%d',
         source='start_time',
     )
     start_time = serializers.DateTimeField(format='%H:%M')
@@ -19,6 +19,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
     screen_type = serializers.CharField(source='screen.screen_type')
     seats_type = serializers.CharField(source='screen.seats_type')
     grade = serializers.CharField(source='movie.grade')
+    region = serializers.CharField(source='screen.theater.region')
 
     class Meta:
         model = Schedule
@@ -29,6 +30,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
             'end_time',
             'movie',
             'grade',
+            'region',
             'theater',
             'screen',
             'screen_type',
