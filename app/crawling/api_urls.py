@@ -67,7 +67,7 @@ urls_params = [
     #     'http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json',
     #     {
     #         # 필수
-    #         'key': '',
+    #         'key': '90aae50e8cd71ff96082a492f0da3918',
     #         'movieCd': '20124079',
     #     }
     # ),
