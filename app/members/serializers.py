@@ -1,8 +1,11 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from utils.excepts import TakenNumberException
 
 Member = get_user_model()
 
@@ -12,7 +15,13 @@ class SignUpSerializer(RegisterSerializer):
     mobile = PhoneNumberField()
     birth_date = serializers.DateField()
 
-    # mobile field unique validate
+    def validate_mobile(self, mobile):
+        try:
+            Member.objects.get(mobile=mobile)
+            raise TakenNumberException
+        except ObjectDoesNotExist:
+            return mobile
+
     def save(self, request):
         self.is_valid()
         validated_data = self.validated_data
@@ -24,6 +33,7 @@ class SignUpSerializer(RegisterSerializer):
             mobile=validated_data['mobile']
         )
         member.set_password(validated_data.pop('password1'))
+        member.save()
         return member
 
 
