@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .utils import reformat_duration
+from utils import reformat_duration
 
 
 class ScheduleSerializer(serializers.Serializer):
