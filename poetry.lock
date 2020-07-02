@@ -196,6 +196,17 @@ version = "3.10.3"
 
 [[package]]
 category = "main"
+description = "JSON Web Token based authentication for Django REST framework"
+name = "djangorestframework-jwt"
+optional = false
+python-versions = "*"
+version = "1.11.0"
+
+[package.dependencies]
+PyJWT = ">=1.5.2,<2.0.0"
+
+[[package]]
+category = "main"
 description = "A minimal JSON Web Token authentication plugin for Django REST Framework"
 name = "djangorestframework-simplejwt"
 optional = false
@@ -494,7 +505,7 @@ python-versions = "*"
 version = "2020.6.16.1"
 
 [metadata]
-content-hash = "1ab6f7b7c2c10b2b547ed97bb71a8830a730cb9ea3b1e4a90dcc0d90f2c41ed0"
+content-hash = "afa75422f91ea366114e6b46467c765474c36839a3c471beefa7ef18070153a1"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -555,6 +566,10 @@ django-storages = [
 djangorestframework = [
     {file = "djangorestframework-3.10.3-py3-none-any.whl", hash = "sha256:5488aed8f8df5ec1d70f04b2114abc52ae6729748a176c453313834a9ee179c8"},
     {file = "djangorestframework-3.10.3.tar.gz", hash = "sha256:dc81cbf9775c6898a580f6f1f387c4777d12bd87abf0f5406018d32ccae71090"},
+]
+djangorestframework-jwt = [
+    {file = "djangorestframework-jwt-1.11.0.tar.gz", hash = "sha256:5efe33032f3a4518a300dc51a51c92145ad95fb6f4b272e5aa24701db67936a7"},
+    {file = "djangorestframework_jwt-1.11.0-py2.py3-none-any.whl", hash = "sha256:ab15dfbbe535eede8e2e53adaf52ef0cf018ee27dbfad10cbc4cbec2ab63d38c"},
 ]
 djangorestframework-simplejwt = [
     {file = "djangorestframework_simplejwt-4.3.0-py3-none-any.whl", hash = "sha256:4cb1a51bf9b098b983e1326a1cfc65fb0b3c5a2aa0fa43effdbf05dd6da5e8cb"},
