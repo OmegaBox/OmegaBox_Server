@@ -36,4 +36,7 @@ class ScheduleTheaterListSerializer(serializers.Serializer):
 class ScheduleRegionCountSerializer(serializers.Serializer):
     region_id = serializers.IntegerField(source='region')
     region_name = serializers.CharField(source='region__name')
-    count = serializers.IntegerField(source='region_count')
+    region_count = serializers.IntegerField(source='name__count')
+
+    # name = serializers.CharField()
+    # count = serializers.IntegerField(source='region_count')

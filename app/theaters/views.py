@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.db.models import Count
 from rest_framework.generics import ListAPIView
+from rest_framework.views import APIView
 
 from .models import Schedule, Theater
 from .serializers import ScheduleSerializer, ScheduleTheaterListSerializer, ScheduleRegionCountSerializer
@@ -45,8 +46,14 @@ class ScheduleRegionCount(ListAPIView):
         date_int = self.kwargs['date']
         date = datetime.strptime(str(date_int), '%y%m%d')
 
-        # 중복된 상영관 존재
         return Theater.objects \
             .filter(screens__schedules__start_time__date=date) \
             .values('region', 'region__name') \
-            .annotate(region_count=Count('screens'))
+            .annotate(Count('name', distinct=True))
+
+        # 중복된 상영관 존재
+        # return Theater.objects \
+        #     .filter(screens__schedules__start_time__date=date) \
+        #     .values('region', 'region__name', 'name') \
+        #     .annotate(Count('region__name')) \
+        #     .values('region', 'region__name')
