@@ -44,6 +44,6 @@ jobs:
         key: ${{ secrets.CALOCULATOR_PEM }}
         script: |
           docker pull qu3vipon/omegabox
-          docker stop omegabox && docker system prune
+          docker stop omegabox && docker system prune -f
           docker run -d -it --rm -p 80:80 -p 443:443 --name omegabox -v ~/.aws:/root/.aws -v /etc/letsencrypt:/etc/letsencrypt qu3vipon/omegabox bash
           docker exec omegabox supervisord -c /srv/omegabox/.config/production/supervisord.conf
