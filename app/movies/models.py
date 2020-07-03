@@ -54,7 +54,7 @@ class Movie(models.Model):
     trailer = models.FileField(upload_to='trailers/', blank=True)
 
     def __str__(self):
-        return f'{self.name_kor} ({self.name_kor})'
+        return f'{self.rank}위: {self.name_kor} ({self.name_eng})'
 
 
 class Rating(models.Model):

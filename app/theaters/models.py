@@ -10,7 +10,7 @@ class Theater(models.Model):
     )
 
     def __str__(self):
-        return f'{self.region}/{self.name}'
+        return f'{self.name} ({self.region})'
 
 
 class Region(models.Model):
