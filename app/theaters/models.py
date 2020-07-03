@@ -65,6 +65,9 @@ class Schedule(models.Model):
     )
     start_time = models.DateTimeField()
 
+    class Meta:
+        ordering = ['start_time']
+
     def __str__(self):
         return f'{self.start_time:%m/%d %H:%M} {self.screen} {self.movie}'
 
