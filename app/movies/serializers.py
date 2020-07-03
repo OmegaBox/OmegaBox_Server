@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from members.models import BaseMemberMixin
+from utils import reformat_duration
 from .models import Movie
 
 
@@ -49,6 +50,7 @@ class AgeBookingSerializer(serializers.ModelSerializer):
 
 
 class MovieSerializer(serializers.ModelSerializer):
+    running_time = serializers.SerializerMethodField()
     acc_favorite = serializers.SerializerMethodField('get_acc_favorite_from_rating')
 
     # age_booking = AgeBookingSerializer()
@@ -59,6 +61,7 @@ class MovieSerializer(serializers.ModelSerializer):
             'id',
             'name_kor',
             'reservation_rate',
+            'running_time',
             'rank',
             'acc_audience',
             'acc_favorite',
@@ -71,6 +74,9 @@ class MovieSerializer(serializers.ModelSerializer):
             # 'day_booking',
             # 'comments',
         ]
+
+    def get_running_time(self, obj):
+        return reformat_duration(obj.running_time)
 
     def get_acc_favorite_from_rating(self, movie):
         acc_favorite = movie.liked.count()
