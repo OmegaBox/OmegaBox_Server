@@ -84,14 +84,7 @@ class Rating(models.Model):
     comment = models.TextField(blank=True)
 
 
-class Genre(models.Model):
-    name = models.CharField(max_length=30)
-
-    def __str__(self):
-        return f'{self.name}'
-
-
-class Person(models.Model):
+class NameObject(models.Model):
     name = models.CharField(max_length=30)
 
     class Meta:
@@ -101,9 +94,13 @@ class Person(models.Model):
         return f'{self.name}'
 
 
-class Director(Person):
+class Genre(NameObject):
     pass
 
 
-class Actor(Person):
+class Director(NameObject):
+    pass
+
+
+class Actor(NameObject):
     pass
