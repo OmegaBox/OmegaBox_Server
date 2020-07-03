@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
@@ -12,6 +14,12 @@ class BaseMemberMixin(models.Model):
 
     class Meta:
         abstract = True
+
+    def age(self):
+        today = datetime.date.today()
+        birth = self.birth_date
+        age = today.year - birth.year - ((today.month, today.day) < (birth.month, birth.day))
+        return age
 
 
 class Member(AbstractUser, BaseMemberMixin):
