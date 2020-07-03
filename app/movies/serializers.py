@@ -1,59 +1,32 @@
+import datetime
+
 from rest_framework import serializers
 
-from members.models import BaseMemberMixin
+from members.models import Member
 from utils import reformat_duration
-from .models import Movie
+from .models import Movie, Rating
 
 
-# class MovieSerializer(serializers.ModelSerializer):
-#     genre = serializers.CharField(source='genre.name')
-#     running_time = serializers.SerializerMethodField()
-#
-#     class Meta:
-#         model = Movie
-#         fields = [
-#             'id',
-#             'name_kor',
-#             'name_eng',
-#             'running_time',
-#             'genre',
-#             'rank',
-#             'acc_audience',
-#             'reservation_rate',
-#             'open_date',
-#             'grade',
-#             'description',
-#             'poster',
-#             'trailer',
-#         ]
-#
-#     def get_running_time(self, obj):
-#         return reformat_duration(obj.running_time)
-
-
-class AgeBookingSerializer(serializers.ModelSerializer):
-    teens = serializers.SerializerMethodField('get_age_booking')
+class RatingSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(source='member.name')
+    good_point = serializers.CharField(source='key_point')
+    point = serializers.IntegerField(source='score')
 
     class Meta:
-        model = Movie
+        model = Rating
         fields = [
-            'teens',
-            # '20',
-            # '30',
-            # '40',
-            # '50'
+            'id',
+            'good_point',
+            'point',
+            'comment'
         ]
-
-    def get_age_booking(self, movie):
-        teens = len(BaseMemberMixin.objects.filter(age__lte=9))
-        return teens
 
 
 class MovieSerializer(serializers.ModelSerializer):
     running_time = serializers.SerializerMethodField()
     acc_favorite = serializers.SerializerMethodField('get_acc_favorite_from_rating')
-
-    # age_booking = AgeBookingSerializer()
+    comments = RatingSerializer(many=True, source='ratings.all')
+    liked = serializers.IntegerField(source='liked.all.count')
 
     class Meta:
         model = Movie
@@ -70,10 +43,12 @@ class MovieSerializer(serializers.ModelSerializer):
             'description',
             'poster',
             'trailer',
+            'comments',
+            'liked',
             # 'age_booking',
-            # 'day_booking',
-            # 'comments',
         ]
+
+        # depth = 1
 
     def get_running_time(self, obj):
         return reformat_duration(obj.running_time)
