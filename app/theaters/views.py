@@ -103,3 +103,4 @@ class ScheduleRegionCount(ListAPIView):
             )
 
         return queryset
+

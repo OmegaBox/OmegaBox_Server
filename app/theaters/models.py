@@ -1,4 +1,8 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from utils.omegabox_data import seating_chart
 
 
 class Theater(models.Model):
@@ -22,9 +26,9 @@ class Region(models.Model):
 
 class Screen(models.Model):
     SEATS_TYPE_CHOICES = [
-        ('A', 'A-type'),
-        ('B', 'B-type'),
-        ('C', 'C-type'),
+        ('0', 'type_0'),
+        ('1', 'type_1'),
+        ('2', 'type_2'),
     ]
     SCREEN_TYPE_CHOICES = [
         ('2D', '2D'),
@@ -34,7 +38,7 @@ class Screen(models.Model):
     seats_type = models.CharField(
         max_length=20,
         choices=SEATS_TYPE_CHOICES,
-        default='A',
+        default='0',
     )
     screen_type = models.CharField(
         max_length=20,
@@ -50,6 +54,22 @@ class Screen(models.Model):
 
     def __str__(self):
         return f'{self.theater} {self.name}'
+
+
+@receiver(post_save, sender=Screen)
+def create_seats(sender, instance, created, **kwargs):
+    if created:
+        type_number = instance.seats_type
+        seats_list = seating_chart.get(type_number, None)
+
+        if seats_list is not None:
+            for seat in seats_list:
+                seat_instance = Seat.objects.get(name=seat)
+
+                SeatType.objects.create(
+                    seat=seat_instance,
+                    screen=instance,
+                )
 
 
 class Schedule(models.Model):
@@ -73,19 +93,23 @@ class Schedule(models.Model):
 
 
 class Seat(models.Model):
-    ROW_CHOICES = [
-        ('A', 'A'),
-        ('B', 'B'),
-        ('C', 'C'),
-        ('D', 'D'),
-        ('E', 'E'),
-        ('F', 'F'),
-        ('G', 'G'),
-        ('H', 'H'),
-        ('I', 'I'),
-    ]
-    COL_CHOICES = [(i, i) for i in range(1, 15)]
+    name = models.CharField(max_length=20)
+    screen = models.ManyToManyField(
+        'Screen',
+        through='SeatType',
+        related_name='seats',
+    )
+    reservation = models.ManyToManyField(
+        'reservations.Reservation',
+        through='SeatGrade',
+        related_name='seats',
+    )
 
+    def __str__(self):
+        return f'{self.name}'
+
+
+class SeatType(models.Model):
     # 예매완료좌석은 예매 모델 필드에서 접근
     # 선택불가좌석은 로직제외
     TYPE_CHOICES = [
@@ -94,18 +118,20 @@ class Seat(models.Model):
         ('general', '일반'),
         ('disabled', '장애인석'),
     ]
-
-    row = models.CharField(max_length=10, choices=ROW_CHOICES)
-    col = models.IntegerField(choices=COL_CHOICES)
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES)
-    screen = models.ManyToManyField(
-        'Screen',
-        related_name='seats'
+    type = models.CharField(
+        max_length=20,
+        choices=TYPE_CHOICES,
+        default='general',
     )
-    reservation = models.ManyToManyField(
-        'reservations.Reservation',
-        through='SeatGrade',
-        related_name='seats',
+    seat = models.ForeignKey(
+        'Seat',
+        on_delete=models.CASCADE,
+        related_name='seat_types',
+    )
+    screen = models.ForeignKey(
+        'Screen',
+        on_delete=models.CASCADE,
+        related_name='seat_types',
     )
 
 
@@ -116,7 +142,11 @@ class SeatGrade(models.Model):
         ('preferred', '우대')
     ]
 
-    grade = models.CharField(choices=SEAT_GRADE_CHOICES, max_length=10)
+    grade = models.CharField(
+        choices=SEAT_GRADE_CHOICES,
+        max_length=10,
+        default='adult',
+    )
     seat = models.ForeignKey(
         'Seat',
         on_delete=models.CASCADE,
