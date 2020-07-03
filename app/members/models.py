@@ -54,6 +54,8 @@ class Profile(models.Model):
     member = models.OneToOneField(
         AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        blank=True,
+        null=True,
     )
     region = models.ManyToManyField(
         'theaters.Region',

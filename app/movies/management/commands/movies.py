@@ -3,7 +3,7 @@ import datetime
 import requests
 from django.core.management import BaseCommand
 
-from movies.models import Genre, Movie, Director, Actor
+from movies import Genre, Movie, Director, Actor
 
 
 class Command(BaseCommand):
