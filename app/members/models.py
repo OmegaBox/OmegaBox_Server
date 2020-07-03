@@ -15,12 +15,6 @@ class BaseMemberMixin(models.Model):
     class Meta:
         abstract = True
 
-    def age(self):
-        today = datetime.date.today()
-        birth = self.birth_date
-        age = today.year - birth.year - ((today.month, today.day) < (birth.month, birth.day))
-        return age
-
 
 class Member(AbstractUser, BaseMemberMixin):
     TIER_CHOICES = [
@@ -40,6 +34,12 @@ class Member(AbstractUser, BaseMemberMixin):
 
     def __str__(self):
         return f'{self.username} | {self.email}'
+
+    def age(self):
+        today = datetime.date.today()
+        birth = self.birth_date
+        age = today.year - birth.year - ((today.month, today.day) < (birth.month, birth.day))
+        return age
 
 
 class NonMember(BaseMemberMixin):
