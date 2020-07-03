@@ -1,10 +1,7 @@
-import datetime
-
 from rest_framework import serializers
 
 from members.models import BaseMemberMixin
-from utils import reformat_duration
-from .models import Movie, Rating
+from .models import Movie
 
 
 # class MovieSerializer(serializers.ModelSerializer):
@@ -53,12 +50,13 @@ class AgeBookingSerializer(serializers.ModelSerializer):
 
 class MovieSerializer(serializers.ModelSerializer):
     acc_favorite = serializers.SerializerMethodField('get_acc_favorite_from_rating')
-    close_date = serializers.SerializerMethodField('get_close_date')
+
     # age_booking = AgeBookingSerializer()
 
     class Meta:
         model = Movie
         fields = [
+            'id',
             'name_kor',
             'reservation_rate',
             'rank',
@@ -66,16 +64,14 @@ class MovieSerializer(serializers.ModelSerializer):
             'acc_favorite',
             'open_date',
             'close_date',
-            # 'description',
+            'description',
+            'poster',
+            'trailer',
             # 'age_booking',
             # 'day_booking',
             # 'comments',
         ]
 
     def get_acc_favorite_from_rating(self, movie):
-        acc_favorite = len(movie.liked.all())
+        acc_favorite = movie.liked.count()
         return acc_favorite
-
-    def get_close_date(self, movie):
-        close_date = movie.open_date + datetime.timedelta(days=7)
-        return close_date
