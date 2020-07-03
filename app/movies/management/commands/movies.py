@@ -48,7 +48,13 @@ class Command(BaseCommand):
             open_year, open_month, open_day = int(open_date[:4]), int(open_date[4:6]), int(open_date[6:])
             movie_info_open_date = datetime.date(open_year, open_month, open_day)
 
-            movie_info_grade = movie_info['movieInfoResult']['movieInfo']['audits'][0]['watchGradeNm']
+            grade = movie_info['movieInfoResult']['movieInfo']['audits'][0]['watchGradeNm']
+            movie_info_grade = ''
+
+            if grade == '전체관람가': movie_info_grade = 'all'
+            if grade == '12세이상관람가': movie_info_grade = '12+'
+            if grade == '15세이상관람가': movie_info_grade = '15+'
+            if grade == '청소년관람불가': movie_info_grade = '18+'
 
             # Movie 객체 생성 (박스오피스 1~10위)
             # Movie.objects.get_or_create(name_kor=movie_info_name_ko, name_eng=movie_info_name_eng, code=int(movie_code),
