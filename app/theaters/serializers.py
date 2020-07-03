@@ -3,7 +3,8 @@ from rest_framework import serializers
 from utils import reformat_duration
 
 
-class ScheduleSerializer(serializers.Serializer):
+class ScheduleMovieSerializer(serializers.Serializer):
+    schedule_id = serializers.IntegerField(source='id')
     date = serializers.DateTimeField(
         format='%Y-%m-%d',
         source='start_time',
@@ -28,9 +29,9 @@ class ScheduleSerializer(serializers.Serializer):
 
 
 class ScheduleTheaterListSerializer(serializers.Serializer):
+    region = serializers.CharField()
     theater_id = serializers.IntegerField(source='id')
     name = serializers.CharField()
-    region = serializers.CharField()
 
 
 class ScheduleRegionCountSerializer(serializers.Serializer):
