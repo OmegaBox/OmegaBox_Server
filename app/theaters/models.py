@@ -60,7 +60,7 @@ class Schedule(models.Model):
     )
     screen = models.ForeignKey(
         'Screen',
-        related_name='screens',
+        related_name='schedules',
         on_delete=models.CASCADE,
     )
     start_time = models.DateTimeField()

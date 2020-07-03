@@ -13,6 +13,8 @@ import json
 import os
 
 import boto3
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -172,7 +174,6 @@ PHONENUMBER_DB_FORMAT = 'NATIONAL'
 # DRF
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
@@ -187,3 +188,13 @@ REST_AUTH_SERIALIZERS = {
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'members.serializers.SignUpSerializer',
 }
+
+# Sentry
+sentry_sdk.init(
+    dsn="https://b90073877e834c63ab9b60864c1c470c@o415300.ingest.sentry.io/5306171",
+    integrations=[DjangoIntegration()],
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)

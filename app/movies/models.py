@@ -42,6 +42,9 @@ class Movie(models.Model):
     acc_audience = models.PositiveIntegerField()
     reservation_rate = models.FloatField()
     open_date = models.DateField()
+    close_date = models.DateField(
+        default='2020-08-31',
+    )
     grade = models.CharField(
         max_length=20,
         choices=MOVIE_GRADES,
@@ -81,22 +84,23 @@ class Rating(models.Model):
     comment = models.TextField(blank=True)
 
 
-class Genre(models.Model):
+class NameObject(models.Model):
     name = models.CharField(max_length=30)
+
+    class Meta:
+        abstract = True
 
     def __str__(self):
         return f'{self.name}'
 
 
-class Director(models.Model):
-    name = models.CharField(max_length=30)
-
-    def __str__(self):
-        return f'{self.name}'
+class Genre(NameObject):
+    pass
 
 
-class Actor(models.Model):
-    name = models.CharField(max_length=30)
+class Director(NameObject):
+    pass
 
-    def __str__(self):
-        return f'{self.name}'
+
+class Actor(NameObject):
+    pass
