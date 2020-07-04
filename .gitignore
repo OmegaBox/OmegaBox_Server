@@ -3,6 +3,7 @@
 
 ### Files ###
 app/.management/
+app/create_seats.py
 
 ### Django ###
 *.log
