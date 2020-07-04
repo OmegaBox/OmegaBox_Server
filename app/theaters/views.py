@@ -6,8 +6,8 @@ from rest_framework.generics import ListAPIView
 from utils import convert_list_to_dict
 from .models import Schedule, Theater
 from .serializers import (
-    ScheduleMovieSerializer, ScheduleTheaterListSerializer, ScheduleRegionCountSerializer
-)
+    ScheduleMovieSerializer, ScheduleTheaterListSerializer, ScheduleRegionCountSerializer,
+    SeatListSerializer)
 
 
 # 해당 상영관의 상영시간 정보
@@ -104,3 +104,12 @@ class ScheduleRegionCount(ListAPIView):
 
         return queryset
 
+
+# 해당 스케쥴의 좌석 정보
+class SeatList(ListAPIView):
+    serializer_class = SeatListSerializer
+
+    def get_queryset(self):
+        schedule_id = int(self.kwargs['schedule_id'])
+        schedule = Schedule.objects.get(pk=schedule_id)
+        return schedule.seat_types.all()

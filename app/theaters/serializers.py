@@ -38,3 +38,12 @@ class ScheduleRegionCountSerializer(serializers.Serializer):
     region_id = serializers.IntegerField(source='region')
     region_name = serializers.CharField(source='region__name')
     region_count = serializers.IntegerField(source='name__count')
+
+
+class SeatListSerializer(serializers.Serializer):
+    seat = serializers.CharField()
+    type = serializers.CharField()
+    reserved = serializers.SerializerMethodField()
+
+    def get_reserved(self, obj):
+        return obj.seat.reservation.exists()

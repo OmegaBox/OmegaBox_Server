@@ -79,7 +79,7 @@ class Schedule(models.Model):
 @receiver(post_save, sender=Schedule)
 def create_seats(sender, instance, created, **kwargs):
     if created:
-        type_number = instance.seats_type
+        type_number = instance.screen.seats_type
         seats_list = seating_chart.get(type_number, None)
 
         if seats_list is not None:
@@ -133,6 +133,9 @@ class SeatType(models.Model):
         on_delete=models.CASCADE,
         related_name='seat_types',
     )
+
+    def __str__(self):
+        return f'{self.type}'
 
 
 class SeatGrade(models.Model):
