@@ -15,7 +15,7 @@ URLS = [
 
 for URL in URLS:
     ydl_opts = {
-        'outtmpl': f'~/Downloads/{URL[0]}'
+        'outtmpl': f'~/Downloads/{URL[0]}.mp4'
     }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([URL[1]])
