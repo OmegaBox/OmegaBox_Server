@@ -13,7 +13,7 @@ class Command(BaseCommand):
         param = {
             # 필수
             'key': '90aae50e8cd71ff96082a492f0da3918',
-            'targetDt': '20200701',
+            'targetDt': '20200702',
             # 옵션
             'itemPerPage': '',
             'multiMovieYn': '',
@@ -23,12 +23,14 @@ class Command(BaseCommand):
         request_url = requests.get(url, params=param)
         boxoffice_info = request_url.json()
 
+
         for rank in range(10):
             movie_code = boxoffice_info['boxOfficeResult']['dailyBoxOfficeList'][rank]['movieCd']
             boxoffice_rank = boxoffice_info['boxOfficeResult']['dailyBoxOfficeList'][rank]['rank']
             acc_count = boxoffice_info['boxOfficeResult']['dailyBoxOfficeList'][rank]['audiAcc']
             # 해당일 상영작 매출총액 대비 매출 비율 (예매율 대체)
             sales_share = boxoffice_info['boxOfficeResult']['dailyBoxOfficeList'][rank]['salesShare']
+            print('sales_share >> ', sales_share)
 
             # 영화 코드별 상세 정보
             url = 'http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json'

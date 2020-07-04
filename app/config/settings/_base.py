@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     'rest_auth.registration',
 
     'phonenumber_field',
+    # 'youtube_download',
 
     # Local
     'members.apps.MembersConfig',
