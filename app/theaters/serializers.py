@@ -47,3 +47,7 @@ class SeatListSerializer(serializers.Serializer):
 
     def get_reserved(self, obj):
         return obj.seat.reservation.exists()
+
+
+class SeatCountSerializer(serializers.Serializer):
+    total_count = serializers.IntegerField(source='count')

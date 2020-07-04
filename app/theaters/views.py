@@ -3,6 +3,8 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count, Q
 from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from utils import convert_list_to_dict
 from utils.excepts import InvalidScheduleIDException
@@ -116,5 +118,19 @@ class SeatList(ListAPIView):
         try:
             schedule = Schedule.objects.get(pk=schedule_id)
             return schedule.seat_types.all()
+        except ObjectDoesNotExist:
+            raise InvalidScheduleIDException
+
+
+# 해당 스케쥴의 전체좌석 및 예약 좌석 합계
+class SeatCount(APIView):
+    def get(self, request, schedule_id):
+        try:
+            schedule = Schedule.objects.get(pk=schedule_id)
+            return Response({
+                'total_seats': schedule.seat_types.count(),
+                'reserved_seats': schedule.seat_types.aggregate(
+                    reserved_seats=Count('seat__reservation'))['reserved_seats']
+            })
         except ObjectDoesNotExist:
             raise InvalidScheduleIDException

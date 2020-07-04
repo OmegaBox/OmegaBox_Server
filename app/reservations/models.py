@@ -21,7 +21,6 @@ class Reservation(models.Model):
         null=True,
         related_name='reservations',
     )
-
     schedule = models.ForeignKey(
         'theaters.Schedule',
         on_delete=models.CASCADE,

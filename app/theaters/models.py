@@ -135,7 +135,7 @@ class SeatType(models.Model):
     )
 
     def __str__(self):
-        return f'{self.type}'
+        return f'{self.type} {self.seat}'
 
 
 class SeatGrade(models.Model):
@@ -160,3 +160,6 @@ class SeatGrade(models.Model):
         on_delete=models.CASCADE,
         related_name='seat_grades',
     )
+
+    def __str__(self):
+        return f'{self.reservation} {self.seat} {self.grade}'
