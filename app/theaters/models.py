@@ -56,22 +56,6 @@ class Screen(models.Model):
         return f'{self.theater} {self.name}'
 
 
-@receiver(post_save, sender=Screen)
-def create_seats(sender, instance, created, **kwargs):
-    if created:
-        type_number = instance.seats_type
-        seats_list = seating_chart.get(type_number, None)
-
-        if seats_list is not None:
-            for seat in seats_list:
-                seat_instance = Seat.objects.get(name=seat)
-
-                SeatType.objects.create(
-                    seat=seat_instance,
-                    screen=instance,
-                )
-
-
 class Schedule(models.Model):
     movie = models.ForeignKey(
         'movies.Movie',
@@ -92,10 +76,26 @@ class Schedule(models.Model):
         return f'{self.start_time:%m/%d %H:%M} {self.screen} {self.movie}'
 
 
+@receiver(post_save, sender=Schedule)
+def create_seats(sender, instance, created, **kwargs):
+    if created:
+        type_number = instance.seats_type
+        seats_list = seating_chart.get(type_number, None)
+
+        if seats_list is not None:
+            for seat in seats_list:
+                seat_instance = Seat.objects.get(name=seat)
+
+                SeatType.objects.create(
+                    seat=seat_instance,
+                    schedule=instance,
+                )
+
+
 class Seat(models.Model):
     name = models.CharField(max_length=20)
-    screen = models.ManyToManyField(
-        'Screen',
+    schedules = models.ManyToManyField(
+        'Schedule',
         through='SeatType',
         related_name='seats',
     )
@@ -128,8 +128,8 @@ class SeatType(models.Model):
         on_delete=models.CASCADE,
         related_name='seat_types',
     )
-    screen = models.ForeignKey(
-        'Screen',
+    schedule = models.ForeignKey(
+        'Schedule',
         on_delete=models.CASCADE,
         related_name='seat_types',
     )
