@@ -1,9 +1,11 @@
 from datetime import datetime
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count, Q
 from rest_framework.generics import ListAPIView
 
 from utils import convert_list_to_dict
+from utils.excepts import InvalidScheduleIDException
 from .models import Schedule, Theater
 from .serializers import (
     ScheduleMovieSerializer, ScheduleTheaterListSerializer, ScheduleRegionCountSerializer,
@@ -111,5 +113,8 @@ class SeatList(ListAPIView):
 
     def get_queryset(self):
         schedule_id = int(self.kwargs['schedule_id'])
-        schedule = Schedule.objects.get(pk=schedule_id)
-        return schedule.seat_types.all()
+        try:
+            schedule = Schedule.objects.get(pk=schedule_id)
+            return schedule.seat_types.all()
+        except ObjectDoesNotExist:
+            raise InvalidScheduleIDException
