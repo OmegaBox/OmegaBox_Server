@@ -1,8 +1,7 @@
-from django.urls import path, include
+from django.urls import path
 
 from .views import MovieList
 
 urlpatterns = [
     path('', MovieList.as_view()),
-    # path('', include('youtube_download.urls')),
 ]
