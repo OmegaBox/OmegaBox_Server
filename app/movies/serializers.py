@@ -18,13 +18,14 @@ class RatingSerializer(serializers.ModelSerializer):
             'id',
             'good_point',
             'point',
-            'comment'
+            'comment',
         ]
 
 
 class MovieSerializer(serializers.ModelSerializer):
     running_time = serializers.SerializerMethodField()
     acc_favorite = serializers.SerializerMethodField('get_acc_favorite_from_rating')
+    average_point = serializers.SerializerMethodField('get_average_point')
     comments = RatingSerializer(many=True, source='ratings.all')
     liked = serializers.IntegerField(source='liked.all.count')
 
@@ -45,6 +46,7 @@ class MovieSerializer(serializers.ModelSerializer):
             'trailer',
             'comments',
             'liked',
+            'average_point',
             # 'age_booking',
         ]
 
@@ -56,3 +58,20 @@ class MovieSerializer(serializers.ModelSerializer):
     def get_acc_favorite_from_rating(self, movie):
         acc_favorite = movie.liked.count()
         return acc_favorite
+
+    def get_average_point(self, movie):
+        try:
+            ratings = movie.ratings.all()
+            points = list()
+            for rating in ratings:
+                points = points.append(rating.score)
+            average_point = sum(points) / len(points)
+            return average_point
+
+        except ZeroDivisionError as e:
+            average_point = 0
+            return average_point
+
+        except TypeError as e:
+            average_point = 0
+            return average_point
