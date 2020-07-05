@@ -18,15 +18,15 @@ class BaseMemberMixin(models.Model):
 
 class Member(AbstractUser, BaseMemberMixin):
     TIER_CHOICES = [
-        ('BASIC', 'BASIC'),
-        ('VIP', 'VIP'),
+        ('basic', 'BASIC'),
+        ('vip', 'VIP'),
     ]
 
     email = models.EmailField(unique=True)
     tier = models.CharField(
         max_length=20,
         choices=TIER_CHOICES,
-        default='BASIC',
+        default='basic',
     )
     point = models.PositiveIntegerField(default=0)
 
