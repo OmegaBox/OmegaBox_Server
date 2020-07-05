@@ -3,6 +3,7 @@ import datetime
 from rest_framework import serializers
 
 from members.models import Member
+from reservations.models import Reservation
 from utils import reformat_duration
 from .models import Movie, Rating
 
