@@ -59,6 +59,9 @@ class JWTSerializer(serializers.Serializer):
 
 
 class ProfileDetailSerializer(serializers.ModelSerializer):
+    tier = serializers.CharField(source='member.tier')
+    point = serializers.CharField(source='member.point')
+
     class Meta:
         model = Profile
         fields = '__all__'
