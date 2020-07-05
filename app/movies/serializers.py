@@ -23,21 +23,12 @@ class RatingSerializer(serializers.ModelSerializer):
         ]
 
 
-
-
-
-
-class AgeBookingSerializer(serializers.Serializer):
-    teens = serializers.IntegerField(default=10)
-
-
 class MovieSerializer(serializers.ModelSerializer):
     running_time = serializers.SerializerMethodField()
     acc_favorite = serializers.SerializerMethodField('get_acc_favorite_from_rating')
     average_point = serializers.SerializerMethodField('get_average_point')
     comments = RatingSerializer(many=True, source='ratings.all')
     liked = serializers.IntegerField(source='liked.all.count')
-    age_booking = AgeBookingSerializer()
 
     class Meta:
         model = Movie
@@ -57,7 +48,7 @@ class MovieSerializer(serializers.ModelSerializer):
             'comments',
             'liked',
             'average_point',
-            'age_booking',
+            # 'age_booking',
         ]
 
         # depth = 1
