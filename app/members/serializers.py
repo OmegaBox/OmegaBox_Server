@@ -6,6 +6,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from utils.excepts import TakenNumberException
+from .models import Profile
 
 Member = get_user_model()
 
@@ -55,3 +56,9 @@ class JWTSerializer(serializers.Serializer):
 
     def get_access(self, obj):
         return str(self.get_token(obj['user']).access_token)
+
+
+class ProfileDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = '__all__'

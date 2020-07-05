@@ -58,12 +58,9 @@ class Profile(models.Model):
         ('18-21', '18시~21시'),
         ('21-00', '21시 이후'),
     ]
-
     member = models.OneToOneField(
         AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        blank=True,
-        null=True,
     )
     region = models.ManyToManyField(
         'theaters.Region',
@@ -75,7 +72,8 @@ class Profile(models.Model):
     )
     time = models.CharField(
         max_length=20,
-        choices=TIME_CHOICES
+        choices=TIME_CHOICES,
+        blank=True,
     )
     # 프론트와 협의 필요
     is_disabled = models.BooleanField(default=False)
