@@ -2,6 +2,7 @@ from django.db.models import Count
 from rest_framework import serializers
 
 from utils import reformat_duration
+from .models import Screen
 
 
 class ScheduleMovieSerializer(serializers.Serializer):
@@ -52,3 +53,10 @@ class ScheduleRegionCountSerializer(serializers.Serializer):
 
 class SeatListSerializer(serializers.Serializer):
     reserved_seat = serializers.CharField(source='seat')
+
+
+class ScreenDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Screen
+        fields = '__all__'
+        depth = 1

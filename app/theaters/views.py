@@ -2,17 +2,17 @@ from datetime import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count, Q
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from utils import convert_list_to_dict
 from utils.excepts import InvalidScheduleIDException
-from .models import Schedule, Theater
+from .models import Schedule, Theater, Screen
 from .serializers import (
     ScheduleMovieSerializer, ScheduleTheaterListSerializer, ScheduleRegionCountSerializer,
-    SeatListSerializer
-)
+    SeatListSerializer,
+    ScreenDetailSerializer)
 
 
 # 해당 상영관의 상영시간 정보
@@ -140,3 +140,9 @@ class SeatCount(APIView):
             })
         except ObjectDoesNotExist:
             raise InvalidScheduleIDException
+
+
+class ScreenDetail(RetrieveAPIView):
+    queryset = Screen.objects.all()
+    serializer_class = ScreenDetailSerializer
+    lookup_url_kwarg = 'screen_id'
