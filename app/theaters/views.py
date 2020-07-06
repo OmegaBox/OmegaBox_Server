@@ -130,7 +130,7 @@ class SeatCount(APIView):
             return Response({
                 'total_seats': schedule.seat_types.count(),
                 'reserved_seats': schedule.seat_types.aggregate(
-                    reserved_seats=Count('seat__reservation'))['reserved_seats']
+                    reserved_seats=Count('seat__reservations'))['reserved_seats']
             })
         except ObjectDoesNotExist:
             raise InvalidScheduleIDException
