@@ -2,6 +2,7 @@ from django.db.models import Count
 from rest_framework import serializers
 
 from utils import reformat_duration
+from .models import Screen
 
 
 class ScheduleMovieSerializer(serializers.Serializer):
@@ -35,7 +36,7 @@ class ScheduleMovieSerializer(serializers.Serializer):
 
     def get_reserved_seats(self, obj):
         return obj.seat_types.aggregate(
-            reserved_seats=Count('seat__reservation'))['reserved_seats']
+            reserved_seats=Count('seat__reservations'))['reserved_seats']
 
 
 class ScheduleTheaterListSerializer(serializers.Serializer):
@@ -51,9 +52,11 @@ class ScheduleRegionCountSerializer(serializers.Serializer):
 
 
 class SeatListSerializer(serializers.Serializer):
-    seat = serializers.CharField()
-    type = serializers.CharField()
-    reserved = serializers.SerializerMethodField()
+    reserved_seat = serializers.CharField(source='seat')
 
-    def get_reserved(self, obj):
-        return obj.seat.reservation.exists()
+
+class ScreenDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Screen
+        fields = '__all__'
+        depth = 1

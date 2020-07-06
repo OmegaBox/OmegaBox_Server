@@ -77,12 +77,15 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     # 3rd-party packages
-    'rest_framework',
-    'rest_framework.authtoken',
-    'rest_auth',
     'allauth',
     'allauth.account',
+    'rest_auth',
     'rest_auth.registration',
+
+    'rest_framework',
+    'rest_framework.authtoken',
+
+    'drf_yasg',
 
     'phonenumber_field',
 
@@ -126,16 +129,6 @@ TEMPLATES = [
         },
     },
 ]
-
-# Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(ROOT_DIR, 'db.sqlite3'),
-#     }
-# }
 
 DATABASES = SECRETS['DATABASES']
 

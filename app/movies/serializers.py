@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from reservations.models import Reservation
 from theaters.models import Schedule
 from utils import reformat_duration
 from .models import Movie, Rating

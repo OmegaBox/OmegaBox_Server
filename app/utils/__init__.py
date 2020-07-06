@@ -1,5 +1,3 @@
-import re
-
 from django.utils.duration import _get_duration_components
 
 
