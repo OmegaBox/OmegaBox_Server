@@ -37,6 +37,7 @@ class MovieSerializer(serializers.ModelSerializer):
             'reservation_rate',
             'running_time',
             'rank',
+            'grade',
             'acc_audience',
             'acc_favorite',
             'open_date',
