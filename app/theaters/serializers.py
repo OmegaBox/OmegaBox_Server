@@ -51,4 +51,4 @@ class ScheduleRegionCountSerializer(serializers.Serializer):
 
 
 class SeatListSerializer(serializers.Serializer):
-    seat = serializers.CharField()
+    reserved_seat = serializers.CharField(source='seat')

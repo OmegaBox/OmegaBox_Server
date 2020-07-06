@@ -7,6 +7,6 @@ urlpatterns = [
     path('schedules/regions/<int:date>/', ScheduleRegionCount.as_view()),
     path('<int:theater_id>/schedules/<int:date>/', ScheduleList.as_view()),
 
-    path('schedules/<int:schedule_id>/seats/', SeatList.as_view()),
+    path('schedules/<int:schedule_id>/reserved-seats/', SeatList.as_view()),
     path('schedules/<int:schedule_id>/seats/count/', SeatCount.as_view()),
 ]
