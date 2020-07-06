@@ -1,9 +1,12 @@
 import datetime
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.signals import m2m_changed
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from phonenumber_field.modelfields import PhoneNumberField
+from rest_framework.exceptions import ValidationError
 
 from config.settings._base import AUTH_USER_MODEL
 
@@ -72,7 +75,6 @@ class Profile(models.Model):
         choices=TIME_CHOICES,
         blank=True,
     )
-
     tier = models.CharField(
         max_length=20,
         choices=TIER_CHOICES,
@@ -89,3 +91,17 @@ class Profile(models.Model):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(member=instance)
+
+
+def regions_changed(sender, **kwargs):
+    if kwargs['instance'].regions.count() > 3:
+        raise ValidationError("최대 선호 지역 개수 초과입니다.")
+
+
+def genres_changed(sender, **kwargs):
+    if kwargs['instance'].genres.count() > 3:
+        raise ValidationError("최대 선호 장르 개수 초과입니다.")
+
+
+m2m_changed.connect(regions_changed, sender=Profile.regions.through)
+m2m_changed.connect(genres_changed, sender=Profile.genres.through)
