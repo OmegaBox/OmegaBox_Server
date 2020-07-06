@@ -77,12 +77,16 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     # 3rd-party packages
-    'rest_framework',
-    'rest_framework.authtoken',
-    'rest_auth',
     'allauth',
     'allauth.account',
+    'rest_auth',
     'rest_auth.registration',
+
+    'rest_framework',
+    'rest_framework.authtoken',
+
+
+    'drf_yasg',
 
     'phonenumber_field',
 
