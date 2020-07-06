@@ -75,7 +75,6 @@ class Profile(models.Model):
         choices=TIME_CHOICES,
         blank=True,
     )
-
     tier = models.CharField(
         max_length=20,
         choices=TIER_CHOICES,

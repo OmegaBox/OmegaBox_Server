@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from utils.omegabox_data import seating_chart
+from utils.omegabox_data import seating_chart_general, seating_chart_apart
 
 
 class Theater(models.Model):
@@ -80,15 +80,19 @@ class Schedule(models.Model):
 def create_seats(sender, instance, created, **kwargs):
     if created:
         type_number = instance.screen.seats_type
-        seats_list = seating_chart.get(type_number, None)
+        general_seats_list = seating_chart_general.get(type_number)
+        apart_seats_list = seating_chart_apart.get(type_number)
 
-        if seats_list is not None:
-            for seat in seats_list:
+        if general_seats_list is not None:
+            for seat in general_seats_list:
                 seat_instance = Seat.objects.get(name=seat)
+
+                seat_type = 'sit_apart' if seat in apart_seats_list else 'general'
 
                 SeatType.objects.create(
                     seat=seat_instance,
                     schedule=instance,
+                    type=seat_type,
                 )
 
 
