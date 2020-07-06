@@ -9,8 +9,8 @@ URLS = [
     ('20208617', 'https://youtu.be/9LXmYtZEnUQ'),
     ('20200361', 'https://youtu.be/2DPU-KJqviY'),
     ('20179462', 'https://youtu.be/cnIOq6P8PUU'),
+    ('20200836', 'https://youtu.be/1lRQc-YugZE'),
     ('20196702', 'https://youtu.be/tHgzM5RM-JY'),
-    ('20201841', 'https://youtu.be/qXwMWUCwvXM'),
 ]
 
 for URL in URLS:

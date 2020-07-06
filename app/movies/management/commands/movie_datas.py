@@ -14,7 +14,7 @@ class Command(BaseCommand):
         param = {
             # 필수
             'key': '90aae50e8cd71ff96082a492f0da3918',
-            'targetDt': '20200702',
+            'targetDt': '20200703',
             # 옵션
             'itemPerPage': '',
             'multiMovieYn': '',
@@ -66,7 +66,9 @@ class Command(BaseCommand):
                                         running_time=datetime.timedelta(minutes=int(movie_info_showtime)),
                                         rank=int(boxoffice_rank), acc_audience=int(acc_count),
                                         reservation_rate=float(sales_share), open_date=movie_info_open_date,
-                                        grade=movie_info_grade, trailer=f'trailers/{movie_code}.mp4')
+                                        grade=movie_info_grade, trailer=f'trailers/{movie_code}.mp4',
+                                        poster=f'posters/{movie_code}.jpg'
+                                        )
             print('Movie 객체들이 새로 생성되었습니다.')
 
             # 감독 (2명 이상일 가능성)

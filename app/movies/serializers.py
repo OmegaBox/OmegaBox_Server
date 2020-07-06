@@ -1,8 +1,7 @@
-import datetime
-
 from rest_framework import serializers
 
-from members.models import Member
+from reservations.models import Reservation
+from theaters.models import Schedule
 from utils import reformat_duration
 from .models import Movie, Rating
 
@@ -28,6 +27,7 @@ class MovieSerializer(serializers.ModelSerializer):
     average_point = serializers.SerializerMethodField('get_average_point')
     comments = RatingSerializer(many=True, source='ratings.all')
     liked = serializers.IntegerField(source='liked.all.count')
+    age_booking = serializers.SerializerMethodField('get_age_booking')
 
     class Meta:
         model = Movie
@@ -47,7 +47,7 @@ class MovieSerializer(serializers.ModelSerializer):
             'comments',
             'liked',
             'average_point',
-            # 'age_booking',
+            'age_booking',
         ]
 
         # depth = 1
@@ -75,3 +75,11 @@ class MovieSerializer(serializers.ModelSerializer):
         except TypeError as e:
             average_point = 0
             return average_point
+
+    def get_age_booking(self, movie):
+        movie_name = movie.name_kor
+        members_ages = list()
+        for schedule in Schedule.objects.filter(movie__name_kor=movie_name):
+            for reservation in schedule.reservations.all():
+                members_ages.append(reservation.member.age())
+        return members_ages
