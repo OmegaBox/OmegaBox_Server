@@ -11,7 +11,8 @@ from utils.excepts import InvalidScheduleIDException
 from .models import Schedule, Theater
 from .serializers import (
     ScheduleMovieSerializer, ScheduleTheaterListSerializer, ScheduleRegionCountSerializer,
-    SeatListSerializer)
+    SeatListSerializer
+)
 
 
 # 해당 상영관의 상영시간 정보
@@ -109,15 +110,20 @@ class ScheduleRegionCount(ListAPIView):
         return queryset
 
 
-# 해당 스케쥴의 좌석 정보
+# 해당 스케쥴의 예약된 좌석 정보
 class SeatList(ListAPIView):
     serializer_class = SeatListSerializer
+    pagination_class = None
 
     def get_queryset(self):
         schedule_id = int(self.kwargs['schedule_id'])
         try:
             schedule = Schedule.objects.get(pk=schedule_id)
-            return schedule.seat_types.all()
+            return schedule.seat_types.exclude(
+                type='sit_apart',
+            ).exclude(
+                seat__reservations__isnull=True,
+            )
         except ObjectDoesNotExist:
             raise InvalidScheduleIDException
 
