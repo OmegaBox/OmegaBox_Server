@@ -59,23 +59,22 @@ class JWTSerializer(serializers.Serializer):
 
 
 class ProfileDetailSerializer(serializers.ModelSerializer):
-    member = serializers.CharField(source='member.name')
-
     class Meta:
         model = Profile
         fields = [
             'id',
-            'member',
             'tier',
             'point',
-            'region',
-            'genre',
+            'regions',
+            'genres',
             'time',
             'is_disabled',
         ]
 
 
 class MemberSerializer(serializers.ModelSerializer):
+    profile = ProfileDetailSerializer()
+
     class Meta:
         model = Member
         fields = [
