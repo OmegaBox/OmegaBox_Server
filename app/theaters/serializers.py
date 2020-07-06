@@ -52,8 +52,3 @@ class ScheduleRegionCountSerializer(serializers.Serializer):
 
 class SeatListSerializer(serializers.Serializer):
     seat = serializers.CharField()
-    type = serializers.CharField()
-    reserved = serializers.SerializerMethodField()
-
-    def get_reserved(self, obj):
-        return obj.seat.reservations.exists()

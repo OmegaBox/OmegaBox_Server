@@ -138,8 +138,9 @@ class SeatType(models.Model):
         related_name='seat_types',
     )
 
+    # SeatListSerializer에서 사용 변경 금지
     def __str__(self):
-        return f'{self.type} {self.seat}'
+        return f'{self.seat}'
 
 
 class SeatGrade(models.Model):
