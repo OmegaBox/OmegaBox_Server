@@ -7,7 +7,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         regions_names = {
             '서울': [
-                '강남', '강남대로(씨티)', '강동', '군자', '동대문', '마곡', '목동', '상봉', '상암월드컵경기장', ' 성수', '센트럴', '송파파크하비오', '신촌', '은평',
+                '강남', '강남대로(씨티)', '강동', '군자', '동대문', '마곡', '목동', '상봉', '상암월드컵경기장', '성수', '센트럴', '송파파크하비오', '신촌', '은평',
                 '이수', '창동', '코엑스', '홍대', '화곡', 'ARTNINE'
             ],
             '경기': [
@@ -35,6 +35,11 @@ class Command(BaseCommand):
                 '제주'
             ]
         }
+
+        # for region in Region.objects.all():
+        #     region.delete()
+        # for theater in Theater.objects.all():
+        #     theater.delete()
 
         for region, name in regions_names.items():
             # Region 객체 생성

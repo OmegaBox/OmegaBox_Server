@@ -24,9 +24,9 @@ class Command(BaseCommand):
         request_url = requests.get(url, params=param)
         boxoffice_info = request_url.json()
 
-        # for movie in Movie.objects.all():
-        #     movie.delete()
-        # print('기존 Movie 객체들이 모두 삭제되었습니다.')
+        for movie in Movie.objects.all():
+            movie.delete()
+        print('기존 Movie 객체들이 모두 삭제되었습니다.')
 
         for rank in range(10):
             movie_code = boxoffice_info['boxOfficeResult']['dailyBoxOfficeList'][rank]['movieCd']
@@ -62,13 +62,14 @@ class Command(BaseCommand):
             if grade == '청소년관람불가': movie_info_grade = '18+'
 
             # Movie 객체 생성 (박스오피스 1~10위)
-            # Movie.objects.get_or_create(name_kor=movie_info_name_ko, name_eng=movie_info_name_eng, code=int(movie_code),
-            #                             running_time=datetime.timedelta(minutes=int(movie_info_showtime)),
-            #                             rank=int(boxoffice_rank), acc_audience=int(acc_count),
-            #                             reservation_rate=float(sales_share), open_date=movie_info_open_date,
-            #                             grade=movie_info_grade, trailer=f'trailers/{movie_code}.mp4',
-            #                             poster=f'posters/{movie_code}.jpg')
-            # print('Movie 객체들이 새로 생성되었습니다.')
+            Movie.objects.get_or_create(name_kor=movie_info_name_ko, name_eng=movie_info_name_eng, code=int(movie_code),
+                                        running_time=datetime.timedelta(minutes=int(movie_info_showtime)),
+                                        rank=int(boxoffice_rank), acc_audience=int(acc_count),
+                                        reservation_rate=float(sales_share), open_date=movie_info_open_date,
+                                        grade=movie_info_grade, trailer=f'trailers/{movie_code}.mp4',
+                                        poster=f'posters/{movie_code}.jpg'
+                                        )
+            print('Movie 객체들이 새로 생성되었습니다.')
 
             # 감독 (2명 이상일 가능성)
             directors = movie_info['movieInfoResult']['movieInfo']['directors']

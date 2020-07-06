@@ -1,7 +1,8 @@
 import datetime
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from phonenumber_field.modelfields import PhoneNumberField
 
 from config.settings._base import AUTH_USER_MODEL
@@ -17,27 +18,16 @@ class BaseMemberMixin(models.Model):
 
 
 class Member(AbstractUser, BaseMemberMixin):
-    TIER_CHOICES = [
-        ('basic', 'BASIC'),
-        ('vip', 'VIP'),
-    ]
-
     email = models.EmailField(unique=True)
-    tier = models.CharField(
-        max_length=20,
-        choices=TIER_CHOICES,
-        default='basic',
-    )
-    point = models.PositiveIntegerField(default=0)
 
-    REQUIRED_FIELDS = ['email', 'mobile', 'birth_date']
+    REQUIRED_FIELDS = ['name', 'email', 'mobile', 'birth_date']
 
     def __str__(self):
         return f'{self.username} | {self.email}'
 
     def age(self):
         today = datetime.date.today()
-        birth = self.birth_date
+        birth = self.members.birth_date
         age = today.year - birth.year - ((today.month, today.day) < (birth.month, birth.day))
         return age
 
@@ -58,15 +48,22 @@ class Profile(models.Model):
         ('18-21', '18시~21시'),
         ('21-00', '21시 이후'),
     ]
+
+    TIER_CHOICES = [
+        ('basic', 'BASIC'),
+        ('vip', 'VIP'),
+    ]
+
     member = models.OneToOneField(
         AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    region = models.ManyToManyField(
+
+    regions = models.ManyToManyField(
         'theaters.Region',
         related_name='profiles',
     )
-    genre = models.ManyToManyField(
+    genres = models.ManyToManyField(
         'movies.Genre',
         related_name='profiles',
     )
@@ -75,5 +72,20 @@ class Profile(models.Model):
         choices=TIME_CHOICES,
         blank=True,
     )
+
+    tier = models.CharField(
+        max_length=20,
+        choices=TIER_CHOICES,
+        default='basic',
+    )
+
+    point = models.PositiveIntegerField(default=0)
+
     # 프론트와 협의 필요
     is_disabled = models.BooleanField(default=False)
+
+
+@receiver(post_save, sender=Member)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(member=instance)
