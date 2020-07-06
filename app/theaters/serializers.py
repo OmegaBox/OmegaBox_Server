@@ -35,7 +35,7 @@ class ScheduleMovieSerializer(serializers.Serializer):
 
     def get_reserved_seats(self, obj):
         return obj.seat_types.aggregate(
-            reserved_seats=Count('seat__reservation'))['reserved_seats']
+            reserved_seats=Count('seat__reservations'))['reserved_seats']
 
 
 class ScheduleTheaterListSerializer(serializers.Serializer):
@@ -56,4 +56,4 @@ class SeatListSerializer(serializers.Serializer):
     reserved = serializers.SerializerMethodField()
 
     def get_reserved(self, obj):
-        return obj.seat.reservation.exists()
+        return obj.seat.reservations.exists()

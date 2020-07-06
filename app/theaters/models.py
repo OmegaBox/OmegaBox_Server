@@ -103,7 +103,7 @@ class Seat(models.Model):
         through='SeatType',
         related_name='seats',
     )
-    reservation = models.ManyToManyField(
+    reservations = models.ManyToManyField(
         'reservations.Reservation',
         through='SeatGrade',
         related_name='seats',
