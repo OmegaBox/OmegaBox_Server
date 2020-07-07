@@ -155,6 +155,7 @@ class SeatsTotalPrice(APIView):
 
         adults = request.query_params.get('adults', None)
         teens = request.query_params.get('teens', None)
+        preferential = request.query_params.get('preferential', None)
 
         total_price = 0
 
@@ -163,6 +164,9 @@ class SeatsTotalPrice(APIView):
 
         if teens is not None:
             total_price += calculate_seat_price(screen_type, 'teen') * int(teens)
+
+        if preferential is not None:
+            total_price += calculate_seat_price(screen_type, 'preferential') * int(preferential)
 
         return Response({
             "total_price": total_price,
