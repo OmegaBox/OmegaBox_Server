@@ -194,7 +194,7 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 
 # DJANGO_SIMPLE_JWT
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
 }
 
 # Sentry

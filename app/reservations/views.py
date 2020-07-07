@@ -7,9 +7,8 @@ from theaters.models import SeatGrade
 
 class SeatGradeListCreateView(CreateAPIView):
     queryset = SeatGrade
-    permission_classes = [IsAuthenticated, ]
-
     serializer_class = SeatGradeCreateSerializer
+    permission_classes = [IsAuthenticated, ]
 
     def perform_create(self, serializer):
         instance = serializer.save()
