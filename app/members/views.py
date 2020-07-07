@@ -22,7 +22,6 @@ class MemberListView(ListAPIView):
 
 
 class MemberRetrieveView(RetrieveAPIView):
-    lookup_field = 'id'
     serializer_class = MemberSerializer
     permission_classes = [IsAuthorizedMember, IsAdminUser, ]
 
