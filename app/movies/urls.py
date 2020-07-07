@@ -1,7 +1,9 @@
 from django.urls import path
 
-from .views import MovieList
+from .views import MovieListView, AgeBookingCount, MovieDetailView
 
 urlpatterns = [
-    path('', MovieList.as_view()),
+    path('', MovieListView.as_view()),
+    path('<int:pk>/', MovieDetailView.as_view()),
+    path('<int:pk>/age_booking/', AgeBookingCount.as_view()),
 ]
