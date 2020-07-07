@@ -2,20 +2,45 @@ from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
 from theaters.models import SeatGrade, Schedule, Seat, SeatType
+from utils.business_data import PRICE_BY_SCREEN_TYPE_CHART, PRICE_DISCOUNT_RATE_CHART
 from utils.excepts import TakenSeatException, InvalidGradeChoicesException, \
     InvalidSeatException
 from .models import Reservation
 
 
+class ReservationDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reservation
+        fields = [
+            'id',
+            'code',
+            'member',
+            'schedule',
+            'payment',
+            'is_canceled',
+            'canceled_at',
+        ]
+
+
 class SeatGradeDetailSerializer(serializers.ModelSerializer):
+    reservation = ReservationDetailSerializer()
+    price = serializers.SerializerMethodField()
+
     class Meta:
         model = SeatGrade
         fields = [
             'id',
             'grade',
+            'price',
             'reservation',
         ]
-        depth = 1
+
+    def get_price(self, obj):
+        original_price = PRICE_BY_SCREEN_TYPE_CHART.get(
+            obj.reservation.schedule.screen.screen_type, 'default'
+        )
+        discount_rate = PRICE_DISCOUNT_RATE_CHART.get(obj.grade, 'default')
+        return original_price * discount_rate
 
 
 class SeatGradeCreateSerializer(serializers.Serializer):
