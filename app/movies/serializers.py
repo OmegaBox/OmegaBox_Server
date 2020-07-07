@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from utils import reformat_duration
-from .models import Movie, Rating, Director, Actor
+from .models import Movie, Rating, Director, Actor, Genre
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -59,6 +59,14 @@ class ActorSerializer(serializers.ModelSerializer):
         ]
 
 
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = [
+            'name'
+        ]
+
+
 class RatingSerializer(serializers.ModelSerializer):
     member = serializers.CharField(source='member.name')
     good_point = serializers.CharField(source='key_point')
@@ -80,8 +88,9 @@ class MovieDetailSerializer(serializers.ModelSerializer):
     average_point = serializers.SerializerMethodField('get_average_point')
     acc_favorite = serializers.IntegerField(source='liked.all.count')
     running_time = serializers.SerializerMethodField()
-    director = DirectorSerializer(many=True)
-    actor = ActorSerializer(many=True)
+    directors = DirectorSerializer(many=True)
+    actors = ActorSerializer(many=True)
+    genres = GenreSerializer(many=True)
     ratings = RatingSerializer(many=True, source='ratings.all')
 
     class Meta:
@@ -102,8 +111,9 @@ class MovieDetailSerializer(serializers.ModelSerializer):
             'acc_audience',
             'acc_favorite',
             'running_time',
-            'director',
-            'actor',
+            'directors',
+            'actors',
+            'genres',
             'ratings',
         ]
 
