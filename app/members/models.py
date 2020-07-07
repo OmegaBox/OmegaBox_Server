@@ -30,7 +30,7 @@ class Member(AbstractUser, BaseMemberMixin):
 
     def age(self):
         today = datetime.date.today()
-        birth = self.members.birth_date
+        birth = self.birth_date
         age = today.year - birth.year - ((today.month, today.day) < (birth.month, birth.day))
         return age
 
