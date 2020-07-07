@@ -146,10 +146,9 @@ class SeatType(models.Model):
 class SeatGrade(models.Model):
     SEAT_GRADE_CHOICES = [
         ('adult', '성인'),
-        ('youth', '청소년'),
-        ('preferred', '우대')
+        ('teen', '청소년'),
+        ('preferential', '우대')
     ]
-
     grade = models.CharField(
         choices=SEAT_GRADE_CHOICES,
         max_length=10,

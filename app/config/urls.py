@@ -37,4 +37,5 @@ urlpatterns = [
     path('members/', include('members.urls')),
     path('movies/', include('movies.urls')),
     path('theaters/', include('theaters.urls')),
+    path('reservations/', include('reservations.urls')),
 ]

@@ -72,7 +72,7 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
         ]
 
 
-class MemberSerializer(serializers.ModelSerializer):
+class MemberDetailSerializer(serializers.ModelSerializer):
     profile = ProfileDetailSerializer()
 
     class Meta:

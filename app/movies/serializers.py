@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from theaters.models import Schedule
 from utils import reformat_duration
 from .models import Movie, Rating
 
@@ -46,10 +45,8 @@ class MovieSerializer(serializers.ModelSerializer):
             'comments',
             'liked',
             'average_point',
-            # 'age_booking',
+            # 'age_booking_count',
         ]
-
-        # depth = 1
 
     def get_running_time(self, obj):
         return reformat_duration(obj.running_time)
