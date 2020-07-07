@@ -26,7 +26,6 @@ class MovieSerializer(serializers.ModelSerializer):
     average_point = serializers.SerializerMethodField('get_average_point')
     comments = RatingSerializer(many=True, source='ratings.all')
     liked = serializers.IntegerField(source='liked.all.count')
-    age_booking = serializers.SerializerMethodField('get_age_booking')
 
     class Meta:
         model = Movie
@@ -47,7 +46,7 @@ class MovieSerializer(serializers.ModelSerializer):
             'comments',
             'liked',
             'average_point',
-            'age_booking',
+            # 'age_booking',
         ]
 
         # depth = 1
@@ -59,6 +58,7 @@ class MovieSerializer(serializers.ModelSerializer):
         acc_favorite = movie.liked.count()
         return acc_favorite
 
+    # 성능 부적합. 변경 필요
     def get_average_point(self, movie):
         try:
             ratings = movie.ratings.all()
@@ -75,11 +75,3 @@ class MovieSerializer(serializers.ModelSerializer):
         except TypeError as e:
             average_point = 0
             return average_point
-
-    def get_age_booking(self, movie):
-        movie_name = movie.name_kor
-        members_ages = list()
-        for schedule in Schedule.objects.filter(movie__name_kor=movie_name):
-            for reservation in schedule.reservations.all():
-                members_ages.append(reservation.member.age())
-        return members_ages
