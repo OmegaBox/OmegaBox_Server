@@ -1,21 +1,19 @@
-from django.db.models import Case, When, Value, Q, CharField, Count, Subquery
-from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, ListAPIView
-from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly, AllowAny
+from django.db.models import Q, Count
+from rest_framework.generics import RetrieveAPIView, ListAPIView
+from rest_framework.permissions import AllowAny
 
 from .models import Movie
 from .serializers import MovieSerializer, MovieDetailSerializer, AgeBookingSerializer
 
 
-class MovieListView(ListCreateAPIView):
+class MovieListView(ListAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
-    permission_classes = [IsAdminUser, IsAuthenticatedOrReadOnly, ]
 
 
 class MovieDetailView(RetrieveAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieDetailSerializer
-    permission_classes = [IsAdminUser, IsAuthenticatedOrReadOnly, ]
 
 
 # 수정 필요
