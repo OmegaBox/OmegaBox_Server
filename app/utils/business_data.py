@@ -88,10 +88,10 @@ SEATING_CHART_APART = {
 }
 
 PRICE_BY_SCREEN_TYPE_CHART = {
-    "2D": 7000,
-    "2Ds": 7000,
-    "3D": 9000,
-    "default": 7000,
+    "2D": 11000,
+    "2Ds": 11000,
+    "3D": 13000,
+    "default": 11000,
 }
 
 PRICE_DISCOUNT_RATE_CHART = {
