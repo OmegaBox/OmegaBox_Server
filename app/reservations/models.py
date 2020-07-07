@@ -37,12 +37,7 @@ class Reservation(models.Model):
     code = models.CharField(max_length=20, blank=True, unique=True)
 
     def __str__(self):
-        if self.member:
-            reserved_on = self.member.name
-        else:
-            reserved_on = self.nonmember.name
-
-        return f'예약자: {reserved_on} / 상영영화: {self.schedule.movie.name_kor} / 예약코드: {self.code}'
+        return f'예약자: {self.member.name} / 상영영화: {self.schedule.movie.name_kor} / 예약코드: {self.code}'
 
 
 @receiver(post_save, sender=Reservation)

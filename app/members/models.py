@@ -51,17 +51,14 @@ class Profile(models.Model):
         ('18-21', '18시~21시'),
         ('21-00', '21시 이후'),
     ]
-
     TIER_CHOICES = [
         ('basic', 'BASIC'),
         ('vip', 'VIP'),
     ]
-
     member = models.OneToOneField(
         AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-
     regions = models.ManyToManyField(
         'theaters.Region',
         related_name='profiles',
@@ -80,7 +77,6 @@ class Profile(models.Model):
         choices=TIER_CHOICES,
         default='basic',
     )
-
     point = models.PositiveIntegerField(default=0)
 
     # 프론트와 협의 필요

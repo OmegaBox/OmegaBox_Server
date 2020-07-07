@@ -1,4 +1,4 @@
-seating_chart_general = {
+SEATING_CHART_GENERAL = {
     '0': ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A10", "A11", "A12", "A13", "A14", "A15", "B1", "B2",
           "B3",
           "B4",
@@ -67,7 +67,7 @@ seating_chart_general = {
           "G9", "G10", "H4", "H6", "H7", "H9"]
 }
 
-seating_chart_apart = {
+SEATING_CHART_APART = {
     "0": ["A1", "A4", "A7", "A10", "A13", "B2", "B5", "B8", "B11", "B14", "C3", "C6", "C9", "C12", "C15", "D1", "D4",
           "D7",
           "D10", "D13", "E2", "E5", "E8", "E11", "E14", "F3", "F6", "F9", "F12", "F15", "G1", "G4", "G7", "G10", "G13",
@@ -85,4 +85,19 @@ seating_chart_apart = {
     "2": ["A1", "A4", "A7", "A10", "B2", "B5", "B8", "B11", "C3", "C6", "C9", "C12", "D1", "D4", "D7", "D10", "E2",
           "E5",
           "E8", "E11", "F3", "F6", "F9", "G4", "G7", "G10"]
+}
+
+PRICE_BY_SCREEN_TYPE_CHART = {
+    "2D": 7000,
+    "2Ds": 7000,
+    "3D": 9000,
+    "default": 7000,
+}
+
+PRICE_DISCOUNT_RATE_CHART = {
+    "adult": 1,
+    "teen": 0.75,
+    "preferential": 0.75,
+    "default": 1,
+
 }
