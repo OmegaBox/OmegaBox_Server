@@ -2,11 +2,11 @@ from datetime import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count, Q
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from utils import convert_list_to_dict
+from utils import convert_list_to_dict, calculate_seat_price
 from utils.excepts import InvalidScheduleIDException
 from .models import Schedule, Theater, Screen
 from .serializers import (
@@ -25,12 +25,12 @@ class ScheduleList(ListAPIView):
 
         theater_id = self.kwargs.get('theater_id', None)
 
-        movie = self.request.query_params.get('movie', None)
+        movies = self.request.query_params.get('movies', None)
 
-        if movie is not None:
-            movies = list(map(int, movie.split()))
+        if movies is not None:
+            movies_list = list(map(int, movies.split()))
 
-            movies_dict = convert_list_to_dict(movies)
+            movies_dict = convert_list_to_dict(movies_list)
             queryset = Schedule.objects.filter(
                 Q(movie=movies_dict[0]) | Q(movie=movies_dict[1]) | Q(movie=movies_dict[2])
             ).filter(
@@ -55,12 +55,12 @@ class ScheduleTheaterList(ListAPIView):
 
         date = datetime.strptime(str(date_int), '%y%m%d')
 
-        movie = self.request.query_params.get('movie', None)
+        movies = self.request.query_params.get('movies', None)
 
-        if movie is not None:
-            movies = list(map(int, movie.split()))
+        if movies is not None:
+            movies_list = list(map(int, movies.split()))
 
-            movies_dict = convert_list_to_dict(movies)
+            movies_dict = convert_list_to_dict(movies_list)
             queryset = Theater.objects.filter(
                 Q(screens__schedules__movie=movies_dict[0]) |
                 Q(screens__schedules__movie=movies_dict[1]) |
@@ -82,12 +82,12 @@ class ScheduleRegionCount(ListAPIView):
         date_int = self.kwargs['date']
 
         date = datetime.strptime(str(date_int), '%y%m%d')
-        movie = self.request.query_params.get('movie', None)
+        movies = self.request.query_params.get('movies', None)
 
-        if movie is not None:
-            movies = list(map(int, movie.split()))
+        if movies is not None:
+            movies_list = list(map(int, movies.split()))
 
-            movies_dict = convert_list_to_dict(movies)
+            movies_dict = convert_list_to_dict(movies_list)
             queryset = Theater.objects.filter(
                 Q(screens__schedules__movie=movies_dict[0]) |
                 Q(screens__schedules__movie=movies_dict[1]) |
@@ -146,3 +146,24 @@ class ScreenDetail(RetrieveAPIView):
     queryset = Screen.objects.all()
     serializer_class = ScreenDetailSerializer
     lookup_url_kwarg = 'screen_id'
+
+
+class SeatsTotalPrice(APIView):
+    def get(self, request, schedule_id):
+        schedule = get_object_or_404(Schedule, pk=schedule_id)
+        screen_type = schedule.screen.screen_type
+
+        adults = request.query_params.get('adults', None)
+        teens = request.query_params.get('teens', None)
+
+        total_price = 0
+
+        if adults is not None:
+            total_price += calculate_seat_price(screen_type, 'adult') * int(adults)
+
+        if teens is not None:
+            total_price += calculate_seat_price(screen_type, 'teen') * int(teens)
+
+        return Response({
+            "total_price": total_price,
+        })
