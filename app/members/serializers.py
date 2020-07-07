@@ -68,8 +68,8 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
             'member',
             'tier',
             'point',
-            'region',
-            'genre',
+            'regions',
+            'genres',
             'time',
             'is_disabled',
         ]
