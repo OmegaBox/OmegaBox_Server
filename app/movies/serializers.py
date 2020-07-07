@@ -137,3 +137,12 @@ class MovieDetailSerializer(serializers.ModelSerializer):
 
     def get_running_time(self, obj):
         return reformat_duration(obj.running_time)
+
+
+class AgeBookingSerializer(serializers.Serializer):
+    member_booked = serializers.IntegerField(source='schedules__reservations__member__id')
+    teens = serializers.IntegerField()
+    twenties = serializers.IntegerField()
+    thirties = serializers.IntegerField()
+    fourties = serializers.IntegerField()
+    fifties = serializers.IntegerField()
