@@ -22,15 +22,15 @@ class Movie(models.Model):
         through=Schedule,
         related_name='movies',
     )
-    director = models.ManyToManyField(
+    directors = models.ManyToManyField(
         'Director',
         related_name='movies',
     )
-    actor = models.ManyToManyField(
+    actors = models.ManyToManyField(
         'Actor',
         related_name='movies',
     )
-    genre = models.ManyToManyField(
+    genres = models.ManyToManyField(
         'Genre',
         related_name='movies',
     )
