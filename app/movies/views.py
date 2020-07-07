@@ -1,9 +1,9 @@
 from django.db.models import Case, When, Value, Q, CharField, Count, Subquery
 from rest_framework.generics import ListCreateAPIView, RetrieveAPIView
+from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from members.models import Member
 from .models import Movie
 from .serializers import MovieSerializer, MovieDetailSerializer
 
@@ -11,28 +11,13 @@ from .serializers import MovieSerializer, MovieDetailSerializer
 class MovieListView(ListCreateAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
+    permission_classes = [IsAdminUser, IsAuthenticatedOrReadOnly, ]
 
 
 class MovieDetailView(RetrieveAPIView):
+    queryset = Movie.objects.all()
     serializer_class = MovieDetailSerializer
-
-    def get_queryset(self):
-        queryset = Movie.objects.all()
-
-        age_type = queryset.values('name_kor', 'schedules__reservations__member').annotate(
-            teens=Count(
-                'schedules__reservations__member',
-                filter=Q(schedules__reservations__member__birth_date__year__lt=2010) &
-                       Q(schedules__reservations__member__birth_date__year__gt=2000),
-            ),
-            twenties=Count(
-                'schedules__reservations__member',
-                filter=Q(schedules__reservations__member__birth_date__year__lt=2000) &
-                       Q(schedules__reservations__member__birth_date__year__gt=1990),
-            )
-        )
-
-        return queryset
+    permission_classes = [IsAdminUser, IsAuthenticatedOrReadOnly, ]
 
 
 class AgeBookingCount(APIView):
