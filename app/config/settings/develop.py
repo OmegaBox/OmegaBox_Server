@@ -15,6 +15,7 @@ MIDDLEWARE = [
 
 ALLOWED_HOSTS += [
     '127.0.0.1',
+    'localhost',
 ]
 
 DEBUG_TOOLBAR_CONFIG = {
