@@ -12,7 +12,7 @@ class Movie(models.Model):
         ('18+', '청소년관람불가'),
     ]
 
-    liked = models.ManyToManyField(
+    raters = models.ManyToManyField(
         AUTH_USER_MODEL,
         through='Rating',
         related_name='movies',

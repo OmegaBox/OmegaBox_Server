@@ -1,4 +1,4 @@
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Sum
 from rest_framework.generics import RetrieveAPIView, ListAPIView
 from rest_framework.permissions import AllowAny
 
@@ -52,5 +52,7 @@ class AgeBookingView(ListAPIView):
                 filter=Q(schedules__reservations__member__birth_date__year__lt=1970) &
                        Q(schedules__reservations__member__birth_date__year__gt=1960),
             ),
+        ).aggregate(
+            teens_sum=Sum('teens'), twenties_sum=Sum('twenties'), thirties_sum=Sum('thirties'), fourties_sum=Sum('fourties'), fifties_sum=Sum('fifties')
         )
         return queryset
