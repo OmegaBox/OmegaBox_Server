@@ -28,6 +28,7 @@ drf-yasg = "^1.17.1"
 [tool.poetry.dev-dependencies]
 django-extensions = "^2.2.9"
 youtube-dl = "^2020.6.16"
+django-debug-toolbar = "^2.2"
 
 [build-system]
 requires = ["poetry>=0.12"]
