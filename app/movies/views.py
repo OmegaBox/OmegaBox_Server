@@ -8,8 +8,21 @@ from .serializers import MovieSerializer, MovieDetailSerializer
 
 
 class MovieListView(ListAPIView):
-    queryset = Movie.objects.all()
     serializer_class = MovieSerializer
+
+    def get_queryset(self):
+        search_name = self.request.query_params.get('searchName', None)
+        try:
+            if search_name is None:
+                queryset = Movie.objects.all()
+            else:
+                queryset = Movie.objects.filter(
+                    Q(name_kor__contains=search_name) |
+                    Q(name_eng__icontains=search_name)
+                )
+        except ValueError as e:
+            queryset = Movie.objects.all()
+        return queryset
 
 
 class MovieDetailView(RetrieveAPIView):
