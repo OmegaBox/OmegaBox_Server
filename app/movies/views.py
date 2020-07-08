@@ -53,6 +53,6 @@ class AgeBookingView(ListAPIView):
                        Q(schedules__reservations__member__birth_date__year__gt=1960),
             ),
         ).aggregate(
-            Sum('teens'), Sum('twenties'), Sum('thirties'), Sum('fourties'), Sum('fifties')
+            teens_sum=Sum('teens'), twenties_sum=Sum('twenties'), thirties_sum=Sum('thirties'), fourties_sum=Sum('fourties'), fifties_sum=Sum('fifties')
         )
         return queryset
