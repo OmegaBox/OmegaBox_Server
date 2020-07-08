@@ -30,8 +30,7 @@ class ScheduleList(ListAPIView):
         if movies is not None:
             movies_list = list(movies)[:3]
             queryset = Schedule.objects.filter(
-                movie__in=movies_list
-            ).filter(
+                movie__in=movies_list,
                 start_time__date=date,
                 screen__theater_id=theater_id,
             )
