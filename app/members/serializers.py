@@ -13,6 +13,7 @@ Member = get_user_model()
 
 class SignUpSerializer(RegisterSerializer):
     name = serializers.CharField()
+    email = serializers.EmailField()
     mobile = PhoneNumberField()
     birth_date = serializers.DateField()
 
