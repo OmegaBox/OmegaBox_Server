@@ -91,6 +91,7 @@ class MovieDetailSerializer(serializers.ModelSerializer):
     directors = DirectorSerializer(many=True)
     actors = ActorSerializer(many=True)
     genres = GenreSerializer(many=True)
+    key_point_count = serializers.SerializerMethodField('get_ratings_key_point_count')
     ratings = RatingSerializer(many=True, source='ratings.all')
 
     class Meta:
@@ -114,6 +115,7 @@ class MovieDetailSerializer(serializers.ModelSerializer):
             'directors',
             'actors',
             'genres',
+            'key_point_count',
             'ratings',
         ]
 
@@ -137,6 +139,20 @@ class MovieDetailSerializer(serializers.ModelSerializer):
 
     def get_running_time(self, obj):
         return reformat_duration(obj.running_time)
+
+    def get_ratings_key_point_count(self, movie):
+        actor = movie.ratings.filter(key_point='actor').count()
+        prod = movie.ratings.filter(key_point='prod').count()
+        story = movie.ratings.filter(key_point='story').count()
+        visual = movie.ratings.filter(key_point='visual').count()
+        ost = movie.ratings.filter(key_point='ost').count()
+        return {
+            'actors': actor,
+            'prods': prod,
+            'story': story,
+            'visual': visual,
+            'ost': ost
+        }
 
 
 class AgeBookingSerializer(serializers.Serializer):
