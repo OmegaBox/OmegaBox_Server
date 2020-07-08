@@ -6,7 +6,7 @@ from .models import Movie, Rating, Director, Actor, Genre
 
 class MovieSerializer(serializers.ModelSerializer):
     average_point = serializers.SerializerMethodField('get_average_point')
-    acc_favorite = serializers.IntegerField(source='liked.all.count')
+    acc_favorite = serializers.IntegerField(source='raters.count')
 
     class Meta:
         model = Movie
@@ -86,7 +86,7 @@ class RatingSerializer(serializers.ModelSerializer):
 
 class MovieDetailSerializer(serializers.ModelSerializer):
     average_point = serializers.SerializerMethodField('get_average_point')
-    acc_favorite = serializers.IntegerField(source='liked.all.count')
+    acc_favorite = serializers.IntegerField(source='raters.all.count')
     running_time = serializers.SerializerMethodField()
     directors = DirectorSerializer(many=True)
     actors = ActorSerializer(many=True)
@@ -156,9 +156,8 @@ class MovieDetailSerializer(serializers.ModelSerializer):
 
 
 class AgeBookingSerializer(serializers.Serializer):
-    member_booked = serializers.IntegerField(source='schedules__reservations__member__id')
-    teens = serializers.IntegerField()
-    twenties = serializers.IntegerField()
-    thirties = serializers.IntegerField()
-    fourties = serializers.IntegerField()
-    fifties = serializers.IntegerField()
+    teens_sum = serializers.IntegerField()
+    twenties_sum = serializers.IntegerField()
+    thirties_sum = serializers.IntegerField()
+    fourties_sum = serializers.IntegerField()
+    fifties_sum = serializers.IntegerField()
