@@ -1,3 +1,4 @@
+from django.db.models import Sum, Count
 from rest_framework import serializers
 
 from utils import reformat_duration
@@ -24,23 +25,20 @@ class MovieSerializer(serializers.ModelSerializer):
             'acc_favorite',
         ]
 
-    # 성능 부적합. 변경 필요
     def get_average_point(self, movie):
-        try:
-            ratings = movie.ratings.all()
-            points = list()
-            for rating in ratings:
-                points.append(rating.score)
-            average_point = sum(points) / len(points)
-            return average_point
+        point_sum = Movie.objects.filter(pk=movie.pk).values('ratings__score').aggregate(
+            point_sum=Sum('ratings__score')
+        )['point_sum']
 
-        except ZeroDivisionError as e:
-            average_point = 0
-            return average_point
+        point_count = Movie.objects.filter(pk=movie.pk).values('ratings__score').aggregate(
+            point_count=Count('ratings__score')
+        )['point_count']
 
-        except TypeError as e:
+        if point_count == 0:
             average_point = 0
-            return average_point
+        else:
+            average_point = point_sum / point_count
+        return average_point
 
     def get_acc_favorite(self, movie):
         return movie.raters.filter(ratings__liked=True).count()
@@ -122,23 +120,20 @@ class MovieDetailSerializer(serializers.ModelSerializer):
             'ratings',
         ]
 
-    # 성능 부적합. 변경 필요
     def get_average_point(self, movie):
-        try:
-            ratings = movie.ratings.all()
-            points = list()
-            for rating in ratings:
-                points.append(rating.score)
-            average_point = sum(points) / len(points)
-            return average_point
+        point_sum = Movie.objects.filter(pk=movie.pk).values('ratings__score').aggregate(
+            point_sum=Sum('ratings__score')
+        )['point_sum']
 
-        except ZeroDivisionError as e:
-            average_point = 0
-            return average_point
+        point_count = Movie.objects.filter(pk=movie.pk).values('ratings__score').aggregate(
+            point_count=Count('ratings__score')
+        )['point_count']
 
-        except TypeError as e:
+        if point_count == 0:
             average_point = 0
-            return average_point
+        else:
+            average_point = point_sum / point_count
+        return average_point
 
     def get_acc_favorite(self, movie):
         return movie.raters.filter(ratings__liked=True).count()
