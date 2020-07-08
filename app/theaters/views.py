@@ -28,7 +28,7 @@ class ScheduleList(ListAPIView):
         movies = self.request.query_params.get('movies', None)
 
         if movies is not None:
-            movies_list = list(movies)[:3]
+            movies_list = list(map(int, movies.split()))[:3]
             queryset = Schedule.objects.filter(
                 movie__in=movies_list,
                 start_time__date=date,
@@ -54,7 +54,7 @@ class ScheduleTheaterList(ListAPIView):
         movies = self.request.query_params.get('movies', None)
 
         if movies is not None:
-            movies_list = list(movies)[:3]
+            movies_list = list(map(int, movies.split()))[:3]
             queryset = Theater.objects.filter(
                 screens__schedules__movie__in=movies_list,
                 screens__schedules__start_time__date=date,
@@ -71,12 +71,12 @@ class ScheduleRegionCount(ListAPIView):
 
     def get_queryset(self):
         date_int = self.kwargs['date']
-
         date = datetime.strptime(str(date_int), '%y%m%d')
+
         movies = self.request.query_params.get('movies', None)
 
         if movies is not None:
-            movies_list = list(movies)[:3]
+            movies_list = list(map(int, movies.split()))[:3]
             queryset = Theater.objects.filter(
                 screens__schedules__movie__in=movies_list,
                 screens__schedules__start_time__date=date
