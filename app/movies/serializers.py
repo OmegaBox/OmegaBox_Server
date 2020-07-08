@@ -6,7 +6,7 @@ from .models import Movie, Rating, Director, Actor, Genre
 
 class MovieSerializer(serializers.ModelSerializer):
     average_point = serializers.SerializerMethodField('get_average_point')
-    acc_favorite = serializers.IntegerField(source='raters.count')
+    acc_favorite = serializers.SerializerMethodField('get_acc_favorite')
 
     class Meta:
         model = Movie
@@ -41,6 +41,9 @@ class MovieSerializer(serializers.ModelSerializer):
         except TypeError as e:
             average_point = 0
             return average_point
+
+    def get_acc_favorite(self, movie):
+        return movie.raters.filter(ratings__liked=True).count()
 
 
 class DirectorSerializer(serializers.ModelSerializer):
@@ -86,7 +89,7 @@ class RatingSerializer(serializers.ModelSerializer):
 
 class MovieDetailSerializer(serializers.ModelSerializer):
     average_point = serializers.SerializerMethodField('get_average_point')
-    acc_favorite = serializers.IntegerField(source='raters.all.count')
+    acc_favorite = serializers.SerializerMethodField('get_acc_favorite')
     running_time = serializers.SerializerMethodField()
     directors = DirectorSerializer(many=True)
     actors = ActorSerializer(many=True)
@@ -137,6 +140,9 @@ class MovieDetailSerializer(serializers.ModelSerializer):
             average_point = 0
             return average_point
 
+    def get_acc_favorite(self, movie):
+        return movie.raters.filter(ratings__liked=True).count()
+
     def get_running_time(self, obj):
         return reformat_duration(obj.running_time)
 
@@ -153,11 +159,3 @@ class MovieDetailSerializer(serializers.ModelSerializer):
             'visual': visual,
             'ost': ost
         }
-
-
-# class AgeBookingCountSerializer(serializers.Serializer):
-#     teens = serializers.SerializerMethodField('get_teens')
-#     twenties_sum = serializers.IntegerField()
-#     thirties_sum = serializers.IntegerField()
-#     fourties_sum = serializers.IntegerField()
-#     fifties_sum = serializers.IntegerField()
