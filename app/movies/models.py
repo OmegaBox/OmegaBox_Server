@@ -53,6 +53,9 @@ class Movie(models.Model):
     poster = models.ImageField(upload_to='posters/', blank=True)
     trailer = models.FileField(upload_to='trailers/', blank=True)
 
+    class Meta:
+        ordering = ['rank']
+
     def __str__(self):
         return f'{self.rank}위: {self.name_kor} ({self.name_eng})'
 

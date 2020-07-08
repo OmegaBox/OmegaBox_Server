@@ -1,9 +1,10 @@
 from django.db.models import Q, Count, Sum
 from rest_framework.generics import RetrieveAPIView, ListAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import Movie
-from .serializers import MovieSerializer, MovieDetailSerializer, AgeBookingSerializer
+from .serializers import MovieSerializer, MovieDetailSerializer
 
 
 class MovieListView(ListAPIView):
@@ -16,14 +17,10 @@ class MovieDetailView(RetrieveAPIView):
     serializer_class = MovieDetailSerializer
 
 
-# 수정 필요
-class AgeBookingView(ListAPIView):
-    serializer_class = AgeBookingSerializer
-    permission_classes = [AllowAny, ]
-
-    def get_queryset(self):
-        queryset = Movie.objects.filter(
-            pk=self.kwargs['pk']
+class AgeBookingCountView(APIView):
+    def get(self, request, pk):
+        age_booking_count = Movie.objects.filter(
+            pk=pk
         ).values(
             'schedules__reservations__member__id'
         ).annotate(
@@ -53,6 +50,14 @@ class AgeBookingView(ListAPIView):
                        Q(schedules__reservations__member__birth_date__year__gt=1960),
             ),
         ).aggregate(
-            teens_sum=Sum('teens'), twenties_sum=Sum('twenties'), thirties_sum=Sum('thirties'), fourties_sum=Sum('fourties'), fifties_sum=Sum('fifties')
+            Sum('teens'), Sum('twenties'), Sum('thirties'),
+            Sum('fourties'), Sum('fifties')
         )
-        return queryset
+
+        return Response({
+            '10': age_booking_count['teens__sum'],
+            '20': age_booking_count['twenties__sum'],
+            '30': age_booking_count['thirties__sum'],
+            '40': age_booking_count['fourties__sum'],
+            '50': age_booking_count['fifties__sum']
+        })
