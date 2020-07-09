@@ -2,7 +2,9 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_auth.registration.serializers import RegisterSerializer
+from rest_auth.serializers import LoginSerializer as DefaultLoginSerializer
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer as DefaultTokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from utils.excepts import TakenNumberException, UsernameDuplicateException
@@ -13,6 +15,7 @@ Member = get_user_model()
 
 class SignUpSerializer(RegisterSerializer):
     name = serializers.CharField()
+    email = serializers.EmailField()
     mobile = PhoneNumberField()
     birth_date = serializers.DateField()
 
@@ -63,6 +66,25 @@ class JWTSerializer(serializers.Serializer):
 
     def get_access(self, obj):
         return str(self.get_token(obj['user']).access_token)
+
+
+# for Documentation
+class CheckUsernameDuplicateSerializer(serializers.Serializer):
+    username = serializers.CharField()
+
+
+class LoginSerializer(DefaultLoginSerializer):
+    username = serializers.CharField(required=True, allow_blank=True)
+    email = None
+
+
+class TokenRefreshResultSerializer(serializers.Serializer):
+    access = serializers.CharField()
+
+
+class TokenRefreshSerializer(DefaultTokenRefreshSerializer):
+    def to_representation(self, instance):
+        return TokenRefreshResultSerializer(instance).data
 
 
 class ProfileDetailSerializer(serializers.ModelSerializer):

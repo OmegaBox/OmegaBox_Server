@@ -146,3 +146,11 @@ class MovieDetailSerializer(serializers.ModelSerializer):
             'visual': visual,
             'ost': ost
         }
+
+
+class AgeBookingSerializer(serializers.Serializer):
+    teens = serializers.IntegerField(source='teens__sum')
+    twenties = serializers.IntegerField(source='twenties__sum')
+    thirties = serializers.IntegerField(source='thirties__sum')
+    fourties = serializers.IntegerField(source='fourties__sum')
+    fifties = serializers.IntegerField(source='fifties__sum')

@@ -1,12 +1,16 @@
 from django.db.models import Q, Count, Sum
+from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import RetrieveAPIView, ListAPIView
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from .models import Movie
-from .serializers import MovieSerializer, MovieDetailSerializer
+from .serializers import MovieSerializer, MovieDetailSerializer, AgeBookingSerializer
 
 
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Movie List',
+    operation_description='전체 영화 정보',
+))
 class MovieListView(ListAPIView):
     serializer_class = MovieSerializer
 
@@ -25,17 +29,27 @@ class MovieListView(ListAPIView):
         return queryset
 
 
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Movie Detail',
+    operation_description='영화 상세 정보',
+))
 class MovieDetailView(RetrieveAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieDetailSerializer
 
 
-class AgeBookingCountView(APIView):
-    def get(self, request, pk):
-        age_booking_count = Movie.objects.filter(
-            pk=pk
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Age Booking',
+    operation_description='해당 영화의 나이대별 예매 총합',
+))
+class AgeBookingView(RetrieveAPIView):
+    serializer_class = AgeBookingSerializer
+
+    def get_object(self):
+        aggregated_dict = Movie.objects.filter(
+            pk=self.kwargs['pk']
         ).values(
-            'schedules__reservations__member__id'
+            'schedules__reservations__member'
         ).annotate(
             teens=Count(
                 'schedules__reservations__member',
@@ -61,16 +75,10 @@ class AgeBookingCountView(APIView):
                 'schedules__reservations__member',
                 filter=Q(schedules__reservations__member__birth_date__year__lt=1970) &
                        Q(schedules__reservations__member__birth_date__year__gt=1960),
-            ),
+            )
         ).aggregate(
             Sum('teens'), Sum('twenties'), Sum('thirties'),
             Sum('fourties'), Sum('fifties')
         )
 
-        return Response({
-            '10': age_booking_count['teens__sum'],
-            '20': age_booking_count['twenties__sum'],
-            '30': age_booking_count['thirties__sum'],
-            '40': age_booking_count['fourties__sum'],
-            '50': age_booking_count['fifties__sum']
-        })
+        return aggregated_dict
