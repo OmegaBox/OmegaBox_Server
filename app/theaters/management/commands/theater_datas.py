@@ -36,11 +36,6 @@ class Command(BaseCommand):
             ]
         }
 
-        # for region in Region.objects.all():
-        #     region.delete()
-        # for theater in Theater.objects.all():
-        #     theater.delete()
-
         for region, name in regions_names.items():
             # Region 객체 생성
             Region.objects.get_or_create(name=region)
@@ -49,3 +44,4 @@ class Command(BaseCommand):
                 r = Region.objects.get(name=region)
                 # Theater 객체 생성
                 Theater.objects.get_or_create(name=n, region=r)
+        print('Region, Theater 객체들이 모두 생성되었습니다.')

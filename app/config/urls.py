@@ -35,6 +35,8 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('doc/', schema_view.with_ui('redoc', cache_timeout=0)),
+    path('api/', schema_view.with_ui('swagger', cache_timeout=0)),
+
     path('admin/', admin.site.urls),
     path('members/', include('members.urls')),
     path('movies/', include('movies.urls')),

@@ -7,7 +7,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer as DefaultTokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from utils.excepts import TakenNumberException
+from utils.excepts import TakenNumberException, UsernameDuplicateException
 from .models import Profile
 
 Member = get_user_model()
@@ -26,6 +26,13 @@ class SignUpSerializer(RegisterSerializer):
         except ObjectDoesNotExist:
             return mobile
 
+    def validate_username(self, username):
+        try:
+            Member.objects.get(username=username)
+            raise UsernameDuplicateException
+        except ObjectDoesNotExist:
+            return username
+
     def save(self, request):
         self.is_valid()
         validated_data = self.validated_data
@@ -39,20 +46,6 @@ class SignUpSerializer(RegisterSerializer):
         member.set_password(validated_data.pop('password1'))
         member.save()
         return member
-
-
-class LoginSerializer(DefaultLoginSerializer):
-    username = serializers.CharField(required=True, allow_blank=True)
-    email = None
-
-
-class TokenRefreshResultSerializer(serializers.Serializer):
-    access = serializers.CharField()
-
-
-class TokenRefreshSerializer(DefaultTokenRefreshSerializer):
-    def to_representation(self, instance):
-        return TokenRefreshResultSerializer(instance).data
 
 
 class JWTSerializer(serializers.Serializer):
@@ -73,6 +66,25 @@ class JWTSerializer(serializers.Serializer):
 
     def get_access(self, obj):
         return str(self.get_token(obj['user']).access_token)
+
+
+# for Documentation
+class CheckUsernameDuplicateSerializer(serializers.Serializer):
+    username = serializers.CharField()
+
+
+class LoginSerializer(DefaultLoginSerializer):
+    username = serializers.CharField(required=True, allow_blank=True)
+    email = None
+
+
+class TokenRefreshResultSerializer(serializers.Serializer):
+    access = serializers.CharField()
+
+
+class TokenRefreshSerializer(DefaultTokenRefreshSerializer):
+    def to_representation(self, instance):
+        return TokenRefreshResultSerializer(instance).data
 
 
 class ProfileDetailSerializer(serializers.ModelSerializer):

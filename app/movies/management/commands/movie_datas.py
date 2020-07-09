@@ -24,10 +24,6 @@ class Command(BaseCommand):
         request_url = requests.get(url, params=param)
         boxoffice_info = request_url.json()
 
-        for movie in Movie.objects.all():
-            movie.delete()
-        print('기존 Movie 객체들이 모두 삭제되었습니다.')
-
         for rank in range(10):
             movie_code = boxoffice_info['boxOfficeResult']['dailyBoxOfficeList'][rank]['movieCd']
             boxoffice_rank = boxoffice_info['boxOfficeResult']['dailyBoxOfficeList'][rank]['rank']

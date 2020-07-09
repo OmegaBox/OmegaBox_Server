@@ -1,20 +1,25 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_auth.registration.views import RegisterView
 from rest_auth.views import (
     LogoutView as DefaultLogoutView, LoginView as DefaultLoginView
 )
+from rest_framework import status
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.views import (
     TokenRefreshView as DefaultTokenRefreshView,
     TokenVerifyView as DefaultTokenVerifyView,
 )
 
+from utils.excepts import UsernameDuplicateException
 from .permissions import IsAuthorizedMember
 from .serializers import SignUpSerializer, MemberDetailSerializer, LoginSerializer, TokenRefreshSerializer, \
-    TokenRefreshResultSerializer
+    TokenRefreshResultSerializer, JWTSerializer, CheckUsernameDuplicateSerializer
 
 Member = get_user_model()
 
@@ -22,9 +27,26 @@ Member = get_user_model()
 @method_decorator(name='post', decorator=swagger_auto_schema(
     operation_summary='Sign Up',
     operation_description='회원가입',
+    responses={200: JWTSerializer()},
 ))
 class SignUpView(RegisterView):
     serializer_class = SignUpSerializer
+
+
+@method_decorator(name='post', decorator=swagger_auto_schema(
+    operation_summary='Check Username Duplicate',
+    operation_description='아이디 중복 확인',
+    request_body=CheckUsernameDuplicateSerializer(),
+    responses={200: ''},
+))
+class CheckUsernameDuplicateView(APIView):
+    def post(self, request):
+        username = request.data['username']
+        try:
+            Member.objects.get(username=username)
+            raise UsernameDuplicateException
+        except ObjectDoesNotExist:
+            return Response({}, status=status.HTTP_200_OK)
 
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
@@ -66,7 +88,7 @@ class TokenVerifyView(DefaultTokenVerifyView):
     operation_summary='Member Detail',
     operation_description='회원 상세 정보',
 ))
-class MemberRetrieveView(RetrieveAPIView):
+class MemberDetailView(RetrieveAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberDetailSerializer
     permission_classes = [IsAuthorizedMember, IsAdminUser, ]
