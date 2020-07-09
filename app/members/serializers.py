@@ -5,7 +5,7 @@ from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from utils.excepts import TakenNumberException
+from utils.excepts import TakenNumberException, UsernameDuplicateException
 from .models import Profile
 
 Member = get_user_model()
@@ -22,6 +22,13 @@ class SignUpSerializer(RegisterSerializer):
             raise TakenNumberException
         except ObjectDoesNotExist:
             return mobile
+
+    def validate_username(self, username):
+        try:
+            Member.objects.get(username=username)
+            raise UsernameDuplicateException
+        except ObjectDoesNotExist:
+            return username
 
     def save(self, request):
         self.is_valid()

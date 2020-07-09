@@ -54,3 +54,9 @@ class InvalidSeatException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = '예약 불가능한 좌석입니다. - 띄어앉기석'
     default_code = 'InvalidSeat(sit_apart)'
+
+
+class UsernameDuplicateException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '이미 가입된 아이디입니다.'
+    default_code = 'DuplicatedUsername'

@@ -34,11 +34,7 @@ class MovieSerializer(serializers.ModelSerializer):
             point_count=Count('ratings__score')
         )['point_count']
 
-        if point_count == 0:
-            average_point = 0
-        else:
-            average_point = point_sum / point_count
-        return average_point
+        return point_sum / point_count if point_count != 0 else 0
 
     def get_acc_favorite(self, movie):
         return movie.raters.filter(ratings__liked=True).count()
@@ -129,11 +125,7 @@ class MovieDetailSerializer(serializers.ModelSerializer):
             point_count=Count('ratings__score')
         )['point_count']
 
-        if point_count == 0:
-            average_point = 0
-        else:
-            average_point = point_sum / point_count
-        return average_point
+        return point_sum / point_count if point_count != 0 else 0
 
     def get_acc_favorite(self, movie):
         return movie.raters.filter(ratings__liked=True).count()

@@ -5,10 +5,11 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-from .views import SignUpView, MemberRetrieveView
+from .views import SignUpView, MemberRetrieveView, UsernameDuplicateView
 
 urlpatterns = [
     path('signup/', SignUpView.as_view()),
+    path('signup/check-username/', UsernameDuplicateView.as_view()),
     path('login/', LoginView.as_view()),
     path('logout/', LogoutView.as_view()),
     path('token/refresh/', TokenRefreshView.as_view()),
