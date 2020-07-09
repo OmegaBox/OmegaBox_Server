@@ -1,7 +1,7 @@
 from django.urls import path
 
-from .views import SeatGradeListCreateView
+from .views import SeatGradeCreateView
 
 urlpatterns = [
-    path('', SeatGradeListCreateView.as_view()),
+    path('', SeatGradeCreateView.as_view()),
 ]
