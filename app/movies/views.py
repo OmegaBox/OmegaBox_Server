@@ -1,28 +1,40 @@
 from django.db.models import Q, Count, Sum
+from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import RetrieveAPIView, ListAPIView
-from rest_framework.permissions import AllowAny
 
 from .models import Movie
 from .serializers import MovieSerializer, MovieDetailSerializer, AgeBookingSerializer
 
 
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Movie List',
+    operation_description='전체 영화 정보',
+))
 class MovieListView(ListAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
 
 
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Movie Detail',
+    operation_description='영화 상세 정보',
+))
 class MovieDetailView(RetrieveAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieDetailSerializer
 
 
 # 수정 필요
-class AgeBookingView(ListAPIView):
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Age Booking',
+    operation_description='해당 영화의 나이대별 예매 총합',
+))
+class AgeBookingView(RetrieveAPIView):
     serializer_class = AgeBookingSerializer
-    permission_classes = [AllowAny, ]
 
-    def get_queryset(self):
-        queryset = Movie.objects.filter(
+    def get_object(self):
+        aggregated_dict = Movie.objects.filter(
             pk=self.kwargs['pk']
         ).values(
             'schedules__reservations__member__id'
@@ -53,6 +65,7 @@ class AgeBookingView(ListAPIView):
                        Q(schedules__reservations__member__birth_date__year__gt=1960),
             ),
         ).aggregate(
-            teens_sum=Sum('teens'), twenties_sum=Sum('twenties'), thirties_sum=Sum('thirties'), fourties_sum=Sum('fourties'), fifties_sum=Sum('fifties')
+            teens_sum=Sum('teens'), twenties_sum=Sum('twenties'), thirties_sum=Sum('thirties'),
+            fourties_sum=Sum('fourties'), fifties_sum=Sum('fifties')
         )
-        return queryset
+        return aggregated_dict

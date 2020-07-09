@@ -168,7 +168,7 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
-# django-phonenumber-field
+# DJANGO-PHONENUMBER-FIELD
 PHONENUMBER_DEFAULT_REGION = 'KR'
 PHONENUMBER_DB_FORMAT = 'NATIONAL'
 
@@ -183,6 +183,7 @@ REST_FRAMEWORK = {
 }
 
 # DJANGO_REST_AUTH
+ACCOUNT_LOGOUT_ON_GET = True
 REST_USE_JWT = True
 REST_AUTH_SERIALIZERS = {
     'JWT_SERIALIZER': 'members.serializers.JWTSerializer',
@@ -206,3 +207,14 @@ sentry_sdk.init(
     # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True
 )
+
+# DRF-YASG
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}

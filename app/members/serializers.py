@@ -2,7 +2,9 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_auth.registration.serializers import RegisterSerializer
+from rest_auth.serializers import LoginSerializer as DefaultLoginSerializer
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer as DefaultTokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from utils.excepts import TakenNumberException
@@ -37,6 +39,20 @@ class SignUpSerializer(RegisterSerializer):
         member.set_password(validated_data.pop('password1'))
         member.save()
         return member
+
+
+class LoginSerializer(DefaultLoginSerializer):
+    username = serializers.CharField(required=True, allow_blank=True)
+    email = None
+
+
+class TokenRefreshResultSerializer(serializers.Serializer):
+    access = serializers.CharField()
+
+
+class TokenRefreshSerializer(DefaultTokenRefreshSerializer):
+    def to_representation(self, instance):
+        return TokenRefreshResultSerializer(instance).data
 
 
 class JWTSerializer(serializers.Serializer):

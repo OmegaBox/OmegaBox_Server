@@ -5,6 +5,40 @@ from utils import reformat_duration
 from .models import Screen
 
 
+class ScheduleTheaterListSerializer(serializers.Serializer):
+    region = serializers.CharField()
+    theater_id = serializers.IntegerField(source='id')
+    name = serializers.CharField()
+
+
+class ScheduleRegionCountSerializer(serializers.Serializer):
+    region_id = serializers.IntegerField(source='region')
+    region_name = serializers.CharField(source='region__name')
+    region_count = serializers.IntegerField(source='name__count')
+
+
+# for Documentation
+class SeatsTotalPriceSerializer(serializers.Serializer):
+    total_price = serializers.IntegerField()
+
+
+class SeatListSerializer(serializers.Serializer):
+    reserved_seat = serializers.CharField(source='seat')
+
+
+# for Documentation
+class TotalAndReservedSeatsCountSerializer(serializers.Serializer):
+    total_seats = serializers.IntegerField()
+    reserved_seats = serializers.IntegerField()
+
+
+class ScreenDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Screen
+        fields = '__all__'
+        depth = 1
+
+
 class ScheduleMovieSerializer(serializers.Serializer):
     schedule_id = serializers.IntegerField(source='id')
     date = serializers.DateTimeField(
@@ -37,26 +71,3 @@ class ScheduleMovieSerializer(serializers.Serializer):
     def get_reserved_seats(self, obj):
         return obj.seat_types.aggregate(
             reserved_seats=Count('seat__reservations'))['reserved_seats']
-
-
-class ScheduleTheaterListSerializer(serializers.Serializer):
-    region = serializers.CharField()
-    theater_id = serializers.IntegerField(source='id')
-    name = serializers.CharField()
-
-
-class ScheduleRegionCountSerializer(serializers.Serializer):
-    region_id = serializers.IntegerField(source='region')
-    region_name = serializers.CharField(source='region__name')
-    region_count = serializers.IntegerField(source='name__count')
-
-
-class SeatListSerializer(serializers.Serializer):
-    reserved_seat = serializers.CharField(source='seat')
-
-
-class ScreenDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Screen
-        fields = '__all__'
-        depth = 1
