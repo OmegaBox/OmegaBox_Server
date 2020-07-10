@@ -51,6 +51,7 @@ class SignUpSerializer(RegisterSerializer):
 class JWTSerializer(serializers.Serializer):
     refresh = serializers.SerializerMethodField()
     access = serializers.SerializerMethodField()
+    id = serializers.IntegerField(source='user.id')
     username = serializers.CharField(source='user.username')
     name = serializers.CharField(source='user.name')
     email = serializers.EmailField(source='user.email')
