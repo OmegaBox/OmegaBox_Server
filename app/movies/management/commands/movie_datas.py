@@ -1,5 +1,4 @@
 import datetime
-import os
 
 import requests
 from django.core.management import BaseCommand
@@ -76,7 +75,7 @@ class Command(BaseCommand):
                 m = Movie.objects.get(code=movie_code)
                 ds = Director.objects.filter(name=director)
                 for d in ds:
-                    m.director.add(d)
+                    m.directors.add(d)
             print('Director 객체들이 MtoM으로 연결되었습니다.')
 
             actors = movie_info['movieInfoResult']['movieInfo']['actors']
@@ -87,7 +86,7 @@ class Command(BaseCommand):
                 m = Movie.objects.get(code=movie_code)
                 acs = Actor.objects.filter(name=actor)
                 for ac in acs:
-                    m.actor.add(ac)
+                    m.actors.add(ac)
             print('Actor 객체들이 MtoM으로 연결되었습니다.')
 
             genres = movie_info['movieInfoResult']['movieInfo']['genres']
@@ -98,5 +97,5 @@ class Command(BaseCommand):
                 m = Movie.objects.get(code=movie_code)
                 gs = Genre.objects.filter(name=genre)
                 for g in gs:
-                    m.genre.add(g)
+                    m.genres.add(g)
             print('Genre 객체들이 MtoM으로 연결되었습니다.')

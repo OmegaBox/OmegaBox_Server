@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (
     SignUpView, MemberDetailView, LoginView, LogoutView, TokenRefreshView, TokenVerifyView,
-    CheckUsernameDuplicateView
+    CheckUsernameDuplicateView, LikeMoviesView, WatchedMoviesView, RatingMoviesView
 )
 
 urlpatterns = [
@@ -14,4 +14,7 @@ urlpatterns = [
     path('token/verify/', TokenVerifyView.as_view()),
 
     path('<int:pk>/', MemberDetailView.as_view()),
+    path('<int:pk>/timeline/like-movies/', LikeMoviesView.as_view()),
+    path('<int:pk>/timeline/watched-movies/', WatchedMoviesView.as_view()),
+    path('<int:pk>/timeline/rating-movies/', RatingMoviesView.as_view()),
 ]

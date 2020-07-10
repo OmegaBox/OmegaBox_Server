@@ -37,7 +37,7 @@ class MovieSerializer(serializers.ModelSerializer):
         return point_sum / point_count if point_count != 0 else 0
 
     def get_acc_favorite(self, movie):
-        return movie.raters.filter(ratings__liked=True).count()
+        return movie.movie_likes.filter(liked=True).count()
 
 
 class DirectorSerializer(serializers.ModelSerializer):
@@ -77,7 +77,6 @@ class RatingSerializer(serializers.ModelSerializer):
             'good_point',
             'point',
             'comment',
-            'liked',
         ]
 
 
@@ -128,7 +127,7 @@ class MovieDetailSerializer(serializers.ModelSerializer):
         return point_sum / point_count if point_count != 0 else 0
 
     def get_acc_favorite(self, movie):
-        return movie.raters.filter(ratings__liked=True).count()
+        return movie.movie_likes.filter(liked=True).count()
 
     def get_running_time(self, obj):
         return reformat_duration(obj.running_time)
@@ -154,3 +153,57 @@ class AgeBookingSerializer(serializers.Serializer):
     thirties = serializers.IntegerField(source='thirties__sum')
     fourties = serializers.IntegerField(source='fourties__sum')
     fifties = serializers.IntegerField(source='fifties__sum')
+
+
+# member별 타임라인 - 본영화, 보고싶어영화
+class TimeLineMoviesSerializer(serializers.ModelSerializer):
+    movie_id = serializers.IntegerField(source='id')
+    liked_at = serializers.SerializerMethodField('get_liked_at')
+    acc_favorite = serializers.SerializerMethodField('get_acc_favorite')
+    running_time = serializers.SerializerMethodField('get_running_time')
+    directors = serializers.SerializerMethodField('get_directors')
+    genres = serializers.SerializerMethodField('get_genres')
+
+    class Meta:
+        model = Movie
+        fields = [
+            'movie_id',
+            'grade',
+            'liked_at',
+            'name_kor',
+            'poster',
+            'acc_favorite',
+            'open_date',
+            'running_time',
+            'directors',
+            'genres',
+        ]
+
+    def get_liked_at(self, movie):
+        return movie.movie_likes.get().liked_at
+
+    def get_acc_favorite(self, movie):
+        return movie.movie_likes.filter(liked=True).count()
+
+    def get_running_time(self, obj):
+        return reformat_duration(obj.running_time)
+
+    def get_directors(self, movie):
+        return [director.name for director in movie.directors.all()]
+
+    def get_genres(self, movie):
+        return [genre.name for genre in movie.genres.all()]
+
+
+# member별 타임라인 - 한줄평영화
+class RatingsMoviesSerializer(serializers.ModelSerializer):
+    movie_id = serializers.IntegerField(source='movie.id')
+
+    class Meta:
+        model = Rating
+        fields = [
+            'movie_id',
+            'score',
+            'key_point',
+            'comment',
+        ]
