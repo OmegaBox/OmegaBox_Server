@@ -25,7 +25,8 @@ schema_view = get_schema_view(
     openapi.Info(
         title="Omegabox API",
         default_version='v1',
-        description="Test description",
+        description='''Repository: https://github.com/OmegaBox/Django_Backend
+        \n 영화 예매 사이트 API''',
         terms_of_service="",
         contact=openapi.Contact(email="caloculator@gmail.com"),
     ),
