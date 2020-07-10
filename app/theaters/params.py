@@ -24,3 +24,9 @@ preferentials_query_param = openapi.Parameter(
     description='우대 좌석의 수',
     type=openapi.TYPE_INTEGER
 )
+seat_names_query_param = openapi.Parameter(
+    'names',
+    openapi.IN_QUERY,
+    description='좌석 이름 - 예시: A1+B2+C3',
+    type=openapi.TYPE_STRING
+)
