@@ -52,6 +52,7 @@ class CheckUsernameDuplicateView(APIView):
 @method_decorator(name='post', decorator=swagger_auto_schema(
     operation_summary='Log In',
     operation_description='로그인',
+    responses={200: JWTSerializer()},
 ))
 class LoginView(DefaultLoginView):
     serializer_class = LoginSerializer
