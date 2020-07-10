@@ -60,3 +60,9 @@ class UsernameDuplicateException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = '이미 가입된 아이디입니다.'
     default_code = 'DuplicatedUsername'
+
+
+class SeatNamesMissingException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '좌석의 이름을 반드시 query parameter로 전달해야합니다.'
+    default_code = 'SeatNamesMissing'

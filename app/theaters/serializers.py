@@ -26,6 +26,11 @@ class SeatListSerializer(serializers.Serializer):
     reserved_seat = serializers.CharField(source='seat')
 
 
+class SeatIDListSerializer(serializers.Serializer):
+    seat_name = serializers.CharField(source='seat.name')
+    seat_id = serializers.IntegerField()
+
+
 # for Documentation
 class TotalAndReservedSeatsCountSerializer(serializers.Serializer):
     total_seats = serializers.IntegerField()

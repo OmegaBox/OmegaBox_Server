@@ -9,13 +9,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from utils import calculate_seat_price
-from utils.excepts import InvalidScheduleIDException
-from .models import Schedule, Theater, Screen
-from .params import movies_query_param, adults_query_param, teens_query_param, preferentials_query_param
+from utils.excepts import InvalidScheduleIDException, SeatNamesMissingException
+from .models import Schedule, Theater, Screen, SeatType
+from .params import movies_query_param, adults_query_param, teens_query_param, preferentials_query_param, \
+    seat_names_query_param
 from .serializers import (
     ScheduleMovieSerializer, ScheduleTheaterListSerializer, ScheduleRegionCountSerializer,
     SeatListSerializer,
-    ScreenDetailSerializer, SeatsTotalPriceSerializer, TotalAndReservedSeatsCountSerializer)
+    ScreenDetailSerializer, SeatsTotalPriceSerializer, TotalAndReservedSeatsCountSerializer, SeatIDListSerializer)
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -160,6 +161,29 @@ class ScreenDetail(RetrieveAPIView):
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Seat ID List',
+    operation_description='스케쥴 ID와 좌석 이름을 입력받아 각 좌석 ID를 반환',
+    responses={200: SeatIDListSerializer(many=True)},
+    manual_parameters=[seat_names_query_param]
+))
+class SeatIDList(APIView):
+    def get(self, request, schedule_id):
+        schedule = get_object_or_404(Schedule, pk=schedule_id)
+        seat_names = self.request.query_params.get('names', None)
+
+        if seat_names is not None:
+            seats_list = list(seat_names.split())
+
+            seat_type_qs = SeatType.objects.filter(
+                schedule=schedule,
+                seat__name__in=seats_list
+            )
+            return Response(SeatIDListSerializer(seat_type_qs, many=True).data)
+        else:
+            raise SeatNamesMissingException
+
+
+@method_decorator(name='get', decorator=swagger_auto_schema(
     operation_summary='Schedules List on Given Date',
     operation_description='해당 상영관 특정 날짜의 스케쥴 정보',
     manual_parameters=[movies_query_param],
@@ -176,7 +200,7 @@ class ScheduleListGivenDate(ListAPIView):
         movies = self.request.query_params.get('movies', None)
 
         if movies is not None:
-            movies_list = list(movies)[:3]
+            movies_list = list(map(int, movies.split()))[:3]
             queryset = Schedule.objects.filter(
                 movie__in=movies_list,
                 start_time__date=date,
