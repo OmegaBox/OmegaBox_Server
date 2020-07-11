@@ -66,3 +66,21 @@ class SeatNamesMissingException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = '좌석의 이름을 반드시 query parameter로 전달해야합니다.'
     default_code = 'SeatNamesMissing'
+
+
+class FailToGetBootPayAccessTokenException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '부트페이 access token 획득 실패'
+    default_code = 'FailToGetBootPayAccessToken'
+
+
+class VerifyRequestFailException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '부트페이 영수증 검증 요청 실패'
+    default_code = 'VerifyRequestFail'
+
+
+class UnverifiedReceiptException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '부트페이 영수증 검증 실패 - 결제완료가 아니거나 가격이 틀림'
+    default_code = 'UnverifiedReceipt'

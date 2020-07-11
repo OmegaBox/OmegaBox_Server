@@ -26,9 +26,10 @@ class Reservation(models.Model):
         on_delete=models.CASCADE,
         related_name='reservations',
     )
-    payment = models.OneToOneField(
+    payment = models.ForeignKey(
         'Payment',
         on_delete=models.CASCADE,
+        related_name='reservations',
         blank=True,
         null=True,
     )
@@ -48,15 +49,19 @@ def set_reservation_code(sender, instance, created, **kwargs):
 
 
 class Payment(models.Model):
-    PAY_WITH = [
-        ('card', '신용/체크카드'),
-        ('phone', '휴대폰결제'),
+    PG_CHOICES = [
+        ('payletter', '페이레터'),
         ('kakao', '카카오페이'),
-        ('payco', '페이코'),
     ]
-
+    METHOD_CHOICES = [
+        ('card', '카드결제'),
+        ('easy', '간편결제'),
+    ]
+    receipt_id = models.CharField(max_length=50)
     price = models.PositiveIntegerField()
     discount_price = models.PositiveIntegerField(blank=True, null=True)
-    pay_with = models.CharField(choices=PAY_WITH, max_length=30)
-    card_name = models.CharField(max_length=30)
+    pg = models.CharField(max_length=20, choices=PG_CHOICES)
+    method = models.CharField(max_length=20, choices=METHOD_CHOICES)
+    card_name = models.CharField(max_length=30, blank=True)
+    card_num = models.PositiveIntegerField(blank=True, null=True)
     payed_at = models.DateTimeField(auto_now_add=True)
