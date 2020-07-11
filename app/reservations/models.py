@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -33,17 +35,9 @@ class Reservation(models.Model):
         blank=True,
         null=True,
     )
-    code = models.CharField(max_length=20, blank=True, unique=True)
 
     def __str__(self):
         return f'예약자: {self.member.name} / 상영영화: {self.schedule.movie.name_kor} / 예약코드: {self.code}'
-
-
-@receiver(post_save, sender=Reservation)
-def set_reservation_code(sender, instance, created, **kwargs):
-    if created:
-        instance.code = get_random_string(length=10) + str(instance.schedule.movie.code)
-        instance.save()
 
 
 class Payment(models.Model):
@@ -55,6 +49,7 @@ class Payment(models.Model):
         ('card', '카드결제'),
         ('easy', '간편결제'),
     ]
+    code = models.CharField(max_length=50)
     receipt_id = models.CharField(max_length=50)
     price = models.PositiveIntegerField()
     discount_price = models.PositiveIntegerField(blank=True, null=True)
@@ -65,3 +60,10 @@ class Payment(models.Model):
     payed_at = models.DateTimeField(auto_now_add=True)
     is_canceled = models.BooleanField(default=False)
     canceled_at = models.DateTimeField(auto_now=True)
+
+
+@receiver(post_save, sender=Payment)
+def set_payment_code(sender, instance, created, **kwargs):
+    if created:
+        instance.code = datetime.now().strftime("%y%m%d") + get_random_string(length=10)
+        instance.save()
