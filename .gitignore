@@ -5,6 +5,9 @@
 app/.management/
 app/create_seats.py
 
+### SECRETS ###
+app/secrets.py
+
 ### Django ###
 *.log
 *.pot
