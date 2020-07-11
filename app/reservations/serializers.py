@@ -2,10 +2,10 @@ from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
 from theaters.models import SeatGrade, Schedule, Seat, SeatType
-from utils import calculate_seat_price
+from utils import calculate_seat_price, verify_receipt_from_bootpay_server
 from utils.excepts import TakenSeatException, InvalidGradeChoicesException, \
     InvalidSeatException
-from .models import Reservation
+from .models import Reservation, Payment
 
 
 class ReservationDetailSerializer(serializers.ModelSerializer):
@@ -82,3 +82,34 @@ class SeatGradeCreateSerializer(serializers.Serializer):
 
     def to_representation(self, instance):
         return SeatGradeDetailSerializer(instance).data
+
+
+class PaymentDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = '__all__'
+
+
+class PaymentCreateSerializer(serializers.Serializer):
+    receipt_id = serializers.CharField()
+    price = serializers.IntegerField()
+
+    def validate(self, data):
+        receipt_id = data['receipt_id']
+        price = data['price']
+
+        result = verify_receipt_from_bootpay_server(receipt_id, price)
+
+        data['pg'] = result['pg']
+        data['method'] = result['method']
+        if data['method'] == 'card':
+            data['card_name'] = result['payment_data']['card_name']
+            data['card_num'] = result['payment_data']['card_no']
+        data['payed_at'] = result['payment_data']['p_at']
+        return data
+
+    def create(self, validated_data):
+        return Payment.objects.create(**validated_data)
+
+    def to_representation(self, instance):
+        return PaymentDetailSerializer(instance).data
