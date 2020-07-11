@@ -33,7 +33,7 @@ class SeatGradeCreateView(CreateAPIView):
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
     operation_summary='Paying for Reservations',
-    operation_description='영화 좌석 예매 - 결제 전',
+    operation_description='예매 좌석들 결제',
     responses={201: PaymentDetailSerializer()}
 ))
 class PaymentCreateView(CreateAPIView):

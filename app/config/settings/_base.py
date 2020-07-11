@@ -17,6 +17,8 @@ import boto3
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
+from secrets import TEST_BOOT_PAY_REST_APP_ID, TEST_BOOT_PAY_PRIVATE_KEY
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_DIR = os.path.dirname(BASE_DIR)
@@ -223,5 +225,5 @@ SWAGGER_SETTINGS = {
 # BOOT_PAY_REST_APP_ID = SECRETS['BOOT_PAY_REST_APP_ID']
 # BOOT_PAY_PRIVATE_KEY = SECRETS['BOOT_PAY_PRIVATE_KEY']
 
-BOOT_PAY_REST_APP_ID = '5f08ab7a4f74b40026f2c499'
-BOOT_PAY_PRIVATE_KEY = 'KjVm/hHkmpYXDGwZoIod1lKMVd+m4Jyot22N+VIifL0='
+BOOT_PAY_REST_APP_ID = TEST_BOOT_PAY_REST_APP_ID
+BOOT_PAY_PRIVATE_KEY = TEST_BOOT_PAY_PRIVATE_KEY

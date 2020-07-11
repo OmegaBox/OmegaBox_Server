@@ -17,8 +17,6 @@ class ReservationDetailSerializer(serializers.ModelSerializer):
             'member',
             'schedule',
             'payment',
-            'is_canceled',
-            'canceled_at',
         ]
 
 
@@ -87,12 +85,28 @@ class SeatGradeCreateSerializer(serializers.Serializer):
 class PaymentDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
-        fields = '__all__'
+        fields = [
+            'id',
+            'receipt_id',
+            'price',
+            'discount_price',
+            'pg',
+            'method',
+            'card_name',
+            'card_num',
+            'payed_at',
+            'is_canceled',
+            'canceled_at',
+            'reservations',
+        ]
 
 
 class PaymentCreateSerializer(serializers.Serializer):
     receipt_id = serializers.CharField()
     price = serializers.IntegerField()
+    reservations_id = serializers.ListField(
+        child=serializers.IntegerField()
+    )
 
     def validate(self, data):
         receipt_id = data['receipt_id']
@@ -109,7 +123,17 @@ class PaymentCreateSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data):
-        return Payment.objects.create(**validated_data)
+        reservations_id = validated_data.pop('reservations_id')
+
+        payment = Payment.objects.create(**validated_data)
+
+        # 예매의 총합 금액과 결제 금액 검증 로직 필요
+        Reservation.objects.filter(
+            id__in=reservations_id,
+        ).update(
+            payment=payment,
+        )
+        return payment
 
     def to_representation(self, instance):
         return PaymentDetailSerializer(instance).data
