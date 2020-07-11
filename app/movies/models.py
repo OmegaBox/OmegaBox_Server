@@ -15,8 +15,15 @@ class Movie(models.Model):
     raters = models.ManyToManyField(
         AUTH_USER_MODEL,
         through='Rating',
-        related_name='movies',
+        related_name='rating_movies',
     )
+
+    like_members = models.ManyToManyField(
+        AUTH_USER_MODEL,
+        through='MovieLike',
+        related_name='like_movies',
+    )
+
     screens = models.ManyToManyField(
         'theaters.Screen',
         through=Schedule,
@@ -68,23 +75,48 @@ class Rating(models.Model):
         ('visual', '영상미'),
         ('ost', 'OST'),
     ]
+
+    # 실제로 영화를 본 member만 생성 가능하도록 예외처리 필요
     member = models.ForeignKey(
         AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='ratings',
     )
+
     movie = models.ForeignKey(
         'Movie',
         on_delete=models.CASCADE,
         related_name='ratings',
     )
     score = models.IntegerField()
-    liked = models.BooleanField(default=False)
     key_point = models.CharField(
         max_length=20,
         choices=KEY_POINT_CHOICES,
     )
     comment = models.TextField(blank=True)
+
+    # 한줄평 수정 불가능
+    created_at = models.DateField(auto_now_add=True)
+
+
+class MovieLike(models.Model):
+    movie = models.ForeignKey(
+        'Movie',
+        on_delete=models.CASCADE,
+        related_name='movie_likes',
+    )
+    member = models.ForeignKey(
+        AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='movie_likes',
+    )
+    liked = models.BooleanField()
+
+    # liked save 될때마다 갱신
+    liked_at = models.DateField(auto_now=True)
+
+    def __str__(self):
+        return self.movie, self.member.name
 
 
 class NameObject(models.Model):

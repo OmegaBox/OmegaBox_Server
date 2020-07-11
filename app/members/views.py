@@ -7,8 +7,8 @@ from rest_auth.views import (
     LogoutView as DefaultLogoutView, LoginView as DefaultLoginView
 )
 from rest_framework import status
-from rest_framework.generics import RetrieveAPIView
-from rest_framework.permissions import IsAdminUser
+from rest_framework.generics import RetrieveAPIView, ListAPIView
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import (
@@ -16,6 +16,8 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView as DefaultTokenVerifyView,
 )
 
+from movies.models import Movie, Rating
+from movies.serializers import LikeMoviesSerializer, WatchedMoviesSerializer, RatingMoviesSerializer
 from utils.excepts import UsernameDuplicateException
 from .permissions import IsAuthorizedMember
 from .serializers import SignUpSerializer, MemberDetailSerializer, LoginSerializer, TokenRefreshSerializer, \
@@ -93,3 +95,30 @@ class MemberDetailView(RetrieveAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberDetailSerializer
     permission_classes = [IsAuthorizedMember, IsAdminUser, ]
+
+
+class LikeMoviesView(ListAPIView):
+    serializer_class = LikeMoviesSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser, ]
+
+    def get_queryset(self):
+        return Movie.objects.filter(like_members__pk=self.kwargs['pk'], movie_likes__liked=True).order_by('movie_likes')
+
+
+class WatchedMoviesView(ListAPIView):
+    serializer_class = WatchedMoviesSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser, ]
+
+    def get_queryset(self):
+        return Movie.objects.filter(
+            schedules__reservations__member__pk=self.kwargs['pk'],
+            schedules__reservations__payment__isnull=False
+        ).order_by('schedules__reservations__payment__payed_at')
+
+
+class RatingMoviesView(ListAPIView):
+    serializer_class = RatingMoviesSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser, ]
+
+    def get_queryset(self):
+        return Rating.objects.filter(member__pk=self.kwargs['pk']).order_by('created_at')
