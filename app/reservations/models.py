@@ -33,8 +33,6 @@ class Reservation(models.Model):
         blank=True,
         null=True,
     )
-    is_canceled = models.BooleanField(default=False)
-    canceled_at = models.DateTimeField(blank=True, null=True)
     code = models.CharField(max_length=20, blank=True, unique=True)
 
     def __str__(self):
@@ -65,3 +63,5 @@ class Payment(models.Model):
     card_name = models.CharField(max_length=30, blank=True)
     card_num = models.PositiveIntegerField(blank=True, null=True)
     payed_at = models.DateTimeField(auto_now_add=True)
+    is_canceled = models.BooleanField(default=False)
+    canceled_at = models.DateTimeField(auto_now=True)
