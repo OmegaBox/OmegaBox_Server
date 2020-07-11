@@ -13,7 +13,6 @@ class ReservationDetailSerializer(serializers.ModelSerializer):
         model = Reservation
         fields = [
             'id',
-            'code',
             'member',
             'schedule',
             'payment',
@@ -87,6 +86,7 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
         model = Payment
         fields = [
             'id',
+            'code',
             'receipt_id',
             'price',
             'discount_price',
