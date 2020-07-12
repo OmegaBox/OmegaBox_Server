@@ -1,3 +1,5 @@
+/app/celerybeat-schedule.db
+
 ### Management Files ###
 .management/
 create_seats.py
@@ -10,4 +12,5 @@ Dockerfile
 
 env.*
 .DS_Store
+
 

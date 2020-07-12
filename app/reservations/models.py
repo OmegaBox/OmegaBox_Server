@@ -35,9 +35,10 @@ class Reservation(models.Model):
         blank=True,
         null=True,
     )
+    reserved_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'예약자: {self.member.name} / 상영영화: {self.schedule.movie.name_kor} / 예약코드: {self.code}'
+        return f'예약자: {self.member.name} / 상영영화: {self.schedule.movie.name_kor}'
 
 
 class Payment(models.Model):

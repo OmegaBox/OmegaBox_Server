@@ -4,7 +4,7 @@
 ### Files ###
 app/.management/
 app/create_seats.py
-
+app/celerybeat-schedule.db
 
 ### Django ###
 *.log
@@ -366,3 +366,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all,linux,windows,macos,python,django
+
