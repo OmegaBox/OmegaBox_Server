@@ -82,6 +82,9 @@ class Profile(models.Model):
     # 프론트와 협의 필요
     is_disabled = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.member.name
+
 
 @receiver(post_save, sender=Member)
 def create_user_profile(sender, instance, created, **kwargs):

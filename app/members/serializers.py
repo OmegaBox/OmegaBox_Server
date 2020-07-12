@@ -7,6 +7,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer as DefaultTokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from movies.models import Movie, Rating
 from utils.excepts import TakenNumberException, UsernameDuplicateException
 from .models import Profile
 
@@ -89,6 +90,9 @@ class TokenRefreshSerializer(DefaultTokenRefreshSerializer):
 
 
 class ProfileDetailSerializer(serializers.ModelSerializer):
+    regions = serializers.SerializerMethodField('get_regions')
+    genres = serializers.SerializerMethodField('get_genres')
+
     class Meta:
         model = Profile
         fields = [
@@ -99,11 +103,21 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
             'genres',
             'time',
             'is_disabled',
+
         ]
+
+    def get_regions(self, profile):
+        return [region.name for region in profile.regions.all()]
+
+    def get_genres(self, profile):
+        return [genre.name for genre in profile.genres.all()]
 
 
 class MemberDetailSerializer(serializers.ModelSerializer):
     profile = ProfileDetailSerializer()
+    watched_movies_count = serializers.SerializerMethodField('get_watched_movies_count')
+    like_movies_count = serializers.SerializerMethodField('get_like_movies_count')
+    rating_movies_count = serializers.SerializerMethodField('get_rating_movies_count')
 
     class Meta:
         model = Member
@@ -114,4 +128,24 @@ class MemberDetailSerializer(serializers.ModelSerializer):
             'mobile',
             'birth_date',
             'profile',
+            'watched_movies_count',
+            'like_movies_count',
+            'rating_movies_count',
         ]
+
+    def get_watched_movies_count(self, member):
+        return Movie.objects.filter(
+            schedules__reservations__member=member,
+            schedules__reservations__payment__isnull=False
+        ).distinct().count()
+
+    def get_like_movies_count(self, member):
+        return Movie.objects.filter(
+            like_members__pk=member.pk,
+            movie_likes__liked=True
+        ).count()
+
+    def get_rating_movies_count(self, member):
+        return Rating.objects.filter(
+            member=member
+        ).count()
