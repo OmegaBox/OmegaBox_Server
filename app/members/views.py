@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
@@ -112,8 +114,9 @@ class WatchedMoviesView(ListAPIView):
     def get_queryset(self):
         return Movie.objects.filter(
             schedules__reservations__member__pk=self.kwargs['pk'],
-            schedules__reservations__payment__isnull=False
-        ).order_by('schedules__reservations__payment__payed_at')
+            schedules__reservations__payment__isnull=False,
+            schedules__start_time__lte=datetime.datetime.today()
+        ).distinct().order_by('schedules__start_time')
 
 
 class RatingMoviesView(ListAPIView):

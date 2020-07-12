@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from phonenumber_field.serializerfields import PhoneNumberField
@@ -115,6 +117,7 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
 
 class MemberDetailSerializer(serializers.ModelSerializer):
     profile = ProfileDetailSerializer()
+    reservated_movies_count = serializers.SerializerMethodField('get_reservated_movies_count')
     watched_movies_count = serializers.SerializerMethodField('get_watched_movies_count')
     like_movies_count = serializers.SerializerMethodField('get_like_movies_count')
     rating_movies_count = serializers.SerializerMethodField('get_rating_movies_count')
@@ -128,15 +131,24 @@ class MemberDetailSerializer(serializers.ModelSerializer):
             'mobile',
             'birth_date',
             'profile',
+            'reservated_movies_count',
             'watched_movies_count',
             'like_movies_count',
             'rating_movies_count',
         ]
 
+    def get_reservated_movies_count(self, member):
+        return Movie.objects.filter(
+            schedules__reservations__member=member,
+            schedules__reservations__payment__isnull=False,
+            schedules__start_time__gte=datetime.datetime.today()
+        ).distinct().count()
+
     def get_watched_movies_count(self, member):
         return Movie.objects.filter(
             schedules__reservations__member=member,
-            schedules__reservations__payment__isnull=False
+            schedules__reservations__payment__isnull=False,
+            schedules__start_time__lte=datetime.datetime.today()
         ).distinct().count()
 
     def get_like_movies_count(self, member):
