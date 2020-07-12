@@ -21,11 +21,11 @@ from rest_framework_simplejwt.views import (
 from movies.models import Movie, Rating
 from movies.serializers import LikeMoviesSerializer, WatchedMoviesSerializer, RatingMoviesSerializer
 from reservations.models import Reservation
-from theaters.models import Schedule
 from utils.excepts import UsernameDuplicateException
 from .permissions import IsAuthorizedMember
 from .serializers import SignUpSerializer, MemberDetailSerializer, LoginSerializer, TokenRefreshSerializer, \
-    TokenRefreshResultSerializer, JWTSerializer, CheckUsernameDuplicateSerializer, ReservedMoviesSerializer
+    TokenRefreshResultSerializer, JWTSerializer, CheckUsernameDuplicateSerializer, ReservedMoviesSerializer, \
+    CanceledReservationMoviesSerializer
 
 Member = get_user_model()
 
@@ -139,3 +139,14 @@ class ReservedMoviesView(ListAPIView):
             member__pk=self.kwargs['pk'],
             payment__isnull=False
         ).distinct().order_by('reserved_at')
+
+
+class CanceledReservationMoviesView(ListAPIView):
+    serializer_class = CanceledReservationMoviesSerializer
+
+    def get_queryset(self):
+        return Reservation.objects.filter(
+            schedule__start_time__lte=datetime.datetime.today(),
+            member__pk=self.kwargs['pk'],
+            payment__is_canceled=True
+        ).order_by('payment.canceled_at')

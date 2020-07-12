@@ -205,3 +205,25 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
 
     def get_seat_name(self, reservation):
         return reservation.seats.values_list('name', flat=True)
+
+
+class CanceledReservationMoviesSerializer(serializers.ModelSerializer):
+    reservation_id = serializers.IntegerField(source='id')
+    canceled_at = serializers.DateTimeField(source='payment.canceled_at', format='%Y-%m-%d %H:%M')
+    movie_name = serializers.CharField(source='schedule.movie.name_kor')
+    theater_name = serializers.CharField(source='schedule.screen.theater.name')
+    theater_region = serializers.CharField(source='schedule.screen.theater.region.name')
+    start_time = serializers.DateTimeField(source='schedule.start_time', format='%Y-%m-%d %H:%M')
+    canceled_payment = serializers.IntegerField(source='payment.price')
+
+    class Meta:
+        model = Reservation
+        fields = [
+            'reservation_id',
+            'canceled_at',
+            'movie_name',
+            'theater_name',
+            'theater_region',
+            'start_time',
+            'canceled_payment',
+        ]
