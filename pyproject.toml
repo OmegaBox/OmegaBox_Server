@@ -25,6 +25,7 @@ sentry-sdk = "0.15.1"
 djangorestframework-jwt = "^1.11.0"
 drf-yasg = "^1.17.1"
 celery = "^4.4.6"
+redis = "^3.5.3"
 
 [tool.poetry.dev-dependencies]
 django-extensions = "^2.2.9"

@@ -19,5 +19,6 @@ RUN         rm /etc/nginx/sites-enabled/default
 RUN         cp /srv/omegabox/.config/production/omegabox.nginx /etc/nginx/sites-enabled/
 
 RUN         mkdir /var/log/gunicorn
+RUN         mkdir /var/log/celery
 
 CMD         /bin/bash
