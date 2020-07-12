@@ -14,36 +14,37 @@ jobs:
         python-version: [3.7]
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    
-    - name: Setup Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-        
-    - name: Install Poetry
-      run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Poetry export requirements
-      run: ~/.poetry/bin/poetry export -f requirements.txt > requirements.txt
-    
-    - name: Docker Build and Push
-      uses: docker/build-push-action@v1
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        repository: qu3vipon/omegabox
-        tags: latest
-        
-    - name: Login to EC2 and Server Init
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.CALOCULATOR_PEM }}
-        script: |
-          docker pull qu3vipon/omegabox
-          docker stop omegabox && docker system prune -f
-          docker run -d -it --rm -p 80:80 -p 443:443 --name omegabox -v ~/.aws:/root/.aws -v /etc/letsencrypt:/etc/letsencrypt qu3vipon/omegabox bash
-          docker exec omegabox supervisord -c /srv/omegabox/.config/production/supervisord.conf
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+
+      - name: Poetry export requirements
+        run: ~/.poetry/bin/poetry export -f requirements.txt > requirements.txt
+
+      - name: Docker Build and Push
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: qu3vipon/omegabox
+          tags: latest
+
+      - name: Login to EC2 and Server Init
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.CALOCULATOR_PEM }}
+          script: |
+            docker pull qu3vipon/omegabox
+            docker stop redis && docker stop omegabox && docker system prune -f
+            docker run -d -p 6379:6379 --name redis redis
+            docker run -d -it --rm -p 80:80 -p 443:443 --name omegabox -v $HOME/.aws:/root/.aws -v /etc/letsencrypt:/etc/letsencrypt --link redis -h redis -p 6379 qu3vipon/omegabox bash
+            docker exec omegabox supervisord -c /srv/omegabox/.config/production/supervisord.conf
