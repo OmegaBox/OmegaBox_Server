@@ -46,6 +46,7 @@ class AgeBookingView(RetrieveAPIView):
     serializer_class = AgeBookingSerializer
 
     def get_object(self):
+        # timedelta를 이용한 계산 변경 검토
         aggregated_dict = Movie.objects.filter(
             pk=self.kwargs['pk']
         ).values(

@@ -2,6 +2,7 @@ import datetime
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count, Q
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_auth.registration.serializers import RegisterSerializer
 from rest_auth.serializers import LoginSerializer as DefaultLoginSerializer
@@ -10,6 +11,8 @@ from rest_framework_simplejwt.serializers import TokenRefreshSerializer as Defau
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from movies.models import Movie, Rating
+from reservations.models import Reservation
+from theaters.models import Schedule
 from utils.excepts import TakenNumberException, UsernameDuplicateException
 from .models import Profile
 
@@ -117,7 +120,7 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
 
 class MemberDetailSerializer(serializers.ModelSerializer):
     profile = ProfileDetailSerializer()
-    reservated_movies_count = serializers.SerializerMethodField('get_reservated_movies_count')
+    reserved_movies_count = serializers.SerializerMethodField('get_reserved_movies_count')
     watched_movies_count = serializers.SerializerMethodField('get_watched_movies_count')
     like_movies_count = serializers.SerializerMethodField('get_like_movies_count')
     rating_movies_count = serializers.SerializerMethodField('get_rating_movies_count')
@@ -131,17 +134,17 @@ class MemberDetailSerializer(serializers.ModelSerializer):
             'mobile',
             'birth_date',
             'profile',
-            'reservated_movies_count',
+            'reserved_movies_count',
             'watched_movies_count',
             'like_movies_count',
             'rating_movies_count',
         ]
 
-    def get_reservated_movies_count(self, member):
+    def get_reserved_movies_count(self, member):
         return Movie.objects.filter(
             schedules__reservations__member=member,
             schedules__reservations__payment__isnull=False,
-            schedules__start_time__gte=datetime.datetime.today()
+            schedules__start_time__gt=datetime.datetime.today()
         ).distinct().count()
 
     def get_watched_movies_count(self, member):
@@ -161,3 +164,44 @@ class MemberDetailSerializer(serializers.ModelSerializer):
         return Rating.objects.filter(
             member=member
         ).count()
+
+
+class ReservedMoviesSerializer(serializers.ModelSerializer):
+    reservation_id = serializers.IntegerField(source='id')
+    reservation_code = serializers.CharField(source='payment.code')
+    movie_name = serializers.CharField(source='schedule.movie.name_kor')
+    screen_type = serializers.CharField(source='schedule.screen.screen_type')
+    screen_name = serializers.CharField(source='schedule.screen.name')
+    theater_name = serializers.CharField(source='schedule.screen.theater.name')
+    theater_region = serializers.CharField(source='schedule.screen.theater.region.name')
+    start_time = serializers.DateTimeField(source='schedule.start_time', format='%Y-%m-%d %H:%M')
+    payed_at = serializers.DateTimeField(source='payment.payed_at', format='%Y-%m-%d')
+    seat_grade = serializers.SerializerMethodField('get_seat_grade')
+    seat_name = serializers.SerializerMethodField('get_seat_name')
+
+    class Meta:
+        model = Reservation
+        fields = [
+            'reservation_id',
+            'reservation_code',
+            'movie_name',
+            'screen_type',
+            'screen_name',
+            'theater_name',
+            'theater_region',
+            'start_time',
+            'seat_grade',
+            'seat_name',
+            'payed_at',
+            # 'prearranged_point',
+        ]
+
+    def get_seat_grade(self, reservation):
+        return reservation.seat_grades.annotate(
+            adult=Count('grade', filter=Q(grade='adult')),
+            teen=Count('grade', filter=Q(grade='teen')),
+            preferential=Count('grade', filter=Q(grade='preferential'))
+        ).values('adult', 'teen', 'preferential')
+
+    def get_seat_name(self, reservation):
+        return reservation.seats.values_list('name', flat=True)

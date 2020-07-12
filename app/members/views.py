@@ -20,10 +20,12 @@ from rest_framework_simplejwt.views import (
 
 from movies.models import Movie, Rating
 from movies.serializers import LikeMoviesSerializer, WatchedMoviesSerializer, RatingMoviesSerializer
+from reservations.models import Reservation
+from theaters.models import Schedule
 from utils.excepts import UsernameDuplicateException
 from .permissions import IsAuthorizedMember
 from .serializers import SignUpSerializer, MemberDetailSerializer, LoginSerializer, TokenRefreshSerializer, \
-    TokenRefreshResultSerializer, JWTSerializer, CheckUsernameDuplicateSerializer
+    TokenRefreshResultSerializer, JWTSerializer, CheckUsernameDuplicateSerializer, ReservedMoviesSerializer
 
 Member = get_user_model()
 
@@ -107,6 +109,15 @@ class LikeMoviesView(ListAPIView):
         return Movie.objects.filter(like_members__pk=self.kwargs['pk'], movie_likes__liked=True).order_by('movie_likes')
 
 
+class RatingMoviesView(ListAPIView):
+    serializer_class = RatingMoviesSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser, ]
+
+    def get_queryset(self):
+        return Rating.objects.filter(member__pk=self.kwargs['pk']).order_by('created_at')
+
+
+# Movie가 아닌 Payment별 분리로 변경 검토
 class WatchedMoviesView(ListAPIView):
     serializer_class = WatchedMoviesSerializer
     permission_classes = [IsAuthenticated, IsAdminUser, ]
@@ -119,9 +130,12 @@ class WatchedMoviesView(ListAPIView):
         ).distinct().order_by('schedules__start_time')
 
 
-class RatingMoviesView(ListAPIView):
-    serializer_class = RatingMoviesSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser, ]
+class ReservedMoviesView(ListAPIView):
+    serializer_class = ReservedMoviesSerializer
 
     def get_queryset(self):
-        return Rating.objects.filter(member__pk=self.kwargs['pk']).order_by('created_at')
+        return Reservation.objects.filter(
+            schedule__start_time__gt=datetime.datetime.today(),
+            member__pk=self.kwargs['pk'],
+            payment__isnull=False
+        ).distinct().order_by('reserved_at')
