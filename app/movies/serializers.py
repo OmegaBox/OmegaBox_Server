@@ -1,3 +1,5 @@
+import datetime
+
 from django.db.models import Sum, Count
 from rest_framework import serializers
 
@@ -220,7 +222,8 @@ class WatchedMoviesSerializer(serializers.ModelSerializer):
         ]
 
     def get_watched_at(self, movie):
-        return movie.schedules.filter(reservations__payment__isnull=False).values('reservations__payment__payed_at')
+        watched_at_list = movie.schedules.values_list('start_time', flat=True).distinct()
+        return [watched_at.strftime('%Y-%m-%d %H:%M') for watched_at in watched_at_list]
 
     def get_acc_favorite(self, movie):
         return movie.movie_likes.filter(liked=True).count()
