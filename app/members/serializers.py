@@ -153,15 +153,17 @@ class MemberDetailSerializer(serializers.ModelSerializer):
         return Movie.objects.filter(
             schedules__reservations__member=member,
             schedules__reservations__payment__isnull=False,
+            schedules__reservations__payment__is_canceled=False,
             schedules__start_time__gt=datetime.datetime.today()
-        ).distinct().count()
+        ).count()
 
     def get_watched_movies_count(self, member):
         return Movie.objects.filter(
             schedules__reservations__member=member,
             schedules__reservations__payment__isnull=False,
+            schedules__reservations__payment__is_canceled=False,
             schedules__start_time__lte=datetime.datetime.today()
-        ).distinct().count()
+        ).count()
 
     def get_like_movies_count(self, member):
         return Movie.objects.filter(

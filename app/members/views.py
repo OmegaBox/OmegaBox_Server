@@ -98,7 +98,7 @@ class TokenVerifyView(DefaultTokenVerifyView):
 class MemberDetailView(RetrieveAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberDetailSerializer
-    permission_classes = [IsAuthorizedMember, IsAdminUser, ]
+    # permission_classes = [IsAuthorizedMember, IsAdminUser, ]
 
 
 class LikeMoviesView(ListAPIView):
