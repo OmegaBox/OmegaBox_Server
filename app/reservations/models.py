@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 
 from django.db import models
@@ -66,5 +67,8 @@ class Payment(models.Model):
 @receiver(post_save, sender=Payment)
 def set_payment_code(sender, instance, created, **kwargs):
     if created:
-        instance.code = datetime.now().strftime("%y%m%d") + get_random_string(length=10)
+        date = datetime.now().strftime("%y%m%d")
+        random_string = get_random_string(length=2, allowed_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+        random_number = random.randint(1000, 9999)
+        instance.code = f'{date}-{random_string}-{str(random_number)}'
         instance.save()
