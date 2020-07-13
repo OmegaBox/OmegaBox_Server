@@ -98,15 +98,22 @@ class TokenVerifyView(DefaultTokenVerifyView):
 class MemberDetailView(RetrieveAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberDetailSerializer
-    # permission_classes = [IsAuthorizedMember, IsAdminUser, ]
+    permission_classes = [IsAuthorizedMember, IsAdminUser, ]
 
 
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Timeline Like Movie List per Member',
+    operation_description='멤버별 좋아요 누른 영화 리스트 정보'
+))
 class LikeMoviesView(ListAPIView):
     serializer_class = LikeMoviesSerializer
     permission_classes = [IsAuthenticated, IsAdminUser, ]
 
     def get_queryset(self):
-        return Movie.objects.filter(like_members__pk=self.kwargs['pk'], movie_likes__liked=True).order_by('movie_likes')
+        return Movie.objects.filter(
+            like_members__pk=self.kwargs['pk'],
+            movie_likes__liked=True
+        ).order_by('movie_likes__liked_at')
 
 
 class RatingMoviesView(ListAPIView):

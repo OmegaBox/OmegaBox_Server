@@ -157,7 +157,6 @@ class AgeBookingSerializer(serializers.Serializer):
     fifties = serializers.IntegerField(source='fifties__sum')
 
 
-# member별 타임라인 - 보고싶어영화
 class LikeMoviesSerializer(serializers.ModelSerializer):
     movie_id = serializers.IntegerField(source='id')
     liked_at = serializers.SerializerMethodField('get_liked_at')
