@@ -19,8 +19,9 @@ from rest_framework_simplejwt.views import (
 )
 
 from movies.models import Movie, Rating
-from movies.serializers import LikeMoviesSerializer, WatchedMoviesSerializer, RatingMoviesSerializer
+from movies.serializers import LikeMoviesSerializer, RatingMoviesSerializer
 from reservations.models import Reservation
+from reservations.serializers import WatchedMoviesSerializer
 from utils.excepts import UsernameDuplicateException
 from .permissions import IsAuthorizedMember
 from .serializers import SignUpSerializer, MemberDetailSerializer, LoginSerializer, TokenRefreshSerializer, \
@@ -98,36 +99,49 @@ class TokenVerifyView(DefaultTokenVerifyView):
 class MemberDetailView(RetrieveAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberDetailSerializer
-    permission_classes = [IsAuthorizedMember, IsAdminUser, ]
 
 
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Timeline Like Movie List per Member',
+    operation_description='멤버별 좋아요 누른 영화 리스트 정보'
+))
 class LikeMoviesView(ListAPIView):
     serializer_class = LikeMoviesSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser, ]
-
-    def get_queryset(self):
-        return Movie.objects.filter(like_members__pk=self.kwargs['pk'], movie_likes__liked=True).order_by('movie_likes')
-
-
-class RatingMoviesView(ListAPIView):
-    serializer_class = RatingMoviesSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser, ]
-
-    def get_queryset(self):
-        return Rating.objects.filter(member__pk=self.kwargs['pk']).order_by('created_at')
-
-
-# Movie가 아닌 Payment별 분리로 변경 검토
-class WatchedMoviesView(ListAPIView):
-    serializer_class = WatchedMoviesSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser, ]
 
     def get_queryset(self):
         return Movie.objects.filter(
-            schedules__reservations__member__pk=self.kwargs['pk'],
-            schedules__reservations__payment__isnull=False,
-            schedules__start_time__lte=datetime.datetime.today()
-        ).distinct().order_by('schedules__start_time')
+            like_members__pk=self.kwargs['pk'],
+            movie_likes__liked=True
+        ).order_by('movie_likes__liked_at')
+
+
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Watched Movie List per Member',
+    operation_description='멤버별 본영화 구매내역 및 상세정보 리스트'
+))
+class WatchedMoviesView(ListAPIView):
+    serializer_class = WatchedMoviesSerializer
+
+    def get_queryset(self):
+        return Reservation.objects.filter(
+            schedule__start_time__lte=datetime.datetime.today(),
+            member__pk=self.kwargs['pk'],
+            payment__isnull=False,
+            payment__is_canceled=False
+        ).order_by('schedule__start_time')
+
+
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Rating Movie List per Member',
+    operation_description='멤버별 한줄평쓴 영화 리스트 정보'
+))
+class RatingMoviesView(ListAPIView):
+    serializer_class = RatingMoviesSerializer
+
+    def get_queryset(self):
+        return Rating.objects.filter(
+            member__pk=self.kwargs['pk']
+        ).order_by('created_at')
 
 
 class ReservedMoviesView(ListAPIView):
@@ -137,8 +151,9 @@ class ReservedMoviesView(ListAPIView):
         return Reservation.objects.filter(
             schedule__start_time__gt=datetime.datetime.today(),
             member__pk=self.kwargs['pk'],
-            payment__isnull=False
-        ).distinct().order_by('reserved_at')
+            payment__isnull=False,
+            payment__is_canceled=False
+        ).order_by('reserved_at')
 
 
 class CanceledReservationMoviesView(ListAPIView):
@@ -146,7 +161,7 @@ class CanceledReservationMoviesView(ListAPIView):
 
     def get_queryset(self):
         return Reservation.objects.filter(
-            schedule__start_time__lte=datetime.datetime.today(),
+            schedule__start_time__gt=datetime.datetime.today(),
             member__pk=self.kwargs['pk'],
             payment__is_canceled=True
         ).order_by('payment.canceled_at')

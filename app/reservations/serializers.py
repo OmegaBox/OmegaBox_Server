@@ -1,10 +1,15 @@
+from django.db.models import Count, Q
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
+from movies.serializers import MovieTimelineSerializer
 from theaters.models import SeatGrade, Schedule, Seat, SeatType
-from utils import calculate_seat_price, verify_receipt_from_bootpay_server, cancel_payment_from_bootpay_server
-from utils.excepts import TakenSeatException, InvalidGradeChoicesException, \
-    InvalidSeatException, PaymentIDReceiptIDNotMatchingException
+from utils import (
+    calculate_seat_price, verify_receipt_from_bootpay_server, reformat_duration, cancel_payment_from_bootpay_server
+)
+from utils.excepts import (
+    TakenSeatException, InvalidGradeChoicesException, InvalidSeatException, PaymentIDReceiptIDNotMatchingException
+)
 from .models import Reservation, Payment
 
 
@@ -164,3 +169,59 @@ class PaymentCancelSerializer(serializers.Serializer):
 
     def to_representation(self, instance):
         return PaymentDetailSerializer(instance).data
+
+
+class WatchedMoviesSerializer(serializers.ModelSerializer):
+    payment_id = serializers.IntegerField(source='payment.id')
+    reservation_code = serializers.CharField(source='payment.code')
+    price = serializers.IntegerField(source='payment.price')
+    screen_type = serializers.CharField(source='schedule.screen.screen_type')
+    screen_name = serializers.CharField(source='schedule.screen.name')
+    seat_grade = serializers.SerializerMethodField('get_seat_grade')
+    seat_name = serializers.SerializerMethodField('get_seat_name')
+    theater_name = serializers.CharField(source='schedule.screen.theater.name')
+    theater_region = serializers.CharField(source='schedule.screen.theater.region.name')
+    start_time = serializers.DateTimeField(source='schedule.start_time', format='%Y-%m-%d %H:%M')
+    payed_at = serializers.DateTimeField(source='payment.payed_at', format='%Y-%m-%d')
+    watched_at = serializers.DateTimeField(source='schedule.start_time', format='%Y-%m-%d %H:%M')
+    movie = MovieTimelineSerializer(source='schedule.movie')
+
+    class Meta:
+        model = Reservation
+        fields = [
+            'payment_id',
+            'reservation_code',
+            'price',
+            'screen_type',
+            'screen_name',
+            'seat_grade',
+            'seat_name',
+            'theater_name',
+            'theater_region',
+            'start_time',
+            'payed_at',
+            'watched_at',
+            'movie',
+        ]
+
+    def get_seat_grade(self, reservation):
+        return reservation.seat_grades.annotate(
+            adult=Count('grade', filter=Q(grade='adult')),
+            teen=Count('grade', filter=Q(grade='teen')),
+            preferential=Count('grade', filter=Q(grade='preferential'))
+        ).values('adult', 'teen', 'preferential')
+
+    def get_seat_name(self, reservation):
+        return reservation.seats.values_list('name', flat=True)
+
+    def get_acc_favorite(self, reservation):
+        return reservation.schedule.movie.movie_likes.filter(liked=True).count()
+
+    def get_running_time(self, obj):
+        return reformat_duration(obj.schedule.movie.running_time)
+
+    def get_directors(self, reservation):
+        return [director.name for director in reservation.schedule.movie.directors.all()]
+
+    def get_genres(self, reservation):
+        return [genre.name for genre in reservation.schedule.movie.genres.all()]

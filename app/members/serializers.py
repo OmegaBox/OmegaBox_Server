@@ -153,15 +153,17 @@ class MemberDetailSerializer(serializers.ModelSerializer):
         return Movie.objects.filter(
             schedules__reservations__member=member,
             schedules__reservations__payment__isnull=False,
+            schedules__reservations__payment__is_canceled=False,
             schedules__start_time__gt=datetime.datetime.today()
-        ).distinct().count()
+        ).count()
 
     def get_watched_movies_count(self, member):
         return Movie.objects.filter(
             schedules__reservations__member=member,
             schedules__reservations__payment__isnull=False,
+            schedules__reservations__payment__is_canceled=False,
             schedules__start_time__lte=datetime.datetime.today()
-        ).distinct().count()
+        ).count()
 
     def get_like_movies_count(self, member):
         return Movie.objects.filter(
@@ -178,6 +180,7 @@ class MemberDetailSerializer(serializers.ModelSerializer):
 class ReservedMoviesSerializer(serializers.ModelSerializer):
     reservation_id = serializers.IntegerField(source='id')
     reservation_code = serializers.CharField(source='payment.code')
+    price = serializers.IntegerField(source='payment.price')
     movie_name = serializers.CharField(source='schedule.movie.name_kor')
     screen_type = serializers.CharField(source='schedule.screen.screen_type')
     screen_name = serializers.CharField(source='schedule.screen.name')
@@ -193,6 +196,7 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
         fields = [
             'reservation_id',
             'reservation_code',
+            'price',
             'movie_name',
             'screen_type',
             'screen_name',

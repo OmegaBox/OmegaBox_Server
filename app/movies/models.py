@@ -116,7 +116,7 @@ class MovieLike(models.Model):
     liked_at = models.DateField(auto_now=True)
 
     def __str__(self):
-        return self.movie, self.member.name
+        return f'{self.movie}, {self.member.name}'
 
 
 class NameObject(models.Model):
