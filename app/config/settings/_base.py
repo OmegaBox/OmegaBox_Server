@@ -67,6 +67,11 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'members.Member'
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -79,6 +84,8 @@ INSTALLED_APPS = [
     # 3rd-party packages
     'allauth',
     'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'rest_auth',
     'rest_auth.registration',
 
@@ -99,6 +106,18 @@ INSTALLED_APPS = [
 # Django allauth
 SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = None
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 
 # Application definition
 
