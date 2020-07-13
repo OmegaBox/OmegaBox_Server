@@ -134,12 +134,18 @@ class WatchedMoviesView(ListAPIView):
         ).order_by('schedule__start_time')
 
 
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Rating Movie List per Member',
+    operation_description='멤버별 한줄평쓴 영화 리스트 정보'
+))
 class RatingMoviesView(ListAPIView):
     serializer_class = RatingMoviesSerializer
     permission_classes = [IsAuthenticated, IsAdminUser, ]
 
     def get_queryset(self):
-        return Rating.objects.filter(member__pk=self.kwargs['pk']).order_by('created_at')
+        return Rating.objects.filter(
+            member__pk=self.kwargs['pk']
+        ).order_by('created_at')
 
 
 class ReservedMoviesView(ListAPIView):

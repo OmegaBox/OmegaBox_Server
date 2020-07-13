@@ -2,6 +2,7 @@ from django.db.models import Count, Q
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
+from movies.serializers import MovieTimelineSerializer
 from theaters.models import SeatGrade, Schedule, Seat, SeatType
 from utils import calculate_seat_price, verify_receipt_from_bootpay_server, reformat_duration
 from utils.excepts import TakenSeatException, InvalidGradeChoicesException, \
@@ -144,7 +145,6 @@ class WatchedMoviesSerializer(serializers.ModelSerializer):
     payment_id = serializers.IntegerField(source='payment.id')
     reservation_code = serializers.CharField(source='payment.code')
     price = serializers.IntegerField(source='payment.price')
-    movie_name = serializers.CharField(source='schedule.movie.name_kor')
     screen_type = serializers.CharField(source='schedule.screen.screen_type')
     screen_name = serializers.CharField(source='schedule.screen.name')
     seat_grade = serializers.SerializerMethodField('get_seat_grade')
@@ -154,14 +154,7 @@ class WatchedMoviesSerializer(serializers.ModelSerializer):
     start_time = serializers.DateTimeField(source='schedule.start_time', format='%Y-%m-%d %H:%M')
     payed_at = serializers.DateTimeField(source='payment.payed_at', format='%Y-%m-%d')
     watched_at = serializers.DateTimeField(source='schedule.start_time', format='%Y-%m-%d %H:%M')
-
-    poster = serializers.ImageField(source='schedule.movie.poster')
-    grade = serializers.CharField(source='schedule.movie.grade')
-    acc_favorite = serializers.SerializerMethodField('get_acc_favorite')
-    open_date = serializers.DateField(source='schedule.movie.open_date', format='%Y-%m-%d')
-    running_time = serializers.SerializerMethodField('get_running_time')
-    directors = serializers.SerializerMethodField('get_directors')
-    genres = serializers.SerializerMethodField('get_genres')
+    movie = MovieTimelineSerializer(source='schedule.movie')
 
     class Meta:
         model = Reservation
@@ -169,7 +162,6 @@ class WatchedMoviesSerializer(serializers.ModelSerializer):
             'payment_id',
             'reservation_code',
             'price',
-            'movie_name',
             'screen_type',
             'screen_name',
             'seat_grade',
@@ -179,14 +171,7 @@ class WatchedMoviesSerializer(serializers.ModelSerializer):
             'start_time',
             'payed_at',
             'watched_at',
-
-            'poster',
-            'grade',
-            'acc_favorite',
-            'open_date',
-            'running_time',
-            'directors',
-            'genres',
+            'movie',
         ]
 
     def get_seat_grade(self, reservation):
