@@ -1,5 +1,8 @@
 import datetime
 
+from allauth.account import app_settings as allauth_settings
+from allauth.account.adapter import get_adapter
+from allauth.utils import email_address_exists
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count, Q
@@ -12,8 +15,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from movies.models import Movie, Rating
 from reservations.models import Reservation
-from theaters.models import Schedule
-from utils.excepts import TakenNumberException, UsernameDuplicateException
+from utils.excepts import TakenNumberException, UsernameDuplicateException, TakenEmailException
 from .models import Profile
 
 Member = get_user_model()
@@ -24,6 +26,13 @@ class SignUpSerializer(RegisterSerializer):
     email = serializers.EmailField()
     mobile = PhoneNumberField()
     birth_date = serializers.DateField()
+
+    def validate_email(self, email):
+        email = get_adapter().clean_email(email)
+        if allauth_settings.UNIQUE_EMAIL:
+            if email and email_address_exists(email):
+                raise TakenEmailException
+        return email
 
     def validate_mobile(self, mobile):
         try:
