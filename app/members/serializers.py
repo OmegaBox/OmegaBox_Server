@@ -180,6 +180,7 @@ class MemberDetailSerializer(serializers.ModelSerializer):
 class ReservedMoviesSerializer(serializers.ModelSerializer):
     reservation_id = serializers.IntegerField(source='id')
     reservation_code = serializers.CharField(source='payment.code')
+    price = serializers.IntegerField(source='payment.price')
     movie_name = serializers.CharField(source='schedule.movie.name_kor')
     screen_type = serializers.CharField(source='schedule.screen.screen_type')
     screen_name = serializers.CharField(source='schedule.screen.name')
@@ -195,6 +196,7 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
         fields = [
             'reservation_id',
             'reservation_code',
+            'price',
             'movie_name',
             'screen_type',
             'screen_name',

@@ -196,47 +196,6 @@ class LikeMoviesSerializer(serializers.ModelSerializer):
         return [genre.name for genre in movie.genres.all()]
 
 
-# member별 타임라인 - 본영화
-class WatchedMoviesSerializer(serializers.ModelSerializer):
-    movie_id = serializers.IntegerField(source='id')
-    watched_at = serializers.SerializerMethodField('get_watched_at')
-    acc_favorite = serializers.SerializerMethodField('get_acc_favorite')
-    running_time = serializers.SerializerMethodField('get_running_time')
-    directors = serializers.SerializerMethodField('get_directors')
-    genres = serializers.SerializerMethodField('get_genres')
-
-    class Meta:
-        model = Movie
-        fields = [
-            'movie_id',
-            'grade',
-            'watched_at',
-            'name_kor',
-            'poster',
-            'acc_favorite',
-            'open_date',
-            'running_time',
-            'directors',
-            'genres',
-        ]
-
-    def get_watched_at(self, movie):
-        watched_at_list = movie.schedules.values_list('start_time', flat=True).distinct()
-        return [watched_at.strftime('%Y-%m-%d %H:%M') for watched_at in watched_at_list]
-
-    def get_acc_favorite(self, movie):
-        return movie.movie_likes.filter(liked=True).count()
-
-    def get_running_time(self, obj):
-        return reformat_duration(obj.running_time)
-
-    def get_directors(self, movie):
-        return [director.name for director in movie.directors.all()]
-
-    def get_genres(self, movie):
-        return [genre.name for genre in movie.genres.all()]
-
-
 # member별 타임라인 - 한줄평영화
 class RatingMoviesSerializer(serializers.ModelSerializer):
     movie_id = serializers.IntegerField(source='movie.id')

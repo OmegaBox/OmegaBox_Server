@@ -15,9 +15,9 @@ urlpatterns = [
     path('token/verify/', TokenVerifyView.as_view()),
 
     path('<int:pk>/', MemberDetailView.as_view()),
-    path('<int:pk>/timeline/like-movies/', LikeMoviesView.as_view()),
-    path('<int:pk>/timeline/watched-movies/', WatchedMoviesView.as_view()),
-    path('<int:pk>/timeline/rating-movies/', RatingMoviesView.as_view()),
-    path('<int:pk>/mypage/reserved-movies/', ReservedMoviesView.as_view()),
-    path('<int:pk>/mypage/reserved-movies/canceled/', CanceledReservationMoviesView.as_view()),
+    path('<int:pk>/like-movies/', LikeMoviesView.as_view()),
+    path('<int:pk>/watched-movies/', WatchedMoviesView.as_view()),
+    path('<int:pk>/rating-movies/', RatingMoviesView.as_view()),
+    path('<int:pk>/reserved-movies/', ReservedMoviesView.as_view()),
+    path('<int:pk>/reserved-movies/canceled/', CanceledReservationMoviesView.as_view()),
 ]
