@@ -4,9 +4,12 @@ from rest_framework.generics import get_object_or_404
 
 from movies.serializers import MovieTimelineSerializer
 from theaters.models import SeatGrade, Schedule, Seat, SeatType
-from utils import calculate_seat_price, verify_receipt_from_bootpay_server, reformat_duration
-from utils.excepts import TakenSeatException, InvalidGradeChoicesException, \
-    InvalidSeatException
+from utils import (
+    calculate_seat_price, verify_receipt_from_bootpay_server, reformat_duration, cancel_payment_from_bootpay_server
+)
+from utils.excepts import (
+    TakenSeatException, InvalidGradeChoicesException, InvalidSeatException, PaymentIDReceiptIDNotMatchingException
+)
 from .models import Reservation, Payment
 
 
@@ -136,6 +139,33 @@ class PaymentCreateSerializer(serializers.Serializer):
             payment=payment,
         )
         return payment
+
+    def to_representation(self, instance):
+        return PaymentDetailSerializer(instance).data
+
+
+class PaymentCancelSerializer(serializers.Serializer):
+    receipt_id = serializers.CharField()
+    price = serializers.IntegerField()
+
+    def validate_receipt_id(self, receipt_id):
+        if self.instance.receipt_id == receipt_id:
+            return receipt_id
+        raise PaymentIDReceiptIDNotMatchingException
+
+    def validate(self, data):
+        result = cancel_payment_from_bootpay_server(
+            receipt_id=data['receipt_id'],
+            price=data['price'],
+        )
+        data['canceled_at'] = result['revoked_at']
+        return data
+
+    def update(self, instance, validated_data):
+        instance.is_canceled = True
+        instance.canceled_at = validated_data['canceled_at']
+        instance.save()
+        return instance
 
     def to_representation(self, instance):
         return PaymentDetailSerializer(instance).data
