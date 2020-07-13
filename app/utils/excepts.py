@@ -90,3 +90,15 @@ class TakenEmailException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = '이미 가입된 이메일 주소입니다.'
     default_code = 'TakenEmail'
+
+
+class PaymentCancelFailException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '결제 취소가 실패했습니다.'
+    default_code = 'PaymentCancelFail'
+
+
+class PaymentIDReceiptIDNotMatchingException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = 'payment_id와 receipt_id가 매칭되지 않습니다.'
+    default_code = 'PaymentIDReceiptIDNotMatching'
