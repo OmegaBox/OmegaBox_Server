@@ -84,3 +84,9 @@ class UnverifiedReceiptException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = '부트페이 영수증 검증 실패 - 결제완료가 아니거나 가격이 틀림'
     default_code = 'UnverifiedReceipt'
+
+
+class TakenEmailException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '이미 가입된 이메일 주소입니다.'
+    default_code = 'TakenEmail'

@@ -12,7 +12,7 @@ from .serializers import SeatGradeCreateSerializer, SeatGradeDetailSerializer, P
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
     operation_summary='Make Reservation',
-    operation_description='영화 좌석 예매 - 결제 전',
+    operation_description='영화 좌석 예매 (결제 전) - 10분 이내에 미결제 시 자동 삭제',
     responses={200: SeatGradeDetailSerializer(many=True)}
 ))
 class SeatGradeCreateView(CreateAPIView):
