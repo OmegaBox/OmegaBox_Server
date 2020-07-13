@@ -99,7 +99,6 @@ class TokenVerifyView(DefaultTokenVerifyView):
 class MemberDetailView(RetrieveAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberDetailSerializer
-    permission_classes = [IsAuthorizedMember, IsAdminUser, ]
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -108,7 +107,6 @@ class MemberDetailView(RetrieveAPIView):
 ))
 class LikeMoviesView(ListAPIView):
     serializer_class = LikeMoviesSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser, ]
 
     def get_queryset(self):
         return Movie.objects.filter(
@@ -123,7 +121,6 @@ class LikeMoviesView(ListAPIView):
 ))
 class WatchedMoviesView(ListAPIView):
     serializer_class = WatchedMoviesSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser, ]
 
     def get_queryset(self):
         return Reservation.objects.filter(
@@ -140,7 +137,6 @@ class WatchedMoviesView(ListAPIView):
 ))
 class RatingMoviesView(ListAPIView):
     serializer_class = RatingMoviesSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser, ]
 
     def get_queryset(self):
         return Rating.objects.filter(
@@ -153,11 +149,11 @@ class ReservedMoviesView(ListAPIView):
 
     def get_queryset(self):
         return Reservation.objects.filter(
-            schedule__start_time__gt=datetime.datetime.today(),
+            schedule__start_time__lt=datetime.datetime.today(),
             member__pk=self.kwargs['pk'],
             payment__isnull=False,
             payment__is_canceled=False
-        ).distinct().order_by('reserved_at')
+        ).order_by('reserved_at')
 
 
 class CanceledReservationMoviesView(ListAPIView):
