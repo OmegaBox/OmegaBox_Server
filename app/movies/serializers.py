@@ -43,9 +43,9 @@ class MovieSerializer(serializers.ModelSerializer):
         return movie.movie_likes.filter(liked=True).count()
 
 
-class RatingSerializer(serializers.ModelSerializer):
-    rating_id = serializers.IntegerField(source='id')
-    member = serializers.CharField(source='member.name')
+class RatingsSerializer(serializers.ModelSerializer):
+    rating_id = serializers.IntegerField(source='id', read_only=True)
+    member = serializers.CharField(source='member.name', read_only=True)
 
     class Meta:
         model = Rating
@@ -67,7 +67,7 @@ class MovieDetailSerializer(serializers.ModelSerializer):
     actors = serializers.SerializerMethodField()
     genres = serializers.SerializerMethodField()
     key_point_count = serializers.SerializerMethodField('get_key_point_count')
-    ratings = RatingSerializer(many=True, source='ratings.all')
+    ratings = RatingsSerializer(many=True, source='ratings.all')
 
     class Meta:
         model = Movie
