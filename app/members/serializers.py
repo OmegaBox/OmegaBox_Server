@@ -15,7 +15,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from movies.models import Movie, Rating
 from reservations.models import Reservation
-from utils.excepts import TakenNumberException, UsernameDuplicateException, TakenEmailException
+from utils.excepts import UsernameDuplicateException, TakenEmailException
 from .models import Profile
 
 Member = get_user_model()
@@ -34,12 +34,12 @@ class SignUpSerializer(RegisterSerializer):
                 raise TakenEmailException
         return email
 
-    def validate_mobile(self, mobile):
-        try:
-            Member.objects.get(mobile=mobile)
-            raise TakenNumberException
-        except ObjectDoesNotExist:
-            return mobile
+    # def validate_mobile(self, mobile):
+    #     try:
+    #         Member.objects.get(mobile=mobile)
+    #         raise TakenNumberException
+    #     except ObjectDoesNotExist:
+    #         return mobile
 
     def validate_username(self, username):
         try:
