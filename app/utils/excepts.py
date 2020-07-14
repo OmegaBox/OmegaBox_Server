@@ -31,7 +31,7 @@ class TakenNumberException(APIException):
     default_code = 'TakenNumber'
 
 
-class InvalidScheduleIDException(APIException):
+class InvalidScheduleIdException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = '유효하지 않은 스케쥴입니다.'
     default_code = 'InvalidScheduleID'
@@ -54,6 +54,12 @@ class InvalidSeatException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = '예약 불가능한 좌석입니다. - 띄어앉기석'
     default_code = 'InvalidSeat(sit_apart)'
+
+
+class InvalidSeatIdException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '유효하지 않은 좌석 id입니다.'
+    default_code = 'InvalidSeatId'
 
 
 class UsernameDuplicateException(APIException):
@@ -108,3 +114,4 @@ class ReservationOwnershipException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = '예약자와 결제자가 다릅니다.'
     default_code = 'ReservationOwnership'
+

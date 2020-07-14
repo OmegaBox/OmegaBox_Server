@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 
 from reservations.models import Reservation
 from utils import calculate_seat_price
-from utils.excepts import InvalidScheduleIDException, SeatNamesMissingException
+from utils.excepts import InvalidScheduleIdException, SeatNamesMissingException
 from .models import Schedule, Theater, Screen, SeatType
 from .params import movies_query_param, adults_query_param, teens_query_param, preferentials_query_param, \
     seat_names_query_param
@@ -126,7 +126,7 @@ class ReservedSeatList(ListAPIView):
             schedule = Schedule.objects.get(pk=schedule_id)
             return Reservation.objects.filter(schedule=schedule).values('seat_grades__seat__name')
         except ObjectDoesNotExist:
-            raise InvalidScheduleIDException
+            raise InvalidScheduleIdException
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -144,7 +144,7 @@ class TotalAndReservedSeatsCount(APIView):
                     reserved_seats=Count('seat__reservations'))['reserved_seats']
             })
         except ObjectDoesNotExist:
-            raise InvalidScheduleIDException
+            raise InvalidScheduleIdException
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
