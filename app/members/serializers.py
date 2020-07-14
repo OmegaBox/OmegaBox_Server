@@ -293,6 +293,7 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
     reservation_code = serializers.CharField(source='payment.code')
     price = serializers.IntegerField(source='payment.price')
     movie_name = serializers.CharField(source='schedule.movie.name_kor')
+    poster = serializers.ImageField(source='schedule.movie.poster')
     screen_type = serializers.CharField(source='schedule.screen.screen_type')
     screen_name = serializers.CharField(source='schedule.screen.name')
     theater_name = serializers.CharField(source='schedule.screen.theater.name')
@@ -309,6 +310,7 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
             'reservation_code',
             'price',
             'movie_name',
+            'poster',
             'screen_type',
             'screen_name',
             'theater_name',
