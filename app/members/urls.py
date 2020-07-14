@@ -14,10 +14,10 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view()),
     path('token/verify/', TokenVerifyView.as_view()),
 
-    path('<int:pk>/', MemberDetailView.as_view()),
-    path('<int:pk>/like-movies/', LikeMoviesView.as_view()),
-    path('<int:pk>/watched-movies/', WatchedMoviesView.as_view()),
-    path('<int:pk>/rating-movies/', RatingMoviesView.as_view()),
-    path('<int:pk>/reserved-movies/', ReservedMoviesView.as_view()),
-    path('<int:pk>/reserved-movies/canceled/', CanceledReservationMoviesView.as_view()),
+    path('detail/', MemberDetailView.as_view()),
+    path('like-movies/', LikeMoviesView.as_view()),
+    path('watched-movies/', WatchedMoviesView.as_view()),
+    path('rating-movies/', RatingMoviesView.as_view()),
+    path('reserved-movies/', ReservedMoviesView.as_view()),
+    path('reserved-movies/canceled/', CanceledReservationMoviesView.as_view()),
 ]

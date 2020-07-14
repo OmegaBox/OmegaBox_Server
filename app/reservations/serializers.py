@@ -1,11 +1,10 @@
-from django.db.models import Count, Q
+from rest_framework import serializers
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
-from movies.serializers import MovieTimelineSerializer
 from theaters.models import SeatGrade, Schedule, Seat, SeatType
 from utils import (
-    calculate_seat_price, verify_receipt_from_bootpay_server, reformat_duration, cancel_payment_from_bootpay_server
+    calculate_seat_price, verify_receipt_from_bootpay_server, cancel_payment_from_bootpay_server
 )
 from utils.excepts import (
     TakenSeatException, InvalidGradeChoicesException, InvalidSeatException, PaymentIDReceiptIDNotMatchingException
@@ -113,6 +112,10 @@ class PaymentCreateSerializer(serializers.Serializer):
         child=serializers.IntegerField()
     )
 
+    def validate_reservations_id(self, reservations_id):
+        # 본인의 예약인지 확인하는 로직 필요
+        pass
+
     def validate(self, data):
         receipt_id = data['receipt_id']
         price = data['price']
@@ -154,6 +157,7 @@ class PaymentCancelSerializer(serializers.Serializer):
         raise PaymentIDReceiptIDNotMatchingException
 
     def validate(self, data):
+        # 본인의 결제인지 확인하는 로직 필요
         result = cancel_payment_from_bootpay_server(
             receipt_id=data['receipt_id'],
             price=data['price'],

@@ -10,7 +10,6 @@ from rest_auth.views import (
 )
 from rest_framework import status
 from rest_framework.generics import RetrieveAPIView, ListAPIView
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import (
@@ -21,7 +20,6 @@ from rest_framework_simplejwt.views import (
 from movies.models import Movie, Rating
 from reservations.models import Reservation
 from utils.excepts import UsernameDuplicateException
-from .permissions import IsAuthorizedMember
 from .serializers import SignUpSerializer, MemberDetailSerializer, LoginSerializer, TokenRefreshSerializer, \
     TokenRefreshResultSerializer, JWTSerializer, CheckUsernameDuplicateSerializer, LikeMoviesSerializer, \
     WatchedMoviesSerializer, RatingMoviesSerializer, ReservedMoviesSerializer, CanceledReservationMoviesSerializer
@@ -95,8 +93,10 @@ class TokenVerifyView(DefaultTokenVerifyView):
     operation_description='회원 상세 정보',
 ))
 class MemberDetailView(RetrieveAPIView):
-    queryset = Member.objects.all()
     serializer_class = MemberDetailSerializer
+
+    def get_object(self):
+        return Member.objects.get(pk=self.request.user.pk)
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -108,7 +108,7 @@ class LikeMoviesView(ListAPIView):
 
     def get_queryset(self):
         return Movie.objects.filter(
-            like_members__pk=self.kwargs['pk'],
+            like_members=self.request.user,
             movie_likes__liked=True
         ).order_by('movie_likes__liked_at')
 
@@ -123,7 +123,7 @@ class WatchedMoviesView(ListAPIView):
     def get_queryset(self):
         return Reservation.objects.filter(
             schedule__start_time__lte=datetime.datetime.today(),
-            member__pk=self.kwargs['pk'],
+            member=self.request.user,
             payment__isnull=False,
             payment__is_canceled=False
         ).order_by('schedule__start_time')
@@ -138,7 +138,7 @@ class RatingMoviesView(ListAPIView):
 
     def get_queryset(self):
         return Rating.objects.filter(
-            member__pk=self.kwargs['pk']
+            member=self.request.user
         ).order_by('created_at')
 
 
@@ -152,7 +152,7 @@ class ReservedMoviesView(ListAPIView):
     def get_queryset(self):
         return Reservation.objects.filter(
             schedule__start_time__gt=datetime.datetime.today(),
-            member__pk=self.kwargs['pk'],
+            member=self.request.user,
             payment__isnull=False,
             payment__is_canceled=False
         ).order_by('reserved_at')
@@ -164,6 +164,6 @@ class CanceledReservationMoviesView(ListAPIView):
     def get_queryset(self):
         return Reservation.objects.filter(
             schedule__start_time__gt=datetime.datetime.today(),
-            member__pk=self.kwargs['pk'],
+            member=self.request.user,
             payment__is_canceled=True
         ).order_by('payment.canceled_at')
