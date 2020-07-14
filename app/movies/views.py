@@ -1,11 +1,17 @@
 from django.db.models import Q, Count, Sum
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework.generics import RetrieveAPIView, ListAPIView, CreateAPIView
+from rest_framework import generics
+from rest_framework.generics import RetrieveAPIView, ListAPIView, CreateAPIView, UpdateAPIView, RetrieveUpdateAPIView, \
+    get_object_or_404, GenericAPIView
+from rest_framework.mixins import RetrieveModelMixin
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .models import Movie, Rating
-from .serializers import MovieSerializer, MovieDetailSerializer, AgeBookingSerializer, RatingsSerializer
+from .models import Movie, Rating, MovieLike
+from .serializers import MovieSerializer, MovieDetailSerializer, AgeBookingSerializer, RatingsSerializer, \
+    MovieLikeSerializer
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -103,3 +109,25 @@ class RatingCreateView(CreateAPIView):
     def perform_create(self, serializer):
         movie = Movie.objects.get(pk=self.kwargs['pk'])
         serializer.save(member=self.request.user, movie=movie)
+
+
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Movie Like Click',
+    operation_description='해당 영화 좋아요 누르기',
+))
+class MovieLikeCheckView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def get_object(self, pk):
+        try:
+            movie = Movie.objects.get(pk=pk)
+            return MovieLike.objects.get(movie=movie, member=self.request.user)
+        except MovieLike.DoesNotExist:
+            return MovieLike.objects.create(movie=movie, member=self.request.user, liked=False)
+
+    def get(self, request, pk):
+        movie_like = self.get_object(pk)
+        movie_like.liked = not movie_like.liked
+        movie_like.save()
+        serializer = MovieLikeSerializer(movie_like)
+        return Response(serializer.data)
