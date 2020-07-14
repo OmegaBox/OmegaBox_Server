@@ -10,6 +10,7 @@ from rest_auth.views import (
 )
 from rest_framework import status
 from rest_framework.generics import RetrieveAPIView, ListAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import (
@@ -94,6 +95,7 @@ class TokenVerifyView(DefaultTokenVerifyView):
 ))
 class MemberDetailView(RetrieveAPIView):
     serializer_class = MemberDetailSerializer
+    permission_classes = [IsAuthenticated, ]
 
     def get_object(self):
         return Member.objects.get(pk=self.request.user.pk)
@@ -105,6 +107,7 @@ class MemberDetailView(RetrieveAPIView):
 ))
 class LikeMoviesView(ListAPIView):
     serializer_class = LikeMoviesSerializer
+    permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
         return Movie.objects.filter(
@@ -119,6 +122,7 @@ class LikeMoviesView(ListAPIView):
 ))
 class WatchedMoviesView(ListAPIView):
     serializer_class = WatchedMoviesSerializer
+    permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
         return Reservation.objects.filter(
@@ -135,6 +139,7 @@ class WatchedMoviesView(ListAPIView):
 ))
 class RatingMoviesView(ListAPIView):
     serializer_class = RatingMoviesSerializer
+    permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
         return Rating.objects.filter(
@@ -148,6 +153,7 @@ class RatingMoviesView(ListAPIView):
 ))
 class ReservedMoviesView(ListAPIView):
     serializer_class = ReservedMoviesSerializer
+    permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
         return Reservation.objects.filter(
@@ -160,6 +166,7 @@ class ReservedMoviesView(ListAPIView):
 
 class CanceledReservationMoviesView(ListAPIView):
     serializer_class = CanceledReservationMoviesSerializer
+    permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
         return Reservation.objects.filter(
