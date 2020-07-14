@@ -29,10 +29,10 @@ class Reservation(models.Model):
         on_delete=models.CASCADE,
         related_name='reservations',
     )
-    payment = models.ForeignKey(
+    payment = models.OneToOneField(
         'Payment',
         on_delete=models.CASCADE,
-        related_name='reservations',
+        related_name='reservation',
         blank=True,
         null=True,
     )
@@ -51,6 +51,7 @@ class Payment(models.Model):
         ('card', '카드결제'),
         ('easy', '간편결제'),
     ]
+    member = models.OneToOneField(AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     code = models.CharField(max_length=50)
     receipt_id = models.CharField(max_length=50)
     price = models.PositiveIntegerField()

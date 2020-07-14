@@ -98,7 +98,13 @@ class PaymentCancelFailException(APIException):
     default_code = 'PaymentCancelFail'
 
 
-class PaymentIDReceiptIDNotMatchingException(APIException):
+class PaymentIdReceiptIdNotMatchingException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = 'payment_id와 receipt_id가 매칭되지 않습니다.'
     default_code = 'PaymentIDReceiptIDNotMatching'
+
+
+class ReservationOwnershipException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '예약자와 결제자가 다릅니다.'
+    default_code = 'ReservationOwnership'
