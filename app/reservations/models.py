@@ -63,6 +63,7 @@ class Payment(models.Model):
     payed_at = models.DateTimeField(auto_now_add=True)
     is_canceled = models.BooleanField(default=False)
     canceled_at = models.DateTimeField(auto_now=True)
+    is_point_saved = models.BooleanField(default=False)
 
 
 @receiver(post_save, sender=Payment)

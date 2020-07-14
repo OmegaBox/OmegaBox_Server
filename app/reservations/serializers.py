@@ -196,6 +196,7 @@ class PaymentCancelSerializer(serializers.Serializer):
         raise PaymentIdReceiptIdNotMatchingException
 
     def validate(self, data):
+        # 영화 상영 시간이 지났으면 취소불가하는 로직 추가
         result = cancel_payment_from_bootpay_server(
             receipt_id=data['receipt_id'],
             price=data['price'],
