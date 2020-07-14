@@ -100,7 +100,7 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
             'payed_at',
             'is_canceled',
             'canceled_at',
-            'reservations',
+            'reservation',
         ]
 
 
