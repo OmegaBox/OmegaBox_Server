@@ -43,8 +43,7 @@ class PaymentCreateView(CreateAPIView):
     operation_description='결제 취소',
     responses={200: PaymentDetailSerializer()}
 ))
-class PaymentCancelView(UpdateModelMixin,
-                        GenericAPIView):
+class PaymentCancelView(UpdateModelMixin, GenericAPIView):
     serializer_class = PaymentCancelSerializer
 
     def get_object(self):
