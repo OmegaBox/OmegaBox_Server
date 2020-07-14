@@ -1,10 +1,10 @@
 from django.db.models import Q, Count, Sum
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework.generics import RetrieveAPIView, ListAPIView
+from rest_framework.generics import RetrieveAPIView, ListAPIView, CreateAPIView
 
-from .models import Movie
-from .serializers import MovieSerializer, MovieDetailSerializer, AgeBookingSerializer
+from .models import Movie, Rating
+from .serializers import MovieSerializer, MovieDetailSerializer, AgeBookingSerializer, RatingsSerializer
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -83,3 +83,17 @@ class AgeBookingView(RetrieveAPIView):
         )
 
         return aggregated_dict
+
+
+class RatingCreateView(CreateAPIView):
+    serializer_class = RatingsSerializer
+
+    def get_queryset(self):
+        return Rating.objects.filter(
+            member=self.request.user,
+            movie=self.kwargs['pk']
+        )
+
+    def perform_create(self, serializer):
+        movie = Movie.objects.get(pk=self.kwargs['pk'])
+        serializer.save(member=self.request.user, movie=movie)

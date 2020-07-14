@@ -9,7 +9,7 @@ from rest_auth.views import (
     LogoutView as DefaultLogoutView, LoginView as DefaultLoginView
 )
 from rest_framework import status
-from rest_framework.generics import RetrieveAPIView, ListAPIView
+from rest_framework.generics import RetrieveAPIView, ListAPIView, ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import (

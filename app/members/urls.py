@@ -20,4 +20,5 @@ urlpatterns = [
     path('rating-movies/', RatingMoviesView.as_view()),
     path('reserved-movies/', ReservedMoviesView.as_view()),
     path('reserved-movies/canceled/', CanceledReservationMoviesView.as_view()),
+
 ]
