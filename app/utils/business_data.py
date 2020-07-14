@@ -101,3 +101,8 @@ PRICE_DISCOUNT_RATE_CHART = {
     "default": 1,
 
 }
+
+POINT_RATE_PER_TIER_CHART = {
+    "basic": 0.01,
+    "vip": 0.02,
+}

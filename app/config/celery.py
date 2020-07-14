@@ -15,7 +15,11 @@ app.conf.beat_schedule = {
     "delete_unpaid_reservations_task": {
         "task": "reservations.tasks.delete_unpaid_reservations",
         "schedule": crontab(minute="*"),
-    }
+    },
+    "save_point_for_played_movie_task": {
+        "task": "reservations.tasks.save_point_for_played_movie",
+        "schedule": crontab(minute="*"),
+    },
 }
 app.autodiscover_tasks()
 
