@@ -1,9 +1,9 @@
 from django.urls import path
 
-from .views import SeatGradeCreateView, PaymentCreateView, PaymentCancelView
+from .views import ReservationCreateView, PaymentCreateView, PaymentCancelView
 
 urlpatterns = [
-    path('', SeatGradeCreateView.as_view()),
+    path('', ReservationCreateView.as_view()),
     path('payments/', PaymentCreateView.as_view()),
     path('payments/<int:pk>/cancel/', PaymentCancelView.as_view()),
 ]

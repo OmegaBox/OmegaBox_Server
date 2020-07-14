@@ -1,38 +1,28 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
 from theaters.models import SeatGrade, Schedule, Seat, SeatType
 from utils import (
-    calculate_seat_price, verify_receipt_from_bootpay_server, cancel_payment_from_bootpay_server
-)
+    verify_receipt_from_bootpay_server, cancel_payment_from_bootpay_server,
+    calculate_seat_price)
 from utils.excepts import (
     TakenSeatException, InvalidGradeChoicesException, InvalidSeatException, PaymentIdReceiptIdNotMatchingException,
-    ReservationOwnershipException)
+    ReservationOwnershipException, InvalidScheduleIdException, InvalidSeatIdException)
 from .models import Reservation, Payment
 
 
-class ReservationDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Reservation
-        fields = [
-            'id',
-            'member',
-            'schedule',
-            'payment',
-        ]
-
-
 class SeatGradeDetailSerializer(serializers.ModelSerializer):
-    reservation = ReservationDetailSerializer()
+    seat_grade_id = serializers.IntegerField(source='id')
     price = serializers.SerializerMethodField()
 
     class Meta:
         model = SeatGrade
         fields = [
-            'id',
+            'seat_grade_id',
             'grade',
+            'seat',
             'price',
-            'reservation',
         ]
 
     def get_price(self, obj):
@@ -42,46 +32,79 @@ class SeatGradeDetailSerializer(serializers.ModelSerializer):
         )
 
 
-class SeatGradeCreateSerializer(serializers.Serializer):
-    grade = serializers.CharField()
-    seat_id = serializers.IntegerField()
+class ReservationDetailSerializer(serializers.ModelSerializer):
+    reservation_id = serializers.IntegerField(source='id')
+    seat_grades = SeatGradeDetailSerializer(many=True)
+
+    class Meta:
+        model = Reservation
+        fields = [
+            'reservation_id',
+            'member',
+            'schedule',
+            'payment',
+            'reserved_at',
+            'seat_grades',
+        ]
+
+
+class ReservationCreateSerializer(serializers.Serializer):
     schedule_id = serializers.IntegerField()
+    grades = serializers.ListField(
+        child=serializers.CharField()
+    )
+    seat_ids = serializers.ListField(
+        child=serializers.IntegerField()
+    )
+
+    def validate_grades(self, grades):
+        # grade choice 유효성 검사
+        for grade in grades:
+            if grade not in list(zip(*SeatGrade.SEAT_GRADE_CHOICES))[0]:
+                raise InvalidGradeChoicesException
+        return grades
 
     def validate(self, data):
-        # grade choice 유효성 검사
-        if data['grade'] not in list(zip(*SeatGrade.SEAT_GRADE_CHOICES))[0]:
-            raise InvalidGradeChoicesException
-
         # 이미 예약된 좌석인지 확인
         reservations = Reservation.objects.filter(schedule_id=data['schedule_id'])
         if reservations.exists():
-            if reservations.filter(seat_grades__seat__id__contains=data['seat_id']).exists():
+            if reservations.filter(seat_grades__seat__id__in=data['seat_ids']).exists():
                 raise TakenSeatException
 
         # 띄어앉기석인지 확인
-        seat_type = get_object_or_404(
-            SeatType,
-            seat_id=data['seat_id'],
-            schedule_id=data['schedule_id']
-        )
-        if seat_type.type == 'sit_apart':
+        if SeatType.objects.filter(
+                schedule_id=data['schedule_id'], seat_id__in=data['seat_ids'], type='sit_apart'
+        ).exists():
             raise InvalidSeatException
+
         return data
 
     def create(self, validated_data):
-        schedule = get_object_or_404(Schedule, pk=validated_data.get('schedule_id'))
+        try:
+            schedule = Schedule.objects.get(pk=validated_data.get('schedule_id'))
+        except ObjectDoesNotExist:
+            raise InvalidScheduleIdException
+
         reservation = Reservation.objects.create(schedule=schedule)
 
-        seat = get_object_or_404(Seat, pk=validated_data.get('seat_id'))
+        zipped_list = list(zip(validated_data['grades'], validated_data['seat_ids']))
 
-        return SeatGrade.objects.create(
-            grade=validated_data.get('grade'),
-            seat=seat,
-            reservation=reservation,
-        )
+        for _tuple in zipped_list:
+            grade = _tuple[0]
+            seat_id = _tuple[1]
+            try:
+                seat = Seat.objects.get(pk=seat_id)
+            except ObjectDoesNotExist:
+                raise InvalidSeatIdException
+            SeatGrade.objects.create(
+                grade=grade,
+                reservation=reservation,
+                seat=seat,
+            )
+        return reservation
 
     def to_representation(self, instance):
-        return SeatGradeDetailSerializer(instance).data
+        return ReservationDetailSerializer(instance).data
 
 
 class PaymentDetailSerializer(serializers.ModelSerializer):
@@ -124,10 +147,9 @@ class PaymentCreateSerializer(serializers.Serializer):
 
         # 실제 결제해야하는 금액과 결제된 금액 확인
         target_price = 0
-        # for reservation_id in data['reservations_id']:
-        #     reservation = Reservation.objects.get(pk=receipt_id)
-        #     screen_type = reservation.schedule.screen.screen_type
-        #     grade = reservation.
+        reservation = Reservation.objects.get(pk=data['reservation_id'])
+        screen_type = reservation.schedule.screen.screen_type
+        qs = reservation.seat_grades.values('grade')
 
         result = verify_receipt_from_bootpay_server(receipt_id, price)
 

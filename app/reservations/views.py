@@ -4,31 +4,25 @@ from rest_framework.generics import CreateAPIView, GenericAPIView
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated
 
-from theaters.models import SeatGrade
-from .models import Payment
-from .serializers import SeatGradeCreateSerializer, SeatGradeDetailSerializer, PaymentCreateSerializer, \
-    PaymentDetailSerializer, PaymentCancelSerializer
+from .models import Payment, Reservation
+from .serializers import PaymentCreateSerializer, \
+    PaymentDetailSerializer, PaymentCancelSerializer, ReservationCreateSerializer, ReservationDetailSerializer
 
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
     operation_summary='Make Reservation',
     operation_description='영화 좌석 예매 (결제 전) - 10분 이내에 미결제 시 자동 삭제',
-    responses={200: SeatGradeDetailSerializer(many=True)}
+    responses={201: ReservationDetailSerializer()}
 ))
-class SeatGradeCreateView(CreateAPIView):
-    queryset = SeatGrade.objects.all()
-    serializer_class = SeatGradeCreateSerializer
+class ReservationCreateView(CreateAPIView):
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationCreateSerializer
     permission_classes = [IsAuthenticated, ]
 
-    def get_serializer(self, *args, **kwargs):
-        kwargs['many'] = True
-        return super(SeatGradeCreateView, self).get_serializer(*args, **kwargs)
-
     def perform_create(self, serializer):
-        instance_list = serializer.save()
-        for instance in instance_list:
-            instance.reservation.member = self.request.user
-            instance.reservation.save()
+        instance = serializer.save()
+        instance.member = self.request.user
+        instance.save()
 
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
