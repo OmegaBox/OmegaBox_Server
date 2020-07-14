@@ -19,14 +19,12 @@ from rest_framework_simplejwt.views import (
 )
 
 from movies.models import Movie, Rating
-from movies.serializers import LikeMoviesSerializer, RatingMoviesSerializer
 from reservations.models import Reservation
-from reservations.serializers import WatchedMoviesSerializer
 from utils.excepts import UsernameDuplicateException
 from .permissions import IsAuthorizedMember
 from .serializers import SignUpSerializer, MemberDetailSerializer, LoginSerializer, TokenRefreshSerializer, \
-    TokenRefreshResultSerializer, JWTSerializer, CheckUsernameDuplicateSerializer, ReservedMoviesSerializer, \
-    CanceledReservationMoviesSerializer
+    TokenRefreshResultSerializer, JWTSerializer, CheckUsernameDuplicateSerializer, LikeMoviesSerializer, \
+    WatchedMoviesSerializer, RatingMoviesSerializer, ReservedMoviesSerializer, CanceledReservationMoviesSerializer
 
 Member = get_user_model()
 
@@ -144,6 +142,10 @@ class RatingMoviesView(ListAPIView):
         ).order_by('created_at')
 
 
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Reserved Movie List per Member',
+    operation_description='멤버별 영화 예매내역 리스트 정보'
+))
 class ReservedMoviesView(ListAPIView):
     serializer_class = ReservedMoviesSerializer
 

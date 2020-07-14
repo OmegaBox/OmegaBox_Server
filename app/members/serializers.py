@@ -14,7 +14,9 @@ from rest_framework_simplejwt.serializers import TokenRefreshSerializer as Defau
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from movies.models import Movie, Rating
+from movies.serializers import MovieTimelineSerializer
 from reservations.models import Reservation
+from utils import reformat_duration
 from utils.excepts import UsernameDuplicateException, TakenEmailException
 from .models import Profile
 
@@ -177,11 +179,121 @@ class MemberDetailSerializer(serializers.ModelSerializer):
         ).count()
 
 
+class LikeMoviesSerializer(serializers.ModelSerializer):
+    movie_name = serializers.CharField(source='name_kor')
+    acc_favorite = serializers.SerializerMethodField('get_acc_favorite')
+    open_date = serializers.DateField(format='%Y-%m-%d')
+    running_time = serializers.SerializerMethodField('get_running_time')
+    directors = serializers.SerializerMethodField('get_directors')
+    genres = serializers.SerializerMethodField('get_genres')
+    liked_at = serializers.SerializerMethodField('get_liked_at')
+
+    class Meta:
+        model = Movie
+        fields = [
+            'movie_name',
+            'poster',
+            'grade',
+            'acc_favorite',
+            'open_date',
+            'running_time',
+            'directors',
+            'genres',
+            'liked_at',
+        ]
+
+    def get_acc_favorite(self, movie):
+        return movie.movie_likes.filter(liked=True).count()
+
+    def get_running_time(self, obj):
+        return reformat_duration(obj.running_time)
+
+    def get_directors(self, movie):
+        return movie.directors.values_list('name', flat=True)
+
+    def get_genres(self, movie):
+        return movie.genres.values_list('name', flat=True)
+
+    def get_liked_at(self, movie):
+        return movie.movie_likes.get().liked_at
+
+
+class WatchedMoviesSerializer(serializers.ModelSerializer):
+    payment_id = serializers.IntegerField(source='payment.id')
+    reservation_code = serializers.CharField(source='payment.code')
+    price = serializers.IntegerField(source='payment.price')
+    screen_type = serializers.CharField(source='schedule.screen.screen_type')
+    screen_name = serializers.CharField(source='schedule.screen.name')
+    seat_grade = serializers.SerializerMethodField('get_seat_grade')
+    seat_name = serializers.SerializerMethodField('get_seat_name')
+    theater_name = serializers.CharField(source='schedule.screen.theater.name')
+    theater_region = serializers.CharField(source='schedule.screen.theater.region.name')
+    start_time = serializers.DateTimeField(source='schedule.start_time', format='%Y-%m-%d %H:%M')
+    payed_at = serializers.DateTimeField(source='payment.payed_at', format='%Y-%m-%d')
+    movie = MovieTimelineSerializer(source='schedule.movie')
+
+    class Meta:
+        model = Reservation
+        fields = [
+            'payment_id',
+            'reservation_code',
+            'price',
+            'screen_type',
+            'screen_name',
+            'seat_grade',
+            'seat_name',
+            'theater_name',
+            'theater_region',
+            'start_time',
+            'payed_at',
+            'movie',
+        ]
+
+    def get_seat_grade(self, reservation):
+        return reservation.seat_grades.annotate(
+            adult=Count('grade', filter=Q(grade='adult')),
+            teen=Count('grade', filter=Q(grade='teen')),
+            preferential=Count('grade', filter=Q(grade='preferential'))
+        ).values('adult', 'teen', 'preferential')
+
+    def get_seat_name(self, reservation):
+        return reservation.seats.values_list('name', flat=True)
+
+    def get_acc_favorite(self, reservation):
+        return reservation.schedule.movie.movie_likes.filter(liked=True).count()
+
+    def get_running_time(self, obj):
+        return reformat_duration(obj.schedule.movie.running_time)
+
+    def get_directors(self, reservation):
+        return [director.name for director in reservation.schedule.movie.directors.all()]
+
+    def get_genres(self, reservation):
+        return [genre.name for genre in reservation.schedule.movie.genres.all()]
+
+
+class RatingMoviesSerializer(serializers.ModelSerializer):
+    rating_id = serializers.IntegerField(source='id')
+    movie = MovieTimelineSerializer()
+
+    class Meta:
+        model = Rating
+        fields = [
+            'rating_id',
+            'movie',
+            'created_at',
+            'score',
+            'key_point',
+            'comment',
+        ]
+
+
 class ReservedMoviesSerializer(serializers.ModelSerializer):
     reservation_id = serializers.IntegerField(source='id')
     reservation_code = serializers.CharField(source='payment.code')
     price = serializers.IntegerField(source='payment.price')
     movie_name = serializers.CharField(source='schedule.movie.name_kor')
+    poster = serializers.ImageField(source='schedule.movie.poster')
     screen_type = serializers.CharField(source='schedule.screen.screen_type')
     screen_name = serializers.CharField(source='schedule.screen.name')
     theater_name = serializers.CharField(source='schedule.screen.theater.name')
@@ -198,6 +310,7 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
             'reservation_code',
             'price',
             'movie_name',
+            'poster',
             'screen_type',
             'screen_name',
             'theater_name',
