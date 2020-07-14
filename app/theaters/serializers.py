@@ -23,7 +23,7 @@ class SeatsTotalPriceSerializer(serializers.Serializer):
 
 
 class SeatListSerializer(serializers.Serializer):
-    reserved_seat = serializers.CharField(source='seat')
+    reserved_seat = serializers.CharField(source='seat_grades__seat__name')
 
 
 class SeatIDListSerializer(serializers.Serializer):

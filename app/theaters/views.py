@@ -8,6 +8,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, get_object_or_
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from reservations.models import Reservation
 from utils import calculate_seat_price
 from utils.excepts import InvalidScheduleIDException, SeatNamesMissingException
 from .models import Schedule, Theater, Screen, SeatType
@@ -123,11 +124,7 @@ class ReservedSeatList(ListAPIView):
         schedule_id = int(self.kwargs['schedule_id'])
         try:
             schedule = Schedule.objects.get(pk=schedule_id)
-            return schedule.seat_types.exclude(
-                type='sit_apart',
-            ).exclude(
-                seat__reservations__isnull=True,
-            )
+            return Reservation.objects.filter(schedule=schedule).values('seat_grades__seat__name')
         except ObjectDoesNotExist:
             raise InvalidScheduleIDException
 
