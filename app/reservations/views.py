@@ -40,6 +40,9 @@ class PaymentCreateView(CreateAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentCreateSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(member=self.request.user)
+
 
 @method_decorator(name='put', decorator=swagger_auto_schema(
     operation_summary='Cancel Payments',
@@ -51,7 +54,10 @@ class PaymentCancelView(UpdateModelMixin,
     serializer_class = PaymentCancelSerializer
 
     def get_object(self):
-        return Payment.objects.get(pk=self.kwargs['pk'])
+        return Payment.objects.get(
+            pk=self.kwargs['pk'],
+            member=self.request.user
+        )
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)

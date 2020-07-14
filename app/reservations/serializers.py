@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
 from theaters.models import SeatGrade, Schedule, Seat, SeatType
@@ -7,8 +6,8 @@ from utils import (
     calculate_seat_price, verify_receipt_from_bootpay_server, cancel_payment_from_bootpay_server
 )
 from utils.excepts import (
-    TakenSeatException, InvalidGradeChoicesException, InvalidSeatException, PaymentIDReceiptIDNotMatchingException
-)
+    TakenSeatException, InvalidGradeChoicesException, InvalidSeatException, PaymentIdReceiptIdNotMatchingException,
+    ReservationOwnershipException)
 from .models import Reservation, Payment
 
 
@@ -108,17 +107,27 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
 class PaymentCreateSerializer(serializers.Serializer):
     receipt_id = serializers.CharField()
     price = serializers.IntegerField()
-    reservations_id = serializers.ListField(
-        child=serializers.IntegerField()
-    )
+    # discount_price = serializers.IntegerField()
+    reservation_id = serializers.IntegerField()
 
-    def validate_reservations_id(self, reservations_id):
-        # 본인의 예약인지 확인하는 로직 필요
-        pass
+    def validate_reservation_id(self, reservation_id):
+        # 본인의 예약인지 확인
+        reservation = get_object_or_404(Reservation, pk=reservation_id)
+        if reservation.member != self.request.user:
+            raise ReservationOwnershipException
+        return reservation_id
 
     def validate(self, data):
         receipt_id = data['receipt_id']
         price = data['price']
+        # discount_price = data['discount_price']
+
+        # 실제 결제해야하는 금액과 결제된 금액 확인
+        target_price = 0
+        # for reservation_id in data['reservations_id']:
+        #     reservation = Reservation.objects.get(pk=receipt_id)
+        #     screen_type = reservation.schedule.screen.screen_type
+        #     grade = reservation.
 
         result = verify_receipt_from_bootpay_server(receipt_id, price)
 
@@ -131,13 +140,12 @@ class PaymentCreateSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data):
-        reservations_id = validated_data.pop('reservations_id')
+        reservation_id = validated_data.pop('reservation_id')
 
         payment = Payment.objects.create(**validated_data)
 
-        # 예매의 총합 금액과 결제 금액 검증 로직 필요
-        Reservation.objects.filter(
-            id__in=reservations_id,
+        Reservation.objects.get(
+            pk=reservation_id,
         ).update(
             payment=payment,
         )
@@ -154,10 +162,9 @@ class PaymentCancelSerializer(serializers.Serializer):
     def validate_receipt_id(self, receipt_id):
         if self.instance.receipt_id == receipt_id:
             return receipt_id
-        raise PaymentIDReceiptIDNotMatchingException
+        raise PaymentIdReceiptIdNotMatchingException
 
     def validate(self, data):
-        # 본인의 결제인지 확인하는 로직 필요
         result = cancel_payment_from_bootpay_server(
             receipt_id=data['receipt_id'],
             price=data['price'],
