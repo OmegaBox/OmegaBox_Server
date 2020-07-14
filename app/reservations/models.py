@@ -51,7 +51,7 @@ class Payment(models.Model):
         ('card', '카드결제'),
         ('easy', '간편결제'),
     ]
-    member = models.OneToOneField(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    member = models.OneToOneField(AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     code = models.CharField(max_length=50)
     receipt_id = models.CharField(max_length=50)
     price = models.PositiveIntegerField()
