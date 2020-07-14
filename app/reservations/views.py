@@ -1,10 +1,9 @@
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework.mixins import UpdateModelMixin
 from rest_framework.generics import CreateAPIView, GenericAPIView
+from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated
 
-from members.permissions import IsAuthorizedMember
 from theaters.models import SeatGrade
 from .models import Payment
 from .serializers import SeatGradeCreateSerializer, SeatGradeDetailSerializer, PaymentCreateSerializer, \
@@ -40,7 +39,6 @@ class SeatGradeCreateView(CreateAPIView):
 class PaymentCreateView(CreateAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentCreateSerializer
-    permission_classes = [IsAuthorizedMember, ]
 
 
 @method_decorator(name='put', decorator=swagger_auto_schema(
@@ -51,7 +49,6 @@ class PaymentCreateView(CreateAPIView):
 class PaymentCancelView(UpdateModelMixin,
                         GenericAPIView):
     serializer_class = PaymentCancelSerializer
-    permission_classes = [IsAuthorizedMember, ]
 
     def get_object(self):
         return Payment.objects.get(pk=self.kwargs['pk'])
