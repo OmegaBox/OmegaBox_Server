@@ -2,6 +2,7 @@ from django.db.models import Q, Count, Sum
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import RetrieveAPIView, ListAPIView, CreateAPIView
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Movie, Rating
 from .serializers import MovieSerializer, MovieDetailSerializer, AgeBookingSerializer, RatingsSerializer
@@ -85,8 +86,13 @@ class AgeBookingView(RetrieveAPIView):
         return aggregated_dict
 
 
+@method_decorator(name='post', decorator=swagger_auto_schema(
+    operation_summary='Movie Rating Create',
+    operation_description='해당 영화의 한줄평 쓰기(생성)',
+))
 class RatingCreateView(CreateAPIView):
     serializer_class = RatingsSerializer
+    permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
         return Rating.objects.filter(
