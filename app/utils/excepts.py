@@ -115,3 +115,14 @@ class ReservationOwnershipException(APIException):
     default_detail = '예약자와 결제자가 다릅니다.'
     default_code = 'ReservationOwnership'
 
+
+class PriceNotMatchingException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '요청한 취소 금액이 결제했던 금액과 다릅니다.'
+    default_code = 'PriceNotMatching'
+
+
+class IncorrectPriceExceptionException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '결제 요청 금액(price + discount_price)이 결제해야하는 금액과 다릅니다.'
+    default_code = 'IncorrectPrice'

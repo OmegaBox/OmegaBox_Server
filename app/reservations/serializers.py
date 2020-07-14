@@ -8,7 +8,8 @@ from utils import (
     calculate_seat_price)
 from utils.excepts import (
     TakenSeatException, InvalidGradeChoicesException, InvalidSeatException, PaymentIdReceiptIdNotMatchingException,
-    ReservationOwnershipException, InvalidScheduleIdException, InvalidSeatIdException)
+    ReservationOwnershipException, InvalidScheduleIdException, InvalidSeatIdException, PriceNotMatchingException,
+    IncorrectPriceExceptionException)
 from .models import Reservation, Payment
 
 
@@ -108,10 +109,12 @@ class ReservationCreateSerializer(serializers.Serializer):
 
 
 class PaymentDetailSerializer(serializers.ModelSerializer):
+    payment_id = serializers.IntegerField(source='id')
+
     class Meta:
         model = Payment
         fields = [
-            'id',
+            'payment_id',
             'code',
             'receipt_id',
             'price',
@@ -130,26 +133,31 @@ class PaymentDetailSerializer(serializers.ModelSerializer):
 class PaymentCreateSerializer(serializers.Serializer):
     receipt_id = serializers.CharField()
     price = serializers.IntegerField()
-    # discount_price = serializers.IntegerField()
+    discount_price = serializers.IntegerField()
     reservation_id = serializers.IntegerField()
 
     def validate_reservation_id(self, reservation_id):
         # 본인의 예약인지 확인
         reservation = get_object_or_404(Reservation, pk=reservation_id)
-        if reservation.member != self.request.user:
+        if reservation.member != self.context['request'].user:
             raise ReservationOwnershipException
         return reservation_id
 
     def validate(self, data):
         receipt_id = data['receipt_id']
         price = data['price']
-        # discount_price = data['discount_price']
+        discount_price = data['discount_price']
 
         # 실제 결제해야하는 금액과 결제된 금액 확인
         target_price = 0
         reservation = Reservation.objects.get(pk=data['reservation_id'])
         screen_type = reservation.schedule.screen.screen_type
-        qs = reservation.seat_grades.values('grade')
+        grade_list = reservation.seat_grades.values('grade')
+        for grade_dict in grade_list:
+            target_price += calculate_seat_price(screen_type, grade_dict['grade'])
+
+        if target_price != price + discount_price:
+            raise IncorrectPriceExceptionException
 
         result = verify_receipt_from_bootpay_server(receipt_id, price)
 
@@ -163,14 +171,10 @@ class PaymentCreateSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         reservation_id = validated_data.pop('reservation_id')
-
         payment = Payment.objects.create(**validated_data)
-
-        Reservation.objects.get(
-            pk=reservation_id,
-        ).update(
-            payment=payment,
-        )
+        reservation = Reservation.objects.get(pk=reservation_id)
+        reservation.payment = payment
+        reservation.save()
         return payment
 
     def to_representation(self, instance):
@@ -180,6 +184,11 @@ class PaymentCreateSerializer(serializers.Serializer):
 class PaymentCancelSerializer(serializers.Serializer):
     receipt_id = serializers.CharField()
     price = serializers.IntegerField()
+
+    def validate_price(self, price):
+        if self.instance.price == price:
+            return price
+        raise PriceNotMatchingException
 
     def validate_receipt_id(self, receipt_id):
         if self.instance.receipt_id == receipt_id:
