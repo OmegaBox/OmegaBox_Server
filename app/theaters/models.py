@@ -151,7 +151,7 @@ class SeatGrade(models.Model):
     ]
     grade = models.CharField(
         choices=SEAT_GRADE_CHOICES,
-        max_length=10,
+        max_length=20,
         default='adult',
     )
     seat = models.ForeignKey(
