@@ -224,6 +224,7 @@ class WatchedMoviesSerializer(serializers.ModelSerializer):
     payment_id = serializers.IntegerField(source='payment.id')
     reservation_code = serializers.CharField(source='payment.code')
     price = serializers.IntegerField(source='payment.price')
+    discount_price = serializers.IntegerField(source='payment.discount_price')
     screen_type = serializers.CharField(source='schedule.screen.screen_type')
     screen_name = serializers.CharField(source='schedule.screen.name')
     seat_grade = serializers.SerializerMethodField('get_seat_grade')
@@ -240,6 +241,7 @@ class WatchedMoviesSerializer(serializers.ModelSerializer):
             'payment_id',
             'reservation_code',
             'price',
+            'discount_price',
             'screen_type',
             'screen_name',
             'seat_grade',
@@ -296,6 +298,7 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
     reservation_id = serializers.IntegerField(source='id')
     reservation_code = serializers.CharField(source='payment.code')
     price = serializers.IntegerField(source='payment.price')
+    discount_price = serializers.IntegerField(source='payment.discount_price')
     movie_name = serializers.CharField(source='schedule.movie.name_kor')
     poster = serializers.ImageField(source='schedule.movie.poster')
     screen_type = serializers.CharField(source='schedule.screen.screen_type')
@@ -305,6 +308,7 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
     payed_at = serializers.DateTimeField(source='payment.payed_at', format='%Y-%m-%d %H:%M')
     seat_grade = serializers.SerializerMethodField('get_seat_grade')
     seat_name = serializers.SerializerMethodField('get_seat_name')
+    saving_point = serializers.SerializerMethodField('get_saving_point')
 
     class Meta:
         model = Reservation
@@ -312,6 +316,7 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
             'reservation_id',
             'reservation_code',
             'price',
+            'discount_price',
             'movie_name',
             'poster',
             'screen_type',
@@ -321,7 +326,7 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
             'seat_grade',
             'seat_name',
             'payed_at',
-            # 'prearranged_point',
+            'saving_point',
         ]
 
     def get_seat_grade(self, reservation):
@@ -334,6 +339,20 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
     def get_seat_name(self, reservation):
         return reservation.seats.values_list('name', flat=True)
 
+    def get_saving_point(self, reservation):
+        if reservation.member.profile.tier == 'basic':
+            discount_rate = 0.01
+        else:
+            discount_rate = 0.02
+
+        # Payment.discount_price null=True, blank=True 빼고 default=0 하는 방안
+        if not reservation.payment.discount_price:
+            discount_price = 0
+        else:
+            discount_price = reservation.payment.discount_price
+
+        return round((reservation.payment.price - discount_price) * discount_rate)
+
 
 class CanceledReservationMoviesSerializer(serializers.ModelSerializer):
     reservation_id = serializers.IntegerField(source='id')
@@ -342,6 +361,7 @@ class CanceledReservationMoviesSerializer(serializers.ModelSerializer):
     theater_name = serializers.CharField(source='schedule.screen.theater.name')
     start_time = serializers.DateTimeField(source='schedule.start_time', format='%Y-%m-%d %H:%M')
     canceled_payment = serializers.IntegerField(source='payment.price')
+    canceled_discount_price = serializers.IntegerField(source='payment.discount_price')
 
     class Meta:
         model = Reservation
@@ -352,4 +372,5 @@ class CanceledReservationMoviesSerializer(serializers.ModelSerializer):
             'theater_name',
             'start_time',
             'canceled_payment',
+            'canceled_discount_price',
         ]
