@@ -221,6 +221,17 @@ requests = "*"
 requests-oauthlib = ">=0.3.0"
 
 [[package]]
+category = "main"
+description = "django-cors-headers is a Django application for handling the server headers required for Cross-Origin Resource Sharing (CORS)."
+name = "django-cors-headers"
+optional = false
+python-versions = ">=3.5"
+version = "3.4.0"
+
+[package.dependencies]
+Django = ">=2.0"
+
+[[package]]
 category = "dev"
 description = "A configurable set of panels that display various debug information about the current request/response."
 name = "django-debug-toolbar"
@@ -816,7 +827,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "104db0935c44b366e2535d77cb52ae9b4d5e3e750a1dc63826491e03ef8e0675"
+content-hash = "90164cd3cb1830a8930cb439c33a3d65dade5e27037207a7389fa83614339096"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -878,6 +889,10 @@ django = [
 ]
 django-allauth = [
     {file = "django-allauth-0.42.0.tar.gz", hash = "sha256:f17209410b7f87da0a84639fd79d3771b596a6d3fc1a8e48ce50dabc7f441d30"},
+]
+django-cors-headers = [
+    {file = "django-cors-headers-3.4.0.tar.gz", hash = "sha256:f5218f2f0bb1210563ff87687afbf10786e080d8494a248e705507ebd92d7153"},
+    {file = "django_cors_headers-3.4.0-py3-none-any.whl", hash = "sha256:5240062ef0b16668ce8a5f43324c388d65f5439e1a30e22c38684d5ddaff0d15"},
 ]
 django-debug-toolbar = [
     {file = "django-debug-toolbar-2.2.tar.gz", hash = "sha256:eabbefe89881bbe4ca7c980ff102e3c35c8e8ad6eb725041f538988f2f39a943"},
