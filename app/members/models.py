@@ -22,6 +22,7 @@ class BaseMemberMixin(models.Model):
 
 class Member(AbstractUser, BaseMemberMixin):
     email = models.EmailField(unique=True)
+    unique_id = models.TextField(blank=True)
 
     REQUIRED_FIELDS = ['name', 'email', 'mobile', 'birth_date']
 

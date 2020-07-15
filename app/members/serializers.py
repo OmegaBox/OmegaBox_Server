@@ -17,7 +17,8 @@ from movies.models import Movie, Rating
 from movies.serializers import MovieTimelineSerializer
 from reservations.models import Reservation
 from utils import reformat_duration
-from utils.excepts import UsernameDuplicateException, TakenEmailException
+from utils.excepts import UsernameDuplicateException, TakenEmailException, GoogleUniqueIdDuplicatesException, \
+    UnidentifiedUniqueIdException, LoginFailException
 from .models import Profile
 
 Member = get_user_model()
@@ -35,13 +36,6 @@ class SignUpSerializer(RegisterSerializer):
             if email and email_address_exists(email):
                 raise TakenEmailException
         return email
-
-    # def validate_mobile(self, mobile):
-    #     try:
-    #         Member.objects.get(mobile=mobile)
-    #         raise TakenNumberException
-    #     except ObjectDoesNotExist:
-    #         return mobile
 
     def validate_username(self, username):
         try:
@@ -61,6 +55,36 @@ class SignUpSerializer(RegisterSerializer):
             mobile=validated_data['mobile']
         )
         member.set_password(validated_data.pop('password1'))
+        member.save()
+        return member
+
+
+class SocialSignUpSerializer(SignUpSerializer):
+    password1, password2 = None, None
+    unique_id = serializers.CharField()
+
+    def validate_unique_id(self, unique_id):
+        try:
+            Member.objects.get(unique_id=unique_id)
+            raise GoogleUniqueIdDuplicatesException
+        except ObjectDoesNotExist:
+            return unique_id
+
+    def validate(self, data):
+        return data
+
+    def save(self, request):
+        self.is_valid()
+        validated_data = self.validated_data
+        member = Member.objects.create(
+            username=validated_data['username'],
+            name=validated_data['name'],
+            email=validated_data['email'],
+            birth_date=validated_data['birth_date'],
+            mobile=validated_data['mobile'],
+            unique_id=validated_data['unique_id'],
+        )
+        member.set_password(validated_data['username'])
         member.save()
         return member
 
@@ -92,8 +116,26 @@ class CheckUsernameDuplicateSerializer(serializers.Serializer):
 
 
 class LoginSerializer(DefaultLoginSerializer):
-    username = serializers.CharField(required=True, allow_blank=True)
     email = None
+    username = serializers.CharField(required=True)
+
+
+class SocialLoginSerializer(DefaultLoginSerializer):
+    email = None
+    username = serializers.CharField(required=True)
+    unique_id = serializers.CharField(required=True, write_only=True)
+
+    def validate(self, data):
+        username = data['username']
+        password = data['password']
+        unique_id = data['unique_id']
+        user = self.authenticate(username=username, password=password)
+        if user is None:
+            raise LoginFailException
+        if user.unique_id != unique_id:
+            raise UnidentifiedUniqueIdException
+        data['user'] = user
+        return data
 
 
 class TokenRefreshResultSerializer(serializers.Serializer):
