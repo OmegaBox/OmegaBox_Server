@@ -23,7 +23,8 @@ from reservations.models import Reservation
 from utils.excepts import UsernameDuplicateException
 from .serializers import SignUpSerializer, MemberDetailSerializer, LoginSerializer, TokenRefreshSerializer, \
     TokenRefreshResultSerializer, JWTSerializer, CheckUsernameDuplicateSerializer, LikeMoviesSerializer, \
-    WatchedMoviesSerializer, RatingMoviesSerializer, ReservedMoviesSerializer, CanceledReservationMoviesSerializer
+    WatchedMoviesSerializer, RatingMoviesSerializer, ReservedMoviesSerializer, CanceledReservationMoviesSerializer, \
+    SocialSignUpSerializer, SocialLoginSerializer
 
 Member = get_user_model()
 
@@ -35,6 +36,15 @@ Member = get_user_model()
 ))
 class SignUpView(RegisterView):
     serializer_class = SignUpSerializer
+
+
+@method_decorator(name='post', decorator=swagger_auto_schema(
+    operation_summary='Social Sign Up',
+    operation_description='소셜 회원가입 - 비밀번호 자동설정(username과 동일)',
+    responses={200: JWTSerializer()},
+))
+class SocialSignUpView(RegisterView):
+    serializer_class = SocialSignUpSerializer
 
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
@@ -60,6 +70,15 @@ class CheckUsernameDuplicateView(APIView):
 ))
 class LoginView(DefaultLoginView):
     serializer_class = LoginSerializer
+
+
+@method_decorator(name='post', decorator=swagger_auto_schema(
+    operation_summary='Social Log In',
+    operation_description='소셜 로그인 - username/password: googleId & unique_id: tokenId',
+    responses={200: JWTSerializer()},
+))
+class SocialLoginView(DefaultLoginView):
+    serializer_class = SocialLoginSerializer
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(

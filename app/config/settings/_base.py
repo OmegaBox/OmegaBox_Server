@@ -86,8 +86,6 @@ INSTALLED_APPS = [
 
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
     'rest_auth',
     'rest_auth.registration',
 
@@ -108,18 +106,6 @@ INSTALLED_APPS = [
 # Django allauth
 SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = None
-
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
-    }
-}
 
 # Application definition
 

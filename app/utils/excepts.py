@@ -126,3 +126,21 @@ class IncorrectPriceExceptionException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = '결제 요청 금액(price + discount_price)이 결제해야하는 금액과 다릅니다.'
     default_code = 'IncorrectPrice'
+
+
+class GoogleUniqueIdDuplicatesException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '동일한 unique_id(id_token)를 가진 사용자가 이미 존재합니다.'
+    default_code = 'GoogleUniqueIdDuplicates'
+
+
+class UnidentifiedUniqueIdException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '해당 사용자의 unique_id와 일치하지 않습니다.'
+    default_code = 'UnidentifiedUniqueId'
+
+
+class LoginFailException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '로그인 실패 - username과 password를 확인해주세요.'
+    default_code = 'LoginFail'
