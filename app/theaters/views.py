@@ -43,7 +43,7 @@ class TheatersGivenDateList(ListAPIView):
         else:
             queryset = Theater.objects.filter(screens__schedules__start_time__date=date).distinct('id')
 
-        return queryset
+        return queryset.select_related('region')
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -174,7 +174,7 @@ class SeatIDList(APIView):
             seat_type_qs = SeatType.objects.filter(
                 schedule=schedule,
                 seat__name__in=seats_list
-            )
+            ).prefetch_related('seat')
             return Response(SeatIDListSerializer(seat_type_qs, many=True).data)
         else:
             raise SeatNamesMissingException
@@ -208,5 +208,4 @@ class ScheduleListGivenDate(ListAPIView):
                 start_time__date=date,
                 screen__theater_id=theater_id,
             )
-
-        return queryset
+        return queryset.select_related('movie', 'screen__theater__region').prefetch_related('seat_types')
