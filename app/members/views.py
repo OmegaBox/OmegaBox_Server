@@ -164,6 +164,10 @@ class ReservedMoviesView(ListAPIView):
         ).order_by('reserved_at')
 
 
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary='Canceled Reserved Movie List per Member',
+    operation_description='멤버별 영화 예매취소내역 리스트 정보'
+))
 class CanceledReservationMoviesView(ListAPIView):
     serializer_class = CanceledReservationMoviesSerializer
     permission_classes = [IsAuthenticated, ]
@@ -172,5 +176,6 @@ class CanceledReservationMoviesView(ListAPIView):
         return Reservation.objects.filter(
             schedule__start_time__gt=datetime.datetime.today(),
             member=self.request.user,
+            payment__isnull=False,
             payment__is_canceled=True
-        ).order_by('payment.canceled_at')
+        ).order_by('-payment__canceled_at')
