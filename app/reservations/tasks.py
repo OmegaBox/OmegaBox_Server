@@ -27,7 +27,7 @@ def save_point_for_played_movie():
 
     for _dict in _list:
         profile = Profile.objects.get(member__pk=_dict['member'])
-        profile.point += _dict['price'] * POINT_RATE_PER_TIER_CHART[profile.tier]
+        profile.point += round(_dict['price'] * POINT_RATE_PER_TIER_CHART[profile.tier])
         profile.save()
 
         payment = Payment.objects.get(pk=_dict['id'])
