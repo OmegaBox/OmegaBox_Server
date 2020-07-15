@@ -217,7 +217,7 @@ class LikeMoviesSerializer(serializers.ModelSerializer):
         return movie.genres.values_list('name', flat=True)
 
     def get_liked_at(self, movie):
-        return movie.movie_likes.get().liked_at
+        return movie.movie_likes.values_list('liked_at', flat=True)[0]
 
 
 class WatchedMoviesSerializer(serializers.ModelSerializer):
