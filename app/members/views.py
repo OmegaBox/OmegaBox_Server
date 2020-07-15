@@ -174,7 +174,6 @@ class CanceledReservationMoviesView(ListAPIView):
 
     def get_queryset(self):
         return Reservation.objects.filter(
-            schedule__start_time__gt=datetime.datetime.today(),
             member=self.request.user,
             payment__isnull=False,
             payment__is_canceled=True
