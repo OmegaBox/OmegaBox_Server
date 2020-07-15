@@ -180,6 +180,7 @@ class MemberDetailSerializer(serializers.ModelSerializer):
 
 
 class LikeMoviesSerializer(serializers.ModelSerializer):
+    movie_id = serializers.IntegerField(source='id')
     movie_name = serializers.CharField(source='name_kor')
     acc_favorite = serializers.SerializerMethodField('get_acc_favorite')
     open_date = serializers.DateField(format='%Y-%m-%d')
@@ -191,6 +192,7 @@ class LikeMoviesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = [
+            'movie_id',
             'movie_name',
             'poster',
             'grade',
@@ -274,13 +276,15 @@ class WatchedMoviesSerializer(serializers.ModelSerializer):
 
 class RatingMoviesSerializer(serializers.ModelSerializer):
     rating_id = serializers.IntegerField(source='id')
-    movie = MovieTimelineSerializer()
+    movie_name = serializers.CharField(source='movie.name_kor')
+    poster = serializers.ImageField(source='movie.poster')
 
     class Meta:
         model = Rating
         fields = [
             'rating_id',
-            'movie',
+            'movie_name',
+            'poster',
             'created_at',
             'score',
             'key_point',
@@ -297,9 +301,8 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
     screen_type = serializers.CharField(source='schedule.screen.screen_type')
     screen_name = serializers.CharField(source='schedule.screen.name')
     theater_name = serializers.CharField(source='schedule.screen.theater.name')
-    theater_region = serializers.CharField(source='schedule.screen.theater.region.name')
     start_time = serializers.DateTimeField(source='schedule.start_time', format='%Y-%m-%d %H:%M')
-    payed_at = serializers.DateTimeField(source='payment.payed_at', format='%Y-%m-%d')
+    payed_at = serializers.DateTimeField(source='payment.payed_at', format='%Y-%m-%d %H:%M')
     seat_grade = serializers.SerializerMethodField('get_seat_grade')
     seat_name = serializers.SerializerMethodField('get_seat_name')
 
@@ -314,7 +317,6 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
             'screen_type',
             'screen_name',
             'theater_name',
-            'theater_region',
             'start_time',
             'seat_grade',
             'seat_name',
@@ -338,7 +340,6 @@ class CanceledReservationMoviesSerializer(serializers.ModelSerializer):
     canceled_at = serializers.DateTimeField(source='payment.canceled_at', format='%Y-%m-%d %H:%M')
     movie_name = serializers.CharField(source='schedule.movie.name_kor')
     theater_name = serializers.CharField(source='schedule.screen.theater.name')
-    theater_region = serializers.CharField(source='schedule.screen.theater.region.name')
     start_time = serializers.DateTimeField(source='schedule.start_time', format='%Y-%m-%d %H:%M')
     canceled_payment = serializers.IntegerField(source='payment.price')
 
@@ -349,7 +350,6 @@ class CanceledReservationMoviesSerializer(serializers.ModelSerializer):
             'canceled_at',
             'movie_name',
             'theater_name',
-            'theater_region',
             'start_time',
             'canceled_payment',
         ]

@@ -4,7 +4,7 @@ from django.db.models import Sum, Count
 from rest_framework import serializers
 
 from utils import reformat_duration
-from .models import Movie, Rating, Director, Actor, Genre
+from .models import Movie, Rating, Director, Actor, Genre, MovieLike
 
 
 # 전체 영화 일반 정보
@@ -178,3 +178,18 @@ class MovieTimelineSerializer(serializers.ModelSerializer):
 
     def get_genres(self, movie):
         return movie.genres.values_list('name', flat=True)
+
+
+class MovieLikeSerializer(serializers.ModelSerializer):
+    member = serializers.CharField(source='member.name')
+    movie_name = serializers.CharField(source='movie.name_kor')
+
+    class Meta:
+        model = MovieLike
+        fields = [
+            'id',
+            'member',
+            'movie_name',
+            'liked',
+            'liked_at',
+        ]
