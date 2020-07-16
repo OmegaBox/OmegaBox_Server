@@ -2,6 +2,7 @@ import datetime
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Prefetch
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_auth.registration.views import RegisterView
@@ -144,7 +145,8 @@ class WatchedMoviesView(ListAPIView):
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        return Reservation.objects.filter(
+        queryset = Reservation.objects.select_related()
+        return queryset.filter(
             schedule__start_time__lte=datetime.datetime.today(),
             member=self.request.user,
             payment__isnull=False,
@@ -161,7 +163,8 @@ class RatingMoviesView(ListAPIView):
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        return Rating.objects.filter(
+        queryset = Rating.objects.select_related()
+        return queryset.filter(
             member=self.request.user
         ).order_by('created_at')
 
@@ -175,7 +178,8 @@ class ReservedMoviesView(ListAPIView):
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        return Reservation.objects.filter(
+        queryset = Reservation.objects.select_related()
+        return queryset.filter(
             schedule__start_time__gt=datetime.datetime.today(),
             member=self.request.user,
             payment__isnull=False,
@@ -192,7 +196,8 @@ class CanceledReservationMoviesView(ListAPIView):
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        return Reservation.objects.filter(
+        queryset = Reservation.objects.select_related()
+        return queryset.filter(
             member=self.request.user,
             payment__isnull=False,
             payment__is_canceled=True
