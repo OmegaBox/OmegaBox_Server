@@ -2,7 +2,6 @@ import datetime
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Prefetch
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_auth.registration.views import RegisterView
@@ -178,9 +177,9 @@ class ReservedMoviesView(ListAPIView):
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        queryset = Reservation.objects.select_related()
-        return queryset.filter(
-            schedule__start_time__gt=datetime.datetime.today(),
+        return Reservation.objects.select_related(
+            'member__profile', 'schedule__movie', 'schedule__screen__theater', 'payment'
+        ).filter(
             member=self.request.user,
             payment__isnull=False,
             payment__is_canceled=False
