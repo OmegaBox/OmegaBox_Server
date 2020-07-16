@@ -1,10 +1,10 @@
-import datetime
+import random
 
 from django.db.models import Sum, Count
 from rest_framework import serializers
 
 from utils import reformat_duration
-from .models import Movie, Rating, Director, Actor, Genre, MovieLike
+from .models import Movie, Rating, MovieLike
 
 
 # 전체 영화 일반 정보
@@ -37,7 +37,7 @@ class MovieSerializer(serializers.ModelSerializer):
             point_count=Count('ratings__score')
         )['point_count']
 
-        return round(point_sum / point_count, 2) if point_count != 0 else 0
+        return round(point_sum / point_count, 2) if point_count != 0 else 6.3
 
     def get_acc_favorite(self, movie):
         return movie.movie_likes.filter(liked=True).count()
@@ -102,8 +102,7 @@ class MovieDetailSerializer(serializers.ModelSerializer):
         point_count = Movie.objects.filter(pk=movie.pk).values('ratings__score').aggregate(
             point_count=Count('ratings__score')
         )['point_count']
-
-        return round(point_sum / point_count, 2) if point_count != 0 else 0
+        return round(point_sum / point_count, 1) if point_count != 0 else 6.3
 
     def get_acc_favorite(self, movie):
         return movie.movie_likes.filter(liked=True).count()

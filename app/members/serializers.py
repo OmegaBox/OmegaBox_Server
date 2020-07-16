@@ -13,7 +13,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer as DefaultTokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from movies.models import Movie, Rating
+from movies.models import Movie, Rating, MovieLike
 from movies.serializers import MovieTimelineSerializer
 from reservations.models import Reservation
 from utils import reformat_duration, check_google_oauth_api
@@ -225,17 +225,19 @@ class MemberDetailSerializer(serializers.ModelSerializer):
 
 
 class LikeMoviesSerializer(serializers.ModelSerializer):
-    movie_id = serializers.IntegerField(source='id')
-    movie_name = serializers.CharField(source='name_kor')
+    movie_id = serializers.IntegerField(source='movie.id')
+    movie_name = serializers.CharField(source='movie.name_kor')
+    poster = serializers.ImageField(source='movie.poster')
+    grade = serializers.CharField(source='movie.grade')
     acc_favorite = serializers.SerializerMethodField('get_acc_favorite')
-    open_date = serializers.DateField(format='%Y-%m-%d')
+    open_date = serializers.DateField(source='movie.open_date', format='%Y-%m-%d')
     running_time = serializers.SerializerMethodField('get_running_time')
     directors = serializers.SerializerMethodField('get_directors')
     genres = serializers.SerializerMethodField('get_genres')
-    liked_at = serializers.SerializerMethodField('get_liked_at')
+    liked_at = serializers.DateField(format='%Y-%m-%d')
 
     class Meta:
-        model = Movie
+        model = MovieLike
         fields = [
             'movie_id',
             'movie_name',
@@ -249,20 +251,17 @@ class LikeMoviesSerializer(serializers.ModelSerializer):
             'liked_at',
         ]
 
-    def get_acc_favorite(self, movie):
-        return movie.movie_likes.filter(liked=True).count()
+    def get_acc_favorite(self, movielike):
+        return movielike.movie.movie_likes.filter(liked=True).count()
 
-    def get_running_time(self, obj):
-        return reformat_duration(obj.running_time)
+    def get_running_time(self, movielike):
+        return reformat_duration(movielike.movie.running_time)
 
-    def get_directors(self, movie):
-        return movie.directors.values_list('name', flat=True)
+    def get_directors(self, movielike):
+        return movielike.movie.directors.values_list('name', flat=True)
 
-    def get_genres(self, movie):
-        return movie.genres.values_list('name', flat=True)
-
-    def get_liked_at(self, movie):
-        return movie.movie_likes.values_list('liked_at', flat=True)[0]
+    def get_genres(self, movielike):
+        return movielike.movie.genres.values_list('name', flat=True)
 
 
 class WatchedMoviesSerializer(serializers.ModelSerializer):
