@@ -1,8 +1,10 @@
 from django.utils.duration import _get_duration_components
+from google.auth.transport import requests
+from google.oauth2 import id_token
 
-from config.settings._base import BOOT_PAY_REST_APP_ID, BOOT_PAY_PRIVATE_KEY
+from config.settings._base import BOOT_PAY_REST_APP_ID, BOOT_PAY_PRIVATE_KEY, GOOGLE_CLIENT_ID
 from utils.excepts import FailToGetBootPayAccessTokenException, UnverifiedReceiptException, VerifyRequestFailException, \
-    PaymentCancelFailException
+    PaymentCancelFailException, InvalidGoogleAccessTokenException
 from .bootpay import BootpayApi
 from .business_data import PRICE_BY_SCREEN_TYPE_CHART, PRICE_DISCOUNT_RATE_CHART
 
@@ -39,3 +41,13 @@ def cancel_payment_from_bootpay_server(receipt_id, price):
         if cancel_result['status'] is 200:
             return cancel_result['data']
         raise PaymentCancelFailException
+
+
+def check_google_oauth_api(google_id_token):
+    client_id = GOOGLE_CLIENT_ID
+    try:
+        info = id_token.verify_oauth2_token(google_id_token, requests.Request(), client_id)
+        unique_id = info['sub']
+        return unique_id
+    except ValueError:
+        raise InvalidGoogleAccessTokenException

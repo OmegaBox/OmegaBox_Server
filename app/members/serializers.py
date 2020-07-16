@@ -13,12 +13,12 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer as DefaultTokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from movies.models import Movie, Rating
+from movies.models import Movie, Rating, MovieLike
 from movies.serializers import MovieTimelineSerializer
 from reservations.models import Reservation
-from utils import reformat_duration
+from utils import reformat_duration, check_google_oauth_api
 from utils.excepts import UsernameDuplicateException, TakenEmailException, GoogleUniqueIdDuplicatesException, \
-    UnidentifiedUniqueIdException, LoginFailException
+    UnidentifiedUniqueIdException, LoginFailException, SocialSignUpUsernameFieldException
 from .models import Profile
 
 Member = get_user_model()
@@ -61,7 +61,7 @@ class SignUpSerializer(RegisterSerializer):
 
 class SocialSignUpSerializer(SignUpSerializer):
     password1, password2 = None, None
-    unique_id = serializers.CharField()
+    unique_id = serializers.CharField(required=True, write_only=True)
 
     def validate_unique_id(self, unique_id):
         try:
@@ -71,6 +71,8 @@ class SocialSignUpSerializer(SignUpSerializer):
             return unique_id
 
     def validate(self, data):
+        if data['username'] != data['email']:
+            raise SocialSignUpUsernameFieldException
         return data
 
     def save(self, request):
@@ -84,7 +86,7 @@ class SocialSignUpSerializer(SignUpSerializer):
             mobile=validated_data['mobile'],
             unique_id=validated_data['unique_id'],
         )
-        member.set_password(validated_data['username'])
+        member.set_password(validated_data['unique_id'])
         member.save()
         return member
 
@@ -123,15 +125,16 @@ class LoginSerializer(DefaultLoginSerializer):
 class SocialLoginSerializer(DefaultLoginSerializer):
     email = None
     username = serializers.CharField(required=True)
-    unique_id = serializers.CharField(required=True, write_only=True)
+    google_id_token = serializers.CharField(required=True, write_only=True)
 
     def validate(self, data):
         username = data['username']
         password = data['password']
-        unique_id = data['unique_id']
+        google_id_token = data['google_id_token']
         user = self.authenticate(username=username, password=password)
         if user is None:
             raise LoginFailException
+        unique_id = check_google_oauth_api(google_id_token)
         if user.unique_id != unique_id:
             raise UnidentifiedUniqueIdException
         data['user'] = user
@@ -222,17 +225,19 @@ class MemberDetailSerializer(serializers.ModelSerializer):
 
 
 class LikeMoviesSerializer(serializers.ModelSerializer):
-    movie_id = serializers.IntegerField(source='id')
-    movie_name = serializers.CharField(source='name_kor')
+    movie_id = serializers.IntegerField(source='movie.id')
+    movie_name = serializers.CharField(source='movie.name_kor')
+    poster = serializers.ImageField(source='movie.poster')
+    grade = serializers.CharField(source='movie.grade')
     acc_favorite = serializers.SerializerMethodField('get_acc_favorite')
-    open_date = serializers.DateField(format='%Y-%m-%d')
+    open_date = serializers.DateField(source='movie.open_date', format='%Y-%m-%d')
     running_time = serializers.SerializerMethodField('get_running_time')
     directors = serializers.SerializerMethodField('get_directors')
     genres = serializers.SerializerMethodField('get_genres')
-    liked_at = serializers.SerializerMethodField('get_liked_at')
+    liked_at = serializers.DateField(format='%Y-%m-%d')
 
     class Meta:
-        model = Movie
+        model = MovieLike
         fields = [
             'movie_id',
             'movie_name',
@@ -246,20 +251,17 @@ class LikeMoviesSerializer(serializers.ModelSerializer):
             'liked_at',
         ]
 
-    def get_acc_favorite(self, movie):
-        return movie.movie_likes.filter(liked=True).count()
+    def get_acc_favorite(self, movielike):
+        return movielike.movie.movie_likes.filter(liked=True).count()
 
-    def get_running_time(self, obj):
-        return reformat_duration(obj.running_time)
+    def get_running_time(self, movielike):
+        return reformat_duration(movielike.movie.running_time)
 
-    def get_directors(self, movie):
-        return movie.directors.values_list('name', flat=True)
+    def get_directors(self, movielike):
+        return movielike.movie.directors.values_list('name', flat=True)
 
-    def get_genres(self, movie):
-        return movie.genres.values_list('name', flat=True)
-
-    def get_liked_at(self, movie):
-        return movie.movie_likes.values_list('liked_at', flat=True)[0]
+    def get_genres(self, movielike):
+        return movielike.movie.genres.values_list('name', flat=True)
 
 
 class WatchedMoviesSerializer(serializers.ModelSerializer):
@@ -348,6 +350,8 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
     theater_name = serializers.CharField(source='schedule.screen.theater.name')
     start_time = serializers.DateTimeField(source='schedule.start_time', format='%Y-%m-%d %H:%M')
     payed_at = serializers.DateTimeField(source='payment.payed_at', format='%Y-%m-%d %H:%M')
+    payment_id = serializers.IntegerField(source='payment.pk')
+    receipt_id = serializers.CharField(source='payment.receipt_id')
     seat_grade = serializers.SerializerMethodField('get_seat_grade')
     seat_name = serializers.SerializerMethodField('get_seat_name')
     saving_point = serializers.SerializerMethodField('get_saving_point')
@@ -368,6 +372,8 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
             'seat_grade',
             'seat_name',
             'payed_at',
+            'payment_id',
+            'receipt_id',
             'saving_point',
         ]
 

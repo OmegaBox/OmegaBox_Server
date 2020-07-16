@@ -86,6 +86,8 @@ INSTALLED_APPS = [
 
     'allauth',
     'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'rest_auth',
     'rest_auth.registration',
 
@@ -192,6 +194,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
 }
+
+# Google Oauth
+GOOGLE_CLIENT_ID = SECRETS['GOOGLE_CLIENT_ID']
 
 # DJANGO_REST_AUTH
 ACCOUNT_LOGOUT_ON_GET = True

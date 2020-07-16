@@ -144,3 +144,15 @@ class LoginFailException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = '로그인 실패 - username과 password를 확인해주세요.'
     default_code = 'LoginFail'
+
+
+class InvalidGoogleAccessTokenException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = 'Google Access Token이 유효하지 않습니다.'
+    default_code = 'InvalidGoogleAccessToken'
+
+
+class SocialSignUpUsernameFieldException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = '소셜 회원가입시 username과 email이 동일해야합니다.'
+    default_code = 'SocialSignUpUsernameField'
