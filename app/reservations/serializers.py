@@ -207,6 +207,7 @@ class PaymentCancelSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         instance.is_canceled = True
         instance.canceled_at = validated_data['canceled_at']
+        instance.reservation.delete()
         instance.save()
         return instance
 
