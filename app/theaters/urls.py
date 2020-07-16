@@ -13,5 +13,4 @@ urlpatterns = [
     path('schedules/<int:schedule_id>/seats/count/', TotalAndReservedSeatsCount.as_view()),
     path('screens/<int:screen_id>/', ScreenDetail.as_view()),
     path('<int:theater_id>/schedules/<int:date>/', ScheduleListGivenDate.as_view()),
-
 ]
