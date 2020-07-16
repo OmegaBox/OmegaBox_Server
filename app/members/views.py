@@ -19,7 +19,7 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView as DefaultTokenVerifyView,
 )
 
-from movies.models import Movie, Rating
+from movies.models import Movie, Rating, MovieLike
 from reservations.models import Reservation
 from utils.excepts import UsernameDuplicateException
 from .serializers import SignUpSerializer, MemberDetailSerializer, LoginSerializer, TokenRefreshSerializer, \
@@ -130,10 +130,12 @@ class LikeMoviesView(ListAPIView):
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        return Movie.objects.filter(
-            like_members=self.request.user,
-            movie_likes__liked=True
-        ).order_by('movie_likes__liked_at')
+        return MovieLike.objects.select_related(
+            'movie', 'member'
+        ).filter(
+            member=self.request.user,
+            liked=True
+        )
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -145,8 +147,9 @@ class WatchedMoviesView(ListAPIView):
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        queryset = Reservation.objects.select_related()
-        return queryset.filter(
+        return Reservation.objects.select_related(
+            'payment', 'schedule__screen__theater__region', 'schedule__movie'
+        ).filter(
             schedule__start_time__lte=datetime.datetime.today(),
             member=self.request.user,
             payment__isnull=False,
@@ -163,8 +166,9 @@ class RatingMoviesView(ListAPIView):
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        queryset = Rating.objects.select_related()
-        return queryset.filter(
+        return Rating.objects.select_related(
+            'movie'
+        ).filter(
             member=self.request.user
         ).order_by('created_at')
 
@@ -178,8 +182,9 @@ class ReservedMoviesView(ListAPIView):
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        queryset = Reservation.objects.select_related()
-        return queryset.filter(
+        return Reservation.objects.select_related(
+            'member__profile', 'payment', 'schedule__movie', 'schedule__screen__theater'
+        ).filter(
             schedule__start_time__gt=datetime.datetime.today(),
             member=self.request.user,
             payment__isnull=False,
@@ -196,8 +201,9 @@ class CanceledReservationMoviesView(ListAPIView):
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        queryset = Reservation.objects.select_related()
-        return queryset.filter(
+        return Reservation.objects.select_related(
+            'member', 'payment', 'schedule__movie', 'schedule__screen__theater'
+        ).filter(
             member=self.request.user,
             payment__isnull=False,
             payment__is_canceled=True
