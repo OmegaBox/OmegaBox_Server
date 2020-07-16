@@ -16,9 +16,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from movies.models import Movie, Rating
 from movies.serializers import MovieTimelineSerializer
 from reservations.models import Reservation
-from utils import reformat_duration
+from utils import reformat_duration, check_google_oauth_api
 from utils.excepts import UsernameDuplicateException, TakenEmailException, GoogleUniqueIdDuplicatesException, \
-    UnidentifiedUniqueIdException, LoginFailException
+    UnidentifiedUniqueIdException, LoginFailException, SocialSignUpUsernameFieldException
 from .models import Profile
 
 Member = get_user_model()
@@ -61,7 +61,7 @@ class SignUpSerializer(RegisterSerializer):
 
 class SocialSignUpSerializer(SignUpSerializer):
     password1, password2 = None, None
-    unique_id = serializers.CharField()
+    unique_id = serializers.CharField(required=True, write_only=True)
 
     def validate_unique_id(self, unique_id):
         try:
@@ -71,6 +71,8 @@ class SocialSignUpSerializer(SignUpSerializer):
             return unique_id
 
     def validate(self, data):
+        if data['username'] != data['email']:
+            raise SocialSignUpUsernameFieldException
         return data
 
     def save(self, request):
@@ -84,7 +86,7 @@ class SocialSignUpSerializer(SignUpSerializer):
             mobile=validated_data['mobile'],
             unique_id=validated_data['unique_id'],
         )
-        member.set_password(validated_data['username'])
+        member.set_password(validated_data['unique_id'])
         member.save()
         return member
 
@@ -123,15 +125,16 @@ class LoginSerializer(DefaultLoginSerializer):
 class SocialLoginSerializer(DefaultLoginSerializer):
     email = None
     username = serializers.CharField(required=True)
-    unique_id = serializers.CharField(required=True, write_only=True)
+    google_id_token = serializers.CharField(required=True, write_only=True)
 
     def validate(self, data):
         username = data['username']
         password = data['password']
-        unique_id = data['unique_id']
+        google_id_token = data['google_id_token']
         user = self.authenticate(username=username, password=password)
         if user is None:
             raise LoginFailException
+        unique_id = check_google_oauth_api(google_id_token)
         if user.unique_id != unique_id:
             raise UnidentifiedUniqueIdException
         data['user'] = user

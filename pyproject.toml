@@ -27,6 +27,7 @@ drf-yasg = "^1.17.1"
 celery = "^4.4.6"
 redis = "^3.5.3"
 django-cors-headers = "^3.4.0"
+google-auth = "^1.19.1"
 
 [tool.poetry.dev-dependencies]
 django-extensions = "^2.2.9"
