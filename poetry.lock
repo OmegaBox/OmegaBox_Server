@@ -15,10 +15,10 @@ description = "Universal Command Line Environment for AWS."
 name = "awscli"
 optional = false
 python-versions = "*"
-version = "1.18.97"
+version = "1.18.98"
 
 [package.dependencies]
-botocore = "1.17.20"
+botocore = "1.17.21"
 docutils = ">=0.10,<0.16"
 s3transfer = ">=0.3.0,<0.4.0"
 
@@ -59,10 +59,10 @@ description = "The AWS SDK for Python"
 name = "boto3"
 optional = false
 python-versions = "*"
-version = "1.14.20"
+version = "1.14.21"
 
 [package.dependencies]
-botocore = ">=1.17.20,<1.18.0"
+botocore = ">=1.17.21,<1.18.0"
 jmespath = ">=0.7.1,<1.0.0"
 s3transfer = ">=0.3.0,<0.4.0"
 
@@ -72,7 +72,7 @@ description = "Low-level, data-driven core of boto 3."
 name = "botocore"
 optional = false
 python-versions = "*"
-version = "1.17.20"
+version = "1.17.21"
 
 [package.dependencies]
 docutils = ">=0.10,<0.16"
@@ -836,8 +836,8 @@ amqp = [
     {file = "amqp-2.6.0.tar.gz", hash = "sha256:24dbaff8ce4f30566bb88976b398e8c4e77637171af3af6f1b9650f48890e60b"},
 ]
 awscli = [
-    {file = "awscli-1.18.97-py2.py3-none-any.whl", hash = "sha256:ba5e5ba0eb86455f423a91c8e788a4818e9cc9fe19a690432089d1932f28119d"},
-    {file = "awscli-1.18.97.tar.gz", hash = "sha256:def6693c83bec66fab8ee72edcbaef0a6d3ec75094dae4f2699fd05df0f99aa7"},
+    {file = "awscli-1.18.98-py2.py3-none-any.whl", hash = "sha256:8fcc41fc5c407871361af10951cd421959219b9abdd6eca58459d1660f8f0c64"},
+    {file = "awscli-1.18.98.tar.gz", hash = "sha256:44ad7e504141ba9efeb3517416e860fc82f7c2e64eca708ddc3ab417d96ef355"},
 ]
 babel = [
     {file = "Babel-2.8.0-py2.py3-none-any.whl", hash = "sha256:d670ea0b10f8b723672d3a6abeb87b565b244da220d76b4dba1b66269ec152d4"},
@@ -848,12 +848,12 @@ billiard = [
     {file = "billiard-3.6.3.0.tar.gz", hash = "sha256:d91725ce6425f33a97dfa72fb6bfef0e47d4652acd98a032bd1a7fbf06d5fa6a"},
 ]
 boto3 = [
-    {file = "boto3-1.14.20-py2.py3-none-any.whl", hash = "sha256:f7aa33b382cc9e73ef7f590b885e72732ad2bd9628c5e312c9aeb8ba011c6820"},
-    {file = "boto3-1.14.20.tar.gz", hash = "sha256:e6ab26155b2f83798218106580ab2b3cd47691e25aba912e0351502eda8d86e0"},
+    {file = "boto3-1.14.21-py2.py3-none-any.whl", hash = "sha256:5c2fa8ac4e4a4800d02b11d75b71bb8fcc190d6fbb15d957f99661414e655e10"},
+    {file = "boto3-1.14.21.tar.gz", hash = "sha256:b093e00e98ab31f98d444efad1738ab4795226f0b05abc6655d747f286f9baf9"},
 ]
 botocore = [
-    {file = "botocore-1.17.20-py2.py3-none-any.whl", hash = "sha256:e7fee600092b51ca8016c541d5c50a8b39179d5c184ec3fd430400d99ba0c55a"},
-    {file = "botocore-1.17.20.tar.gz", hash = "sha256:d1bf8c2085719221683edf54913c6155c68705f26ab4a72c45e4de5176a8cf7b"},
+    {file = "botocore-1.17.21-py2.py3-none-any.whl", hash = "sha256:9c4694e413c344ca2fb1175f33a97265dbf7f8a5943fbeafde3161d080b72308"},
+    {file = "botocore-1.17.21.tar.gz", hash = "sha256:fcbcda16c815744482be4206ed098f4d08f2dfddfb1fcfa0f822f4cfd94adb85"},
 ]
 celery = [
     {file = "celery-4.4.6-py2.py3-none-any.whl", hash = "sha256:ef17d7dffde7fc73ecab3a3b6389d93d3213bac53fa7f28e68e33647ad50b916"},
