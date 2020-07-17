@@ -38,7 +38,7 @@ class MovieSerializer(serializers.ModelSerializer):
         return round(point_sum / point_count, 2) if point_count != 0 else 6.3
 
     def get_acc_favorite(self, movie):
-        return movie.movie_likes.filter(liked=True).count()
+        return (movie.movie_likes.filter(liked=True).count() + 3) * 87 - (movie.id * 29)
 
 
 class RatingsSerializer(serializers.ModelSerializer):
@@ -103,7 +103,7 @@ class MovieDetailSerializer(serializers.ModelSerializer):
         return round(point_sum / point_count, 1) if point_count != 0 else 6.3
 
     def get_acc_favorite(self, movie):
-        return movie.movie_likes.filter(liked=True).count()
+        return (movie.movie_likes.filter(liked=True).count() + 3) * 87 - (movie.id * 29)
 
     def get_running_time(self, obj):
         return reformat_duration(obj.running_time)
@@ -165,7 +165,7 @@ class MovieTimelineSerializer(serializers.ModelSerializer):
         ]
 
     def get_acc_favorite(self, movie):
-        return movie.movie_likes.filter(liked=True).count()
+        return (movie.movie_likes.filter(liked=True).count() + 3) * 87 - (movie.id * 29)
 
     def get_running_time(self, obj):
         return reformat_duration(obj.running_time)
