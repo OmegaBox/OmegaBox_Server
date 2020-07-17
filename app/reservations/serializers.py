@@ -108,6 +108,12 @@ class ReservationCreateSerializer(serializers.Serializer):
         return ReservationDetailSerializer(instance).data
 
 
+class ReservationDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = '__all__'
+
+
 class PaymentDetailSerializer(serializers.ModelSerializer):
     payment_id = serializers.IntegerField(source='id')
 

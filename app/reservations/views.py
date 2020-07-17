@@ -1,12 +1,16 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework.generics import CreateAPIView, GenericAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, DestroyAPIView
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated
 
+from utils.excepts import InvalidReservationIdException
 from .models import Payment, Reservation
-from .serializers import PaymentCreateSerializer, \
-    PaymentDetailSerializer, PaymentCancelSerializer, ReservationCreateSerializer, ReservationDetailSerializer
+from .serializers import (
+    PaymentCreateSerializer, PaymentDetailSerializer, PaymentCancelSerializer, ReservationCreateSerializer,
+    ReservationDetailSerializer,
+    ReservationDeleteSerializer)
 
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
@@ -23,6 +27,23 @@ class ReservationCreateView(CreateAPIView):
         instance = serializer.save()
         instance.member = self.request.user
         instance.save()
+
+
+class ReservationDeleteView(DestroyAPIView):
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationDeleteSerializer
+    permission_classes = [IsAuthenticated, ]
+
+    def get_object(self):
+        try:
+            reservation = Reservation.objects.get(
+                pk=self.kwargs['reservation_id'],
+                member=self.request.user,
+                payment__isnull=True,
+            )
+        except ObjectDoesNotExist:
+            raise InvalidReservationIdException
+        return reservation
 
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
