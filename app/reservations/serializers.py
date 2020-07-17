@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
 from theaters.models import SeatGrade, Schedule, Seat, SeatType
-from utils import (
+from utils.custom_functions import (
     verify_receipt_from_bootpay_server, cancel_payment_from_bootpay_server,
     calculate_seat_price)
 from utils.excepts import (
@@ -108,6 +108,12 @@ class ReservationCreateSerializer(serializers.Serializer):
         return ReservationDetailSerializer(instance).data
 
 
+class ReservationDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = '__all__'
+
+
 class PaymentDetailSerializer(serializers.ModelSerializer):
     payment_id = serializers.IntegerField(source='id')
 
@@ -207,6 +213,7 @@ class PaymentCancelSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         instance.is_canceled = True
         instance.canceled_at = validated_data['canceled_at']
+        instance.reservation.delete()
         instance.save()
         return instance
 

@@ -16,7 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from movies.models import Movie, Rating, MovieLike
 from movies.serializers import MovieTimelineSerializer
 from reservations.models import Reservation
-from utils import reformat_duration, check_google_oauth_api
+from utils.custom_functions import reformat_duration, check_google_oauth_api
 from utils.excepts import UsernameDuplicateException, TakenEmailException, GoogleUniqueIdDuplicatesException, \
     UnidentifiedUniqueIdException, LoginFailException, SocialSignUpUsernameFieldException
 from .models import Profile
@@ -252,7 +252,7 @@ class LikeMoviesSerializer(serializers.ModelSerializer):
         ]
 
     def get_acc_favorite(self, movielike):
-        return movielike.movie.movie_likes.filter(liked=True).count()
+        return (movielike.movie.movie_likes.filter(liked=True).count() + 3) * 87 - (movielike.movie.id * 29)
 
     def get_running_time(self, movielike):
         return reformat_duration(movielike.movie.running_time)
@@ -308,7 +308,8 @@ class WatchedMoviesSerializer(serializers.ModelSerializer):
         return reservation.seats.values_list('name', flat=True)
 
     def get_acc_favorite(self, reservation):
-        return reservation.schedule.movie.movie_likes.filter(liked=True).count()
+        return (reservation.schedule.movie.movie_likes.filter(liked=True).count() + 3) * 87 - (
+                reservation.schedule.movie.id * 29)
 
     def get_running_time(self, obj):
         return reformat_duration(obj.schedule.movie.running_time)

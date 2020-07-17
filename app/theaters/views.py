@@ -9,15 +9,17 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from reservations.models import Reservation
-from utils import calculate_seat_price
+from utils.custom_functions import calculate_seat_price
 from utils.excepts import InvalidScheduleIdException, SeatNamesMissingException
 from .models import Schedule, Theater, Screen, SeatType
-from .params import movies_query_param, adults_query_param, teens_query_param, preferentials_query_param, \
-    seat_names_query_param
+from .params import (
+    movies_query_param, adults_query_param, teens_query_param, preferentials_query_param, seat_names_query_param
+)
 from .serializers import (
     ScheduleMovieSerializer, ScheduleTheaterListSerializer, ScheduleRegionCountSerializer,
     SeatListSerializer,
-    ScreenDetailSerializer, SeatsTotalPriceSerializer, TotalAndReservedSeatsCountSerializer, SeatIDListSerializer)
+    ScreenDetailSerializer, SeatsTotalPriceSerializer, TotalAndReservedSeatsCountSerializer, SeatIDListSerializer
+)
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -64,14 +66,14 @@ class TheatersRegionCountGivenDate(ListAPIView):
             movies_list = list(map(int, movies.split()))[:3]
             queryset = Theater.objects.filter(
                 screens__schedules__movie__in=movies_list,
-                screens__schedules__start_time__date=date
+                screens__schedules__start_time__date=date,
             ).values(
                 'region', 'region__name'
             ).annotate(Count('name', distinct=True))
 
         else:
             queryset = Theater.objects.filter(
-                screens__schedules__start_time__date=date
+                screens__schedules__start_time__date=date,
             ).values(
                 'region', 'region__name'
             ).annotate(
@@ -139,7 +141,7 @@ class TotalAndReservedSeatsCount(APIView):
         try:
             schedule = Schedule.objects.get(pk=schedule_id)
             return Response({
-                'total_seats': schedule.seat_types.count(),
+                'total_seats': schedule.seat_types.filter(type='general').count(),
                 'reserved_seats': schedule.seat_types.aggregate(
                     reserved_seats=Count('seat__reservations'))['reserved_seats']
             })
