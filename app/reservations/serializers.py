@@ -5,11 +5,13 @@ from rest_framework.generics import get_object_or_404
 from theaters.models import SeatGrade, Schedule, Seat, SeatType
 from utils.custom_functions import (
     verify_receipt_from_bootpay_server, cancel_payment_from_bootpay_server,
-    calculate_seat_price)
+    calculate_seat_price
+)
 from utils.excepts import (
     TakenSeatException, InvalidGradeChoicesException, InvalidSeatException, PaymentIdReceiptIdNotMatchingException,
     ReservationOwnershipException, InvalidScheduleIdException, InvalidSeatIdException, PriceNotMatchingException,
-    IncorrectPriceExceptionException)
+    IncorrectPriceExceptionException
+)
 from .models import Reservation, Payment
 
 
@@ -77,7 +79,6 @@ class ReservationCreateSerializer(serializers.Serializer):
                 schedule_id=data['schedule_id'], seat_id__in=data['seat_ids'], type='sit_apart'
         ).exists():
             raise InvalidSeatException
-
         return data
 
     def create(self, validated_data):

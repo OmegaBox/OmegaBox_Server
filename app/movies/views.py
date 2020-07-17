@@ -7,8 +7,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Movie, Rating, MovieLike
-from .serializers import MovieSerializer, MovieDetailSerializer, AgeBookingSerializer, RatingsSerializer, \
-    MovieLikeSerializer
+from .serializers import (
+    MovieSerializer, MovieDetailSerializer, AgeBookingSerializer, RatingsSerializer, MovieLikeSerializer
+)
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(

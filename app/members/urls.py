@@ -3,7 +3,8 @@ from django.urls import path
 from .views import (
     SignUpView, MemberDetailView, LoginView, LogoutView, TokenRefreshView, TokenVerifyView,
     CheckUsernameDuplicateView, LikeMoviesView, WatchedMoviesView, RatingMoviesView, ReservedMoviesView,
-    CanceledReservationMoviesView, SocialSignUpView, SocialLoginView)
+    CanceledReservationMoviesView, SocialSignUpView, SocialLoginView
+)
 
 urlpatterns = [
     path('signup/', SignUpView.as_view()),

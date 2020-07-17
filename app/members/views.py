@@ -25,7 +25,8 @@ from .serializers import (
     SignUpSerializer, MemberDetailSerializer, LoginSerializer, TokenRefreshSerializer,
     TokenRefreshResultSerializer, JWTSerializer, CheckUsernameDuplicateSerializer, LikeMoviesSerializer,
     WatchedMoviesSerializer, RatingMoviesSerializer, ReservedMoviesSerializer, CanceledReservationMoviesSerializer,
-    SocialSignUpSerializer, SocialLoginSerializer)
+    SocialSignUpSerializer, SocialLoginSerializer
+)
 
 Member = get_user_model()
 

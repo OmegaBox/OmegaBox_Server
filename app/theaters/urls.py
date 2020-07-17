@@ -2,7 +2,8 @@ from django.urls import path
 
 from .views import (
     ScheduleListGivenDate, TheatersGivenDateList, TheatersRegionCountGivenDate, ReservedSeatList, ScreenDetail,
-    TotalAndReservedSeatsCount, SeatsTotalPrice, SeatIDList)
+    TotalAndReservedSeatsCount, SeatsTotalPrice, SeatIDList
+)
 
 urlpatterns = [
     path('schedules/regions/<int:date>/', TheatersRegionCountGivenDate.as_view()),
