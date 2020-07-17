@@ -1,7 +1,7 @@
 from django.db.models import Count
 from rest_framework import serializers
 
-from utils import reformat_duration
+from utils.custom_functions import reformat_duration
 from .models import Screen
 
 

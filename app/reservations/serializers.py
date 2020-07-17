@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
 from theaters.models import SeatGrade, Schedule, Seat, SeatType
-from utils import (
+from utils.custom_functions import (
     verify_receipt_from_bootpay_server, cancel_payment_from_bootpay_server,
     calculate_seat_price)
 from utils.excepts import (
