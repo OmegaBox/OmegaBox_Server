@@ -17,8 +17,10 @@ from movies.models import Movie, Rating, MovieLike
 from movies.serializers import MovieTimelineSerializer
 from reservations.models import Reservation
 from utils.custom_functions import reformat_duration, check_google_oauth_api
-from utils.excepts import UsernameDuplicateException, TakenEmailException, GoogleUniqueIdDuplicatesException, \
+from utils.excepts import (
+    UsernameDuplicateException, TakenEmailException, GoogleUniqueIdDuplicatesException,
     UnidentifiedUniqueIdException, LoginFailException, SocialSignUpUsernameFieldException
+)
 from .models import Profile
 
 Member = get_user_model()

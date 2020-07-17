@@ -9,8 +9,8 @@ from utils.excepts import InvalidReservationIdException
 from .models import Payment, Reservation
 from .serializers import (
     PaymentCreateSerializer, PaymentDetailSerializer, PaymentCancelSerializer, ReservationCreateSerializer,
-    ReservationDetailSerializer,
-    ReservationDeleteSerializer)
+    ReservationDetailSerializer, ReservationDeleteSerializer
+)
 
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
@@ -29,6 +29,11 @@ class ReservationCreateView(CreateAPIView):
         instance.save()
 
 
+@method_decorator(name='delete', decorator=swagger_auto_schema(
+    operation_summary='Delete Reservation',
+    operation_description='예매 인스턴스 삭제',
+    responses={204: ''}
+))
 class ReservationDeleteView(DestroyAPIView):
     queryset = Reservation.objects.all()
     serializer_class = ReservationDeleteSerializer
