@@ -252,7 +252,7 @@ class LikeMoviesSerializer(serializers.ModelSerializer):
         ]
 
     def get_acc_favorite(self, movielike):
-        return movielike.movie.movie_likes.filter(liked=True).count()
+        return (movielike.movie.movie_likes.filter(liked=True).count() + 3) * 87 - (movielike.movie.id * 29)
 
     def get_running_time(self, movielike):
         return reformat_duration(movielike.movie.running_time)
@@ -308,7 +308,8 @@ class WatchedMoviesSerializer(serializers.ModelSerializer):
         return reservation.seats.values_list('name', flat=True)
 
     def get_acc_favorite(self, reservation):
-        return reservation.schedule.movie.movie_likes.filter(liked=True).count()
+        return (reservation.schedule.movie.movie_likes.filter(liked=True).count() + 3) * 87 - (
+                reservation.schedule.movie.id * 29)
 
     def get_running_time(self, obj):
         return reformat_duration(obj.schedule.movie.running_time)
