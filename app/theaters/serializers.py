@@ -1,6 +1,7 @@
 from django.db.models import Count
 from rest_framework import serializers
 
+from reservations.models import Reservation
 from utils.custom_functions import reformat_duration
 from .models import Screen
 
@@ -71,8 +72,12 @@ class ScheduleMovieSerializer(serializers.Serializer):
         return f'{obj.start_time + obj.movie.running_time:%H:%M}'
 
     def get_total_seats(self, obj):
-        return obj.seat_types.count()
+        return obj.seat_types.filter(type='general').count()
 
     def get_reserved_seats(self, obj):
-        return obj.seat_types.aggregate(
-            reserved_seats=Count('seat__reservations'))['reserved_seats']
+        schedule = obj
+        return Reservation.objects.filter(
+            schedule=schedule,
+        ).aggregate(
+            reserved_seats=Count('seat_grades')
+        )['reserved_seats']
