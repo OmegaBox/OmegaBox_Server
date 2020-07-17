@@ -16,7 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from movies.models import Movie, Rating, MovieLike
 from movies.serializers import MovieTimelineSerializer
 from reservations.models import Reservation
-from utils import reformat_duration, check_google_oauth_api
+from utils.custom_functions import reformat_duration, check_google_oauth_api
 from utils.excepts import UsernameDuplicateException, TakenEmailException, GoogleUniqueIdDuplicatesException, \
     UnidentifiedUniqueIdException, LoginFailException, SocialSignUpUsernameFieldException
 from .models import Profile

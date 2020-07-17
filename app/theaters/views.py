@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from reservations.models import Reservation
-from utils import calculate_seat_price
+from utils.custom_functions import calculate_seat_price
 from utils.excepts import InvalidScheduleIdException, SeatNamesMissingException
 from .models import Schedule, Theater, Screen, SeatType
 from .params import movies_query_param, adults_query_param, teens_query_param, preferentials_query_param, \

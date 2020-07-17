@@ -18,13 +18,15 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView as DefaultTokenVerifyView,
 )
 
-from movies.models import Movie, Rating, MovieLike
+from movies.models import Rating, MovieLike
 from reservations.models import Reservation
 from utils.excepts import UsernameDuplicateException
-from .serializers import SignUpSerializer, MemberDetailSerializer, LoginSerializer, TokenRefreshSerializer, \
-    TokenRefreshResultSerializer, JWTSerializer, CheckUsernameDuplicateSerializer, LikeMoviesSerializer, \
-    WatchedMoviesSerializer, RatingMoviesSerializer, ReservedMoviesSerializer, CanceledReservationMoviesSerializer, \
+from .serializers import (
+    SignUpSerializer, MemberDetailSerializer, LoginSerializer, TokenRefreshSerializer,
+    TokenRefreshResultSerializer, JWTSerializer, CheckUsernameDuplicateSerializer, LikeMoviesSerializer,
+    WatchedMoviesSerializer, RatingMoviesSerializer, ReservedMoviesSerializer, CanceledReservationMoviesSerializer,
     SocialSignUpSerializer, SocialLoginSerializer
+)
 
 Member = get_user_model()
 
