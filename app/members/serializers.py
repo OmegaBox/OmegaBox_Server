@@ -15,7 +15,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from movies.models import Movie, Rating, MovieLike
 from movies.serializers import MovieTimelineSerializer
-from reservations.models import Reservation
+from reservations.models import Reservation, Payment
 from utils.custom_functions import reformat_duration, check_google_oauth_api
 from utils.excepts import (
     UsernameDuplicateException, TakenEmailException, GoogleUniqueIdDuplicatesException,
@@ -404,21 +404,20 @@ class ReservedMoviesSerializer(serializers.ModelSerializer):
             discount_price = 0
         else:
             discount_price = reservation.payment.discount_price
-
         return round((reservation.payment.price - discount_price) * discount_rate)
 
 
 class CanceledReservationMoviesSerializer(serializers.ModelSerializer):
-    reservation_id = serializers.IntegerField(source='id')
-    canceled_at = serializers.DateTimeField(source='payment.canceled_at', format='%Y-%m-%d %H:%M')
-    movie_name = serializers.CharField(source='schedule.movie.name_kor')
-    theater_name = serializers.CharField(source='schedule.screen.theater.name')
-    start_time = serializers.DateTimeField(source='schedule.start_time', format='%Y-%m-%d %H:%M')
-    canceled_payment = serializers.IntegerField(source='payment.price')
-    canceled_discount_price = serializers.IntegerField(source='payment.discount_price')
+    reservation_id = serializers.IntegerField(source='reservation.id')
+    canceled_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M')
+    movie_name = serializers.CharField(source='reservation.schedule.movie.name_kor')
+    theater_name = serializers.CharField(source='reservation.schedule.screen.theater.name')
+    start_time = serializers.DateTimeField(source='reservation.schedule.start_time', format='%Y-%m-%d %H:%M')
+    canceled_payment = serializers.IntegerField(source='price')
+    canceled_discount_price = serializers.IntegerField(source='discount_price')
 
     class Meta:
-        model = Reservation
+        model = Payment
         fields = [
             'reservation_id',
             'canceled_at',
