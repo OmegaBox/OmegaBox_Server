@@ -19,7 +19,7 @@ from rest_framework_simplejwt.views import (
 )
 
 from movies.models import Rating, MovieLike
-from reservations.models import Reservation
+from reservations.models import Reservation, Payment
 from utils.excepts import UsernameDuplicateException
 from .serializers import (
     SignUpSerializer, MemberDetailSerializer, LoginSerializer, TokenRefreshSerializer,
@@ -201,10 +201,9 @@ class CanceledReservationMoviesView(ListAPIView):
     permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        return Reservation.objects.select_related(
-            'member', 'payment', 'schedule__movie', 'schedule__screen__theater'
+        return Payment.objects.select_related(
+            'reservation__schedule__screen__theater', 'reservation__schedule__movie',
         ).filter(
+            is_canceled=True,
             member=self.request.user,
-            payment__isnull=False,
-            payment__is_canceled=True
-        ).order_by('-payment__canceled_at')
+        ).order_by('-canceled_at')
