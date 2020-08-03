@@ -189,7 +189,7 @@ class ReservedMoviesView(ListAPIView):
             member=self.request.user,
             payment__isnull=False,
             payment__is_canceled=False
-        ).order_by('reserved_at')
+        ).order_by('-reserved_at')
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
