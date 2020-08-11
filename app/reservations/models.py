@@ -59,7 +59,7 @@ class Payment(models.Model):
     pg = models.CharField(max_length=20, choices=PG_CHOICES)
     method = models.CharField(max_length=20, choices=METHOD_CHOICES)
     card_name = models.CharField(max_length=30, blank=True)
-    card_num = models.IntegerField(max_length=30, blank=True, null=True)
+    card_num = models.CharField(max_length=30, blank=True, null=True)
     payed_at = models.DateTimeField(auto_now_add=True)
     is_canceled = models.BooleanField(default=False)
     canceled_at = models.DateTimeField(auto_now=True)
