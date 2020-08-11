@@ -13,7 +13,7 @@ from config.settings._base import AUTH_USER_MODEL
 
 class BaseMemberMixin(models.Model):
     name = models.CharField(max_length=30)
-    mobile = PhoneNumberField(unique=True)
+    mobile = PhoneNumberField()
     birth_date = models.DateField()
 
     class Meta:
