@@ -15,8 +15,8 @@ server {
     charset utf-8;
 
     ssl on;
-    ssl_certificate /etc/letsencrypt/live/omegabox.xyz/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/omegabox.xyz/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/omegabox.xyz-0002/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/omegabox.xyz-0002/privkey.pem;
 
 
     location / {
