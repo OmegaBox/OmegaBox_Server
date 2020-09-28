@@ -70,6 +70,7 @@ class PaymentCreateView(CreateAPIView):
     responses={200: PaymentDetailSerializer()}
 ))
 class PaymentCancelView(UpdateModelMixin, GenericAPIView):
+    queryset = Payment
     serializer_class = PaymentCancelSerializer
 
     def get_object(self):
