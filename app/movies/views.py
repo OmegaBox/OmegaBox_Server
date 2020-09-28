@@ -48,6 +48,7 @@ class MovieDetailView(RetrieveAPIView):
     operation_description='해당 영화의 나이대별 예매 총합',
 ))
 class AgeBookingView(RetrieveAPIView):
+    queryset = Movie.objects.all()
     serializer_class = AgeBookingSerializer
 
     def get_object(self):
