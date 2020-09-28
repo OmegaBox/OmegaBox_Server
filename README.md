@@ -34,3 +34,6 @@ https://www.omegabox.xyz/doc/
 신동현 https://github.com/qu3vipon 권효진 https://github.com/moorekwon
 
 <br>
+
+# Updates
+20/09/29: let's encrypt ssl certificate update
