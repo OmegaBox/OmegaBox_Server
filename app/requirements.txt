@@ -50,9 +50,9 @@ django-rest-auth==0.9.5 \
 django-storages==1.9.1 \
     --hash=sha256:a59e9923cbce7068792f75344ed7727021ee4ac20f227cf17297d0d03d141e91 \
     --hash=sha256:3103991c2ee8cef8a2ff096709973ffe7106183d211a79f22cf855f33533d924
-djangorestframework==3.10.3 \
-    --hash=sha256:5488aed8f8df5ec1d70f04b2114abc52ae6729748a176c453313834a9ee179c8 \
-    --hash=sha256:dc81cbf9775c6898a580f6f1f387c4777d12bd87abf0f5406018d32ccae71090
+djangorestframework==3.11.2 \
+    --hash=sha256:5cc724dc4b076463497837269107e1995b1fbc917468d1b92d188fd1af9ea789 \
+    --hash=sha256:a5967b68a04e0d97d10f4df228e30f5a2d82ba63b9d03e1759f84993b7bf1b53
 djangorestframework-jwt==1.11.0 \
     --hash=sha256:5efe33032f3a4518a300dc51a51c92145ad95fb6f4b272e5aa24701db67936a7 \
     --hash=sha256:ab15dfbbe535eede8e2e53adaf52ef0cf018ee27dbfad10cbc4cbec2ab63d38c
